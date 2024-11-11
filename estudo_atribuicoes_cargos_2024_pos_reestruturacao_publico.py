@@ -156,6 +156,30 @@ cargos_atrib_atual_nocor
 
 """Possível verificar que são 14 linhas (carreiras) e 72 colunas (atribuições), totalizando 1008 células com valores 0 ou 1."""
 
+def heatmap_tabela_atrib(tabelaAtribBin, titulo, color_map):
+  tabelaBinariaColor = tabelaAtribBin.set_index('Carreira')
+
+  # Convert all columns to numeric, replacing errors with NaN
+  tabelaBinariaColor = tabelaBinariaColor.apply(pd.to_numeric, errors='coerce')
+
+  fig, ax = plt.subplots(figsize=(18, 12))
+
+  # Use tabelaBinariaColor for both heatmaps
+  heatmap = sns.heatmap(tabelaBinariaColor, annot=True, cbar=False)
+  sns.heatmap(tabelaBinariaColor, cmap=color_map, vmin=0, vmax=1,
+              center=0, linewidths=1, annot=True, square=True,
+              linecolor='black', cbar=False)
+
+  ax.set(xlabel=None)
+  ax.set(ylabel=None)
+  plt.title(titulo, fontsize=20)
+  plt.show()
+
+titulo = "Tabela Binária - Atual Original Sem Correção Total"
+color_map = "BrBG"
+
+heatmap_tabela_atrib(cargos_atrib_atual_nocor, titulo, color_map)
+
 #Verificação dos dados
 cargos_atrib_atual_nocor.head(14)
 
@@ -172,6 +196,13 @@ cols_all_ones
 #Retirando cargos comuns a todos do DF.
 atrib_gerais_no_cor = cargos_atrib_atual_nocor.drop(cols_all_ones, axis=1)
 #atrib_gerais_no_cor
+
+"""Tabela binária colorida sem os atributos comuns."""
+
+titulo = "Tabela Binária - Atual Original Sem Correção"
+color_map = "BrBG"
+
+heatmap_tabela_atrib(atrib_gerais_no_cor, titulo, color_map)
 
 """É possível elencar a atribuição por carreira com a função 'atrib_por_carreira'. A lista segue abaixo. Essas listas podem dar o panorama geral sem retirar as atribuições repetidas."""
 
@@ -363,6 +394,13 @@ cargos_atrib_atual_nocor_condensed, cargos_atrib_atual_nocor_hist_redux = df_con
 
 cargos_atrib_atual_nocor_condensed
 
+"""Tabela binária condensada colorida."""
+
+titulo = "Tabela Binária - Atual Condensada Sem Correção"
+color_map = "PRGn"
+
+heatmap_tabela_atrib(cargos_atrib_atual_nocor_condensed, titulo, color_map)
+
 cargos_atrib_atual_nocor_hist_redux
 
 """Calculando redução de colunas em números absolutos."""
@@ -475,6 +513,13 @@ cargos_atrib_atual_withcor.loc[:, (cargos_atrib_atual_withcor == 1).all()]
 cols_all_ones = cargos_atrib_atual_withcor.loc[:, (cargos_atrib_atual_withcor == 1).all()].columns.tolist()
 atrib_gerais_with_cor = cargos_atrib_atual_withcor.drop(cols_all_ones, axis=1)
 
+"""Tabela binária colorida sem os atributos comuns."""
+
+titulo = "Tabela Binária - Atual Original Com Correção"
+color_map = "PiYG"
+
+heatmap_tabela_atrib(atrib_gerais_with_cor, titulo, color_map)
+
 """Atribuições por carreira."""
 
 atrib_por_carreira(atrib_gerais_with_cor)
@@ -512,6 +557,13 @@ Abaixo a geração de tabelas condensadas.
 cargos_atrib_atual_withcor_condensed, cargos_atrib_atual_withcor_hist_redux = df_condensado_e_reducoes(cargos_atrib_atual_withcor)
 
 cargos_atrib_atual_withcor_condensed
+
+"""Tabela binária condensada colorida."""
+
+titulo = "Tabela Binária - Atual Condensada Com Correção"
+color_map = "BrBG"
+
+heatmap_tabela_atrib(cargos_atrib_atual_withcor_condensed, titulo, color_map)
 
 cargos_atrib_atual_withcor_hist_redux
 
@@ -570,6 +622,13 @@ cargos_atrib_LONPC_nocor.loc[:, (cargos_atrib_LONPC_nocor == 1).all()]
 cols_all_ones = cargos_atrib_LONPC_nocor.loc[:, (cargos_atrib_LONPC_nocor == 1).all()].columns.tolist()
 atrib_gerais_LONPC_no_cor = cargos_atrib_LONPC_nocor.drop(cols_all_ones, axis=1)
 
+"""Tabela binária colorida sem os atributos comuns."""
+
+titulo = "Tabela Binária - LONPC Original Sem Correção"
+color_map = "PuOr"
+
+heatmap_tabela_atrib(atrib_gerais_LONPC_no_cor, titulo, color_map)
+
 """Atribuições de cada carreira."""
 
 atrib_por_carreira(atrib_gerais_LONPC_no_cor)
@@ -613,6 +672,13 @@ cargos_atrib_LONPC_nocor_condensed, cargos_atrib_LONPC_nocor_hist_redux = df_con
 
 cargos_atrib_LONPC_nocor_condensed
 
+"""Tabela binária condensada colorida."""
+
+titulo = "Tabela Binária - LONPC Condensada Sem Correção"
+color_map = "RdGy"
+
+heatmap_tabela_atrib(atrib_gerais_no_cor, titulo, color_map)
+
 cargos_atrib_LONPC_nocor_hist_redux
 
 """Quantidade de colunas reduzidas."""
@@ -650,6 +716,13 @@ print(cargos_atrib_LONPC_withcor.to_string())
 cargos_atrib_LONPC_withcor.loc[:, (cargos_atrib_LONPC_withcor == 1).all()]
 cols_all_ones = cargos_atrib_LONPC_withcor.loc[:, (cargos_atrib_LONPC_withcor == 1).all()].columns.tolist()
 atrib_gerais_LONPC_with_cor = cargos_atrib_LONPC_withcor.drop(cols_all_ones, axis=1)
+
+"""Tabela binária colorida sem os atributos comuns."""
+
+titulo = "Tabela Binária - LONPC Original Com Correção"
+color_map = "RdBu"
+
+heatmap_tabela_atrib(atrib_gerais_no_cor, titulo, color_map)
 
 """Listagem de atribuições de cada carreira"""
 
@@ -689,6 +762,13 @@ Abaixo a geração de tabelas condensadas.
 cargos_atrib_LONPC_withcor_condensed, cargos_atrib_LONPC_withcor_hist_redux = df_condensado_e_reducoes(cargos_atrib_LONPC_withcor)
 
 cargos_atrib_LONPC_withcor_condensed
+
+"""Tabela binária condensada colorida."""
+
+titulo = "Tabela Binária - LONPC Condensada Com Correção"
+color_map = "RdBu"
+
+heatmap_tabela_atrib(cargos_atrib_LONPC_withcor_condensed, titulo, color_map)
 
 cargos_atrib_LONPC_withcor_hist_redux
 
@@ -2072,6 +2152,38 @@ titulo = 'Cargos Atuais sem correções'
 
 matrix_adjacencia(cargos_atrib_atual_nocor, titulo)
 
+"""Matrix de adjacência colorida com pesos."""
+
+def heatmap_tabela_adj(df, tabelaAdj, arestas, titulo, color_map):
+  matrix_adj_com_pesos = tabelaAdj
+  vmax = 0
+  for aresta in arestas:
+    matrix_adj_com_pesos[aresta[0], aresta[1]] = aresta[2]
+    matrix_adj_com_pesos[aresta[1], aresta[0]] = aresta[2]
+    max_atual = aresta[2]
+    if max_atual > vmax:
+      vmax = max_atual
+  matrix_adj_com_pesos = np.array(matrix_adj_com_pesos)
+  for i in range(len(matrix_adj_com_pesos)):
+    matrix_adj_com_pesos[i,i] = "NaN"
+
+  tabelaAdj = pd.DataFrame(matrix_adj_com_pesos, columns=df['Carreira'], index=df['Carreira'])
+
+  fig, ax = plt.subplots(figsize=(18, 12))
+
+  heatmap = sns.heatmap(tabelaAdj, annot=True, cbar=False)
+  sns.heatmap(tabelaAdj, cmap=color_map, vmin=0, vmax=vmax,
+              center=0, linewidths=1, annot=True, square=True,
+              linecolor='black', cbar=True)
+
+  plt.title(titulo, fontsize=20)
+  plt.show()
+
+titulo = "Tabela Adjacência com pesos - Atual Sem Correção"
+color_map = "BrBG"
+
+heatmap_tabela_adj(atrib_gerais_no_cor, matrix_adj, arestas, titulo, color_map)
+
 """Plotando o Diagrama de Grafos. As cores foram setadas em azul claro para grupos dos Delegados, vermelho para Investigação, violeta para Perícia, verde claro para apoio à perícia e laranja para apoio à Investigação (quando disponível). Essas cores não afetam os cálculos, somente a estética do diagrama."""
 
 #Plotando Diagrama de Grafos
@@ -2230,6 +2342,13 @@ titulo = 'Cargos Atuais com correções'
 
 matrix_adjacencia(cargos_atrib_atual_withcor, titulo)
 
+"""Matrix de adjacência colorida com pesos."""
+
+titulo = "Tabela Adjacência com pesos- Atual Com Correção"
+color_map = "PiYG"
+
+heatmap_tabela_adj(atrib_gerais_with_cor, matrix_adj, arestas, titulo, color_map)
+
 """Plotando Diagrama de Grafos."""
 
 #Plotando Diagrama de Grafos
@@ -2337,6 +2456,13 @@ titulo = 'Cargos LONPC sem correções'
 
 matrix_adjacencia(cargos_atrib_LONPC_nocor, titulo)
 
+"""Matrix de adjacência colorida."""
+
+titulo = "Tabela Adjacência com pesos- LONPC Sem Correção"
+color_map = "PuOr"
+
+heatmap_tabela_adj(atrib_gerais_LONPC_no_cor, matrix_adj, arestas, titulo, color_map)
+
 """Plotando Diagrama de Grafos."""
 
 #Plotando Diagrama de Grafos
@@ -2397,6 +2523,13 @@ Inicialmente, contruir a matriz de adjacência e as arestas.
 titulo = 'Cargos LONPC com correções'
 
 matrix_adjacencia(cargos_atrib_LONPC_withcor, titulo)
+
+"""Matrix de adjacência colorida."""
+
+titulo = "Tabela Adjacência com pesos- LONPC Com Correção"
+color_map = "RdBu"
+
+heatmap_tabela_adj(atrib_gerais_LONPC_with_cor, matrix_adj, arestas, titulo, color_map)
 
 """Plotando Diagrama de Grafos."""
 
