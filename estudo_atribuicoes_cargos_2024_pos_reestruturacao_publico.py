@@ -677,7 +677,7 @@ cargos_atrib_LONPC_nocor_condensed
 titulo = "Tabela Binária - LONPC Condensada Sem Correção"
 color_map = "RdGy"
 
-heatmap_tabela_atrib(atrib_gerais_no_cor, titulo, color_map)
+heatmap_tabela_atrib(atrib_gerais_LONPC_no_cor, titulo, color_map)
 
 cargos_atrib_LONPC_nocor_hist_redux
 
@@ -722,7 +722,7 @@ atrib_gerais_LONPC_with_cor = cargos_atrib_LONPC_withcor.drop(cols_all_ones, axi
 titulo = "Tabela Binária - LONPC Original Com Correção"
 color_map = "RdBu"
 
-heatmap_tabela_atrib(atrib_gerais_no_cor, titulo, color_map)
+heatmap_tabela_atrib(atrib_gerais_LONPC_with_cor, titulo, color_map)
 
 """Listagem de atribuições de cada carreira"""
 
