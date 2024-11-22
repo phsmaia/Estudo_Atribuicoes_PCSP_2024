@@ -785,12 +785,107 @@ atrib_cond_por_carreira(cargos_atrib_LONPC_withcor_condensed)
 
 """Observando as atribuições compartilhadas, a lista se tornou praticamente a mesma gerada na situação das carreiras e atribuições atuais com correções.
 
-###1.1.5 - Comentários Gerais
-Com as listas exclusivas e compartilhadas, é possível verificar que em nenhum momento existem atribuições compartilhadas entre Papiloscopistas Policias e Investigadores de Polícia. A quantidade de atribuições compartilhadas varia de 2 a 10 entre Perito Criminal e Papiloscoppista, já indicando atribuições compartilhadas entre esses cargos, como a presença de atribuições periciais para ambos.
+###1.1.5 - Restruturação Proposta pela PCSP em 2024
+Utilizando como base a restruturação apresentada pela PCSP em 2024, e colhendo as modificação tanto já sendo implementadas quanto aquelas propostas, pode-se ter uma ideia de como serão as modificações relativas ao que era antes da LONPC, e também confrontando a adequação a LONPC.
+As correções são parecidas com as propostas anteriormente, com exceção de:
+- Investigador de Polícia é renomedo para Oficial Investigador de Polícia. O Escrivão de Polícia é mantido a parte.
+- Todas ausência pericial corretiva proposta para papiloscopista é mantida.
+- Papiloscopista Policial e Auxiliar de Papiloscopista Policial são mesclados de forma simples no cargo de Papiloscopista Policial, sem atribuições periciais. Isso ocorre retirando todas as intersecções possíveis dos cargos periciais explícitos de Perito Criminal e Médico Legista, e criando três institutos novos: o Assessoramento Técnico Papiloscópico, o qual não seria perícia papiloscópica de local de crime, apesar da mesma essência; o Suporte a Desastres, o qual reduziria o papiloscopista a mero auxílio nessas situações; e a confeção de relatórios de assessoramento papiloscópico e exame papiloscópico, não periciais, meramente atividades policiais.
+- As carreiras de apoio a investigação (Agente de Telecomunicações Policiais, Agente Policial e Carcereiro Policial) são mesclados no Agente de Polícia Judiciária. A priori, só foram atribuidas as funções de Oficial Investigador de Polícia.
+- São mesclados Fotógrafo Técnico Pericial e Desenhista Técnico Pericial em Agente de Perícia Criminalística.
+- São mesclados o Auxiliar de Necrópsia Policial e o Atendente de Necrotério Policial no Agente de Perícia Médico Legal.
 
-Interessante notar que o Perito Criminal só atua com papiloscopia na fase externa, e realiza perícia de coleta na papiloscopia, e outras mais no local e com suas diferentes expertises. O Papiloscopista Policial atua em todo o ciclo da cadeia de custódia na papiloscopia, fase externa de coleta, e é o único Perito na identificação papiloscópica a fazer perícia de fase interna na papiloscopia, a qual é o processamento (a perícia em si). Auxiliariares de papiloscopia auxiliam papiloscopistas na parte externa de coleta, e não possuem as condições necessárias para realizar perícia na parte externa, somente coleta auxiliar ao do papiloscopista.
+####1.1.5.1 Original
+"""
 
-Indicar que o papiloscopista realizaria assessoramento ao invés de perícia seria, no mínimo, duvidoso, haja vista enfrequecer uma prova sólida que é a mesma que o perito criminal trabalha. Ademais, os papiloscopistas trabalham com excelência, produzindo mais resultados que peritos pelo seu enfoque. Ademais, seria deturpar a ciência em um espaço geográfico ficcional de forma a funcionar como o humano deseja, e não a natureza, retirando o poder probatório dessa prova e a deixando mais frágil, não somente papiloscopista. Dessa forma, colocando em risco todas as operações, investigações e condenações por impressões digitais, de forma a criar um grande elefante branco (o Instituto de Identificação), além de criar inceficiência para a perícia, investigação, segurança pública e sociedade. É criar castas entre peritos e policias, acentuar diferenças se motivos justos, legais ou plausíveis.
+uploaded = files.upload()
+cargos_atrib_restr = pd.read_csv('05 - Atrib Rest Rem Pericia.CSV', encoding='iso-8859-1', sep=';')
+
+"""Verificação da leitura."""
+
+#Verificando o arquivo
+print(cargos_atrib_restr.to_string())
+
+"""Remoção das atribuições comuns a todos os cargos."""
+
+cargos_atrib_restr.loc[:, (cargos_atrib_restr == 1).all()]
+cols_all_ones = cargos_atrib_restr.loc[:, (cargos_atrib_restr == 1).all()].columns.tolist()
+atrib_gerais_restr = cargos_atrib_restr.drop(cols_all_ones, axis=1)
+
+"""Tabela binária colorida sem os atributos comuns."""
+
+titulo = "Tabela Binária - Restruturação Original Proposta PCSP 2024"
+color_map = "RdYlBu"
+
+heatmap_tabela_atrib(atrib_gerais_restr, titulo, color_map)
+
+"""Listagem de atribuições de cada carreira"""
+
+atrib_por_carreira(atrib_gerais_restr)
+
+"""Atribuições compartilhadas e seus cargos."""
+
+atrib_comp(atrib_gerais_restr)
+
+"""Atribuições exclusivas de cada cargo."""
+
+atrib_excl(atrib_gerais_restr)
+
+"""Abaixo a comparação direta entre Perito Criminal, Papiloscopista (mesclado com Auxiliar de Papiloscopia Policial) e Oficial Investigador de Polícia."""
+
+#Cargos a selecionar
+lista_cargos_select = ['Perito Criminal', 'Papiloscopista Policial', 'Oficial Investigador de Polícia']
+
+lista_exclusivas_compartilhadas_Ncargos(lista_cargos_select, atrib_gerais_restr)
+
+"""É possível verificar das listas de cargos da restruturação proposta entre todos os cargos, entre Perito Criminal, Papiloscopista Policial e Oficial Investigador de Polícia:
+
+1. O Perito Criminal possui 9 atribuições exclusivas (14,06%).
+2. Perito Criminal e Papiloscopista Policial compartilham 1 atribuição (1,56%).
+3. O Papiloscopista Policial possui 13 atribuições exclusivas (20,31%).
+4. NÃO há atribuições compartilhadas entre Papiloscopista Policial e Oficial Investigador de Polícia (Zero – 0%).
+5. O Oficial Investigador de Polícia não possuí atribuições exclusivas (Zero – 0%), já que compartilha todas com o Agente de Polícia Judiciária.
+6. A tabela total com as 64 atribuições (100%) já que houve a criação do Assessoramento Técnico Papiloscópico, o Suporte a Desastres e a Edição de Relatórios de Assessoramento Técnico Papiloscópico e Relatórios de Exame Papiloscópico, todos não periciais.
+7. A parte do Perito Criminal exclusiva e compartilhada entre  Papiloscopista Policial e Oficial Investigador de Polícia não se alterou em comparação com a situação Atual sem correções. Houve edução nas atrituições compartilhadas entre Perito Criminal e Papiloscopista Policial, aumento nas atribuições do Papiloscopista Policial e redução nas atribuições exclusivas do Oficial Investigador Policial.
+8. Total de atribuições nas análises de atribuições exclusivas e compartilhadas: 23 (35,94%).
+
+####1.1.5.2 Condensada
+
+Abaixo a geração de tabelas condensadas.
+"""
+
+cargos_atrib_restr_condensed, cargos_atrib_restr_hist_redux = df_condensado_e_reducoes(cargos_atrib_restr)
+
+cargos_atrib_restr_condensed
+
+"""Tabela binária condensada colorida."""
+
+titulo = "Tabela Binária - Restruturação Condensada Proposta PCSP"
+color_map = "RdYlBu"
+
+heatmap_tabela_atrib(cargos_atrib_restr_condensed, titulo, color_map)
+
+cargos_atrib_restr_hist_redux
+
+"""Quantidade de colunas reduzidas."""
+
+quant_colunas_reduzidas(cargos_atrib_restr, cargos_atrib_restr_condensed)
+
+"""A redução foi similar a gerada similar a gerada na situação atual corrigida.
+
+A seguir as atribuições condensadas por carreiras.
+"""
+
+atrib_cond_por_carreira(cargos_atrib_restr_condensed)
+
+"""Observando as atribuições exclusivas e compartilhadas, a lista se tornou uma apresentação das atribuições compartilhadas entre peritos explícitos (Perito Criminal e Médico Legista) e apoio a perícia (Agente de Perícia Criminalística e Agente de Perícia Médico Legal), com poucas exceções com o Papiloscopista Policial (identificação do cadáver latu sensu com o médico; e Suporte a desastres com o apoio a perícia criminal). Há o total compartilhamento entre atribuições do Oficial Investigador de Polícia e Agente de Polícia Judiciária.
+
+###1.1.6 - Comentários Gerais
+Com as listas exclusivas e compartilhadas, é possível verificar que em nenhum momento existem atribuições compartilhadas entre Papiloscopistas Policias e Investigadores de Polícia. A quantidade de atribuições compartilhadas varia de 2 a 10 entre Perito Criminal e Papiloscopistanas situações atuais e LONPC com e sem correções, já indicando atribuições compartilhadas entre esses cargos, como a presença de atribuições periciais para ambos. Todavia, há redução na restruturação proposta, afastando das questões periciais
+
+Interessante notar que o Perito Criminal só atua com papiloscopia na fase externa, e realiza perícia de coleta na papiloscopia, e outras mais no local e com suas diferentes expertises. O Papiloscopista Policial atua em todo o ciclo da cadeia de custódia na papiloscopia, fase externa de coleta, e é o único Perito na identificação Papiloscópica a fazer perícia de fase interna na papiloscopia, a qual é o processamento (a perícia em si). Auxiliariares de papiloscopia auxiliam papiloscopistas na parte externa de coleta, e não possuem as condições necessárias para realizar perícia na parte externa, somente coleta auxiliar ao do papiloscopista. Com a alterações propostas, não haveria tanto perícia quanto prova pericial papiloscópica, abolindo tais na esfera pericial e policial do Estado de São Paulo.
+
+Indicar que o papiloscopista realizaria assessoramento ao invés de perícia seria, no mínimo, duvidoso, haja vista enfrequecer uma prova sólida que é a mesma que o perito criminal trabalha. Ademais, os papiloscopistas trabalham com excelência, produzindo mais resultados que peritos pelo seu enfoque. Isto seria deturpar a ciência em um espaço geográfico ficcional de forma a funcionar como o humano deseja, e não a natureza, retirando o poder probatório dessa prova e a deixando mais frágil. Dessa forma, coloca-se em risco todas as operações, investigações e condenações por impressões digitais, além de criar ineficiência para a perícia, investigação, segurança pública e sociedade. Pode-se com isso criar desnecessidade da parte criminal do Instituto de Identificação, por criar retrabalho no ramo pericial da identificação. Além disso, cria-se castas entre peritos (explícitos e tácitos) e policias, acentuando diferenças sem motivos justos ou plausíveis.
 
 #2 - Cálculo de Distâncias e HeatMaps das Similaridades
 O cálculo de distância utiliza medidas relativas comparativas na tabela binária para verificar a proximidade com bases nos números e atributos. Desde que os dados estejam bem processados e sejam bem interpretados, é possível extrair algumas informações.
@@ -931,6 +1026,47 @@ color_map = "BrBG"
 
 heatmap_tabela_dist(tabelaCorrelation, titulo, color_map)
 
+"""Para facilitar as comparações e manter imagens menores, foi feita uma redução do gráfico para somente o Perito Criminal, Papiloscopista Policial e Investigador de Polícia."""
+
+def tabela_correlation_selecionados(cargos_selecionados):
+  global tabelaCorrelation_selected
+  #copia colunas dos cargos selecionados da tabela de correlação
+  tabelaCorrelation_selected = tabelaCorrelation[cargos_selecionados].copy()
+  #seleciona linhas com valor zero, ou seja, somente dos cargos selecionados
+  tabelaCorrelation_selected  = tabelaCorrelation_selected [tabelaCorrelation_selected.eq(0).any(axis=1)]
+  #Removendo cargos com zero após o último (os cargos selecionados sempre são os três primeiros)
+  tabelaCorrelation_selected.reset_index(drop=True, inplace=True)
+  for index in tabelaCorrelation_selected.index:
+    if index > 2:
+      tabelaCorrelation_selected.drop(index, inplace=True)
+
+  return tabelaCorrelation_selected
+
+carreiras_selecionadas = ['Carreira','Perito Criminal', 'Papiloscopista Policial', 'Investigador de Polícia']
+
+tabela_correlation_selecionados(carreiras_selecionadas)
+
+def heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_map):
+  tabelaCorrelation_selected = tabelaCorrelation_selected.set_index('Carreira')
+  tabelaCorrelation_selected = tabelaCorrelation_selected.apply(pd.to_numeric, errors='coerce')
+
+  fig, ax = plt.subplots(figsize=(6, 4))
+
+  heatmap = sns.heatmap(tabelaCorrelation_selected, annot=True, cbar=False)
+  sns.heatmap(tabelaCorrelation_selected, cmap = color_map, vmin = 0, vmax = 1,
+              center = 0, linewidths=1, annot=True, square=True,
+              linecolor='black', cbar=True)
+
+  ax.set(xlabel=None)
+  ax.set(ylabel=None)
+  plt.title(titulo, fontsize=10)
+  plt.show()
+
+titulo = "Heat Map - Atual Original Sem Correção Selecionados"
+color_map = "BrBG"
+
+heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_map)
+
 """####2.1.2 Condensada
 
 Processamento dos dados.
@@ -968,6 +1104,17 @@ titulo = "Heat Map - Atual Condensada Sem Correção"
 color_map = "PRGn"
 
 heatmap_tabela_dist(tabelaCorrelation, titulo, color_map)
+
+"""Redimensionagem para somente o Perito Criminal, Papiloscopista Policial e Investigador de Polícia."""
+
+carreiras_selecionadas = ['Carreira','Perito Criminal', 'Papiloscopista Policial', 'Investigador de Polícia']
+
+tabela_correlation_selecionados(carreiras_selecionadas)
+
+titulo = "Heat Map - Atual Condensada Sem Correção Selecionados"
+color_map = "PRGn"
+
+heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_map)
 
 """##2.2 Atual com correção
 
@@ -1009,6 +1156,17 @@ color_map = "PiYG"
 
 heatmap_tabela_dist(tabelaCorrelation, titulo, color_map)
 
+"""Redimensionagem para somente o Perito Criminal, Papiloscopista Policial e Investigador de Polícia (+ Agente de Telecomunicações + Agente Policial + Carcereiro Policial)."""
+
+carreiras_selecionadas = ['Carreira','Perito Criminal', 'Papiloscopista Policial', 'Investigador de Polícia (+ Agente de Telecomunicações Policial + Agente Policial + Carcereiro Policial)']
+
+tabela_correlation_selecionados(carreiras_selecionadas)
+
+titulo = "Heat Map - Atual Original Com Correção Selecionados"
+color_map = "PiYG"
+
+heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_map)
+
 """####2.2.2 Condensada
 
 Processamento dos dados.
@@ -1044,6 +1202,17 @@ titulo = "Heat Map - Atual Condensada Com Correção"
 color_map = "BrBG"
 
 heatmap_tabela_dist(tabelaCorrelation, titulo, color_map)
+
+"""Redimensionagem para somente o Perito Criminal, Papiloscopista Policial e Investigador de Polícia (+ Agente de Telecomunicações + Agente Policial + Carcereiro Policial)."""
+
+carreiras_selecionadas = ['Carreira','Perito Criminal', 'Papiloscopista Policial', 'Investigador de Polícia (+ Agente de Telecomunicações Policial + Agente Policial + Carcereiro Policial)']
+
+tabela_correlation_selecionados(carreiras_selecionadas)
+
+titulo = "Heat Map - Atual Condensada Com Correção Selecionados"
+color_map = "BrBG"
+
+heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_map)
 
 """##2.3 LONPC sem correção
 
@@ -1085,6 +1254,17 @@ color_map = "PuOr"
 
 heatmap_tabela_dist(tabelaCorrelation, titulo, color_map)
 
+"""Redimensionagem para somente o Perito Criminal, Perito Papiloscopista e Oficial Investigador de Polícia."""
+
+carreiras_selecionadas = ['Carreira','Perito Criminal', 'Perito Papiloscopista', 'Oficial Investigador de Polícia']
+
+tabela_correlation_selecionados(carreiras_selecionadas)
+
+titulo = "Heat Map - LONPC Original Sem Correção Selecionados"
+color_map = "PuOr"
+
+heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_map)
+
 """####2.3.2 Condensada
 
 Processamento dos dados.
@@ -1122,6 +1302,17 @@ titulo = "Heat Map - LONPC Condensado Sem Correção"
 color_map = "RdGy"
 
 heatmap_tabela_dist(tabelaCorrelation, titulo, color_map)
+
+"""Redimensionagem para somente o Perito Criminal, Perito Papiloscopista e Oficial Investigador de Polícia."""
+
+carreiras_selecionadas = ['Carreira','Perito Criminal', 'Perito Papiloscopista', 'Oficial Investigador de Polícia']
+
+tabela_correlation_selecionados(carreiras_selecionadas)
+
+titulo = "Heat Map - LONPC Condensada Sem Correção Selecionados"
+color_map = "RdGy"
+
+heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_map)
 
 """##2.4 LONPC com correção
 
@@ -1163,6 +1354,17 @@ color_map = "RdBu"
 
 heatmap_tabela_dist(tabelaCorrelation, titulo, color_map)
 
+"""Redimensionagem para somente o Perito Criminal, Perito Papiloscopista e Oficial Investigador de Polícia."""
+
+carreiras_selecionadas = ['Carreira','Perito Criminal', 'Perito Papiloscopista', 'Oficial Investigador de Polícia']
+
+tabela_correlation_selecionados(carreiras_selecionadas)
+
+titulo = "Heat Map - LONPC Original Com Correção Selecionados"
+color_map = "RdBu"
+
+heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_map)
+
 """####2.4.2 Condensada
 
 Processamento dos dados.
@@ -1201,8 +1403,125 @@ color_map = "RdYlBu"
 
 heatmap_tabela_dist(tabelaCorrelation, titulo, color_map)
 
-"""##2.5 Comentários Gerais
-Em nenhuma situação proposta houve similaridade entre Investigadores de Polícia e Papiloscopistas Policiais (valor sempre 1.0, de total dissimilaridade). A situação entre Perito Criminal e Papiloscopista Policial variou de 0.6 a 0.913043, indicando dissimilaridade, mas ainda menor do que com o Investigador de Polícia. Poucos os valores eram menores que 0.5 na totalidade dos cálculos, com o menor encontrado sendo 0.43. Tal fato faz sentido, já que muita similaridade indicaria talvez o mesmo cargo com poucas diferenças. Ainda que dissimilar em certo grau, esse os valores entre Papiloscopistas Policiais e Peritos indicam similaridade de atribuições. Valores mais baixos com Auxiliar de Papiloscopista são esperados, já que Papiloscopista Policiais realizam tudo que Auxiliares de Papiloscopista realizam, e estes também estão afeitos a perícia, ainda que em apoio.
+"""Redimensionagem para somente o Perito Criminal, Perito Papiloscopista e Oficial Investigador de Polícia."""
+
+carreiras_selecionadas = ['Carreira','Perito Criminal', 'Perito Papiloscopista', 'Oficial Investigador de Polícia']
+
+tabela_correlation_selecionados(carreiras_selecionadas)
+
+titulo = "Heat Map - LONPC Condensada Com Correção Selecionados"
+color_map = "RdYlBu"
+
+heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_map)
+
+"""##2.5 Reestruturação Proposta pela PCSP 2024
+
+####2.5.1 Original
+
+Processamento dos dados.
+"""
+
+processamento_dados(cargos_atrib_restr)
+
+dict_pdist, dict_pdist_squared, tabelaDistCargos, tabelaCorrelation = tabelas_distancia(cargos_atrib_restr)
+
+"""Tabela de distância relativas."""
+
+dict_pdist
+
+"""Tabelas com valores elevados ao quadrado para redução dos erros."""
+
+dict_pdist_squared
+
+"""Tabela de Correlação, advinda da tabela de distâncias calculadas entre cargos."""
+
+tabelaCorrelation
+
+"""Verificando a similaridade entre os cargos em pauta, chegamos aos seguintes valores:
+
+Perito Crimnal x Papiloscopista Policial: 0.972222.
+
+Papiloscopista Policial x Oficial Investigador de Polícia: 1.000000.
+
+Dissimilaridade entre o Oficial Investigador de Polícia e o Perito papiloscopista continua máxima. A similaridade com o Perito Criminal diminui, tendendo a chegar a 1 (um), criando maior dissimilaridade.
+
+HeatMap gerado.
+"""
+
+titulo = "Heat Map - Restruturação PCSP 2024 Original"
+
+color_map = "RdYlBu"
+
+heatmap_tabela_dist(tabelaCorrelation, titulo, color_map)
+
+"""Redimensionagem para somente o Perito Criminal, Papiloscopista Policial e Oficial Investigador de Polícia."""
+
+carreiras_selecionadas = ['Carreira','Perito Criminal', 'Papiloscopista Policial', 'Oficial Investigador de Polícia']
+
+tabela_correlation_selecionados(carreiras_selecionadas)
+
+titulo = "Heat Map - Restruturação PCSP 2024 Original Selecionados"
+color_map = "RdYlBu"
+
+heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_map)
+
+"""####2.5.2 Condensada
+
+Processamento dos dados.
+"""
+
+processamento_dados(cargos_atrib_restr_condensed)
+
+dict_pdist, dict_pdist_squared, tabelaDistCargos, tabelaCorrelation = tabelas_distancia(cargos_atrib_restr_condensed)
+
+"""Tabela de distância relativas."""
+
+dict_pdist
+
+"""Tabelas com valores elevados ao quadrado para redução dos erros."""
+
+dict_pdist_squared
+
+"""Tabela de Correlação, advinda da tabela de distâncias calculadas entre cargos."""
+
+tabelaCorrelation
+
+"""Verificando a similaridade entre os cargos em pauta, chegamos aos seguintes valores:
+
+Perito Criminal x Papiloscopista Policial: 0.900.
+
+Papiloscopista Policial x Oficial Investigador de Polícia: 1.000000.
+
+Dissimilaridade entre o Oficial Investigador de Polícia e o Perito papiloscopista continua máxima. A similaridade com o Perito Criminal diminui menos, ainda tendendo a chegar a 1 (um), criando maior dissimilaridade.
+
+HeatMap gerado.
+"""
+
+titulo = "Heat Map - Restruturação PCSP 2024 Condensado"
+
+color_map = "RdYlGn"
+
+heatmap_tabela_dist(tabelaCorrelation, titulo, color_map)
+
+"""Redimensionagem para somente o Perito Criminal, Papiloscopista Policial e Oficial Investigador de Polícia."""
+
+carreiras_selecionadas = ['Carreira','Perito Criminal', 'Papiloscopista Policial', 'Oficial Investigador de Polícia']
+
+tabela_correlation_selecionados(carreiras_selecionadas)
+
+titulo = "Heat Map - Restruturação PCSP 2024 Condensada Selecionados"
+color_map = "RdYlBu"
+
+heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_map)
+
+"""##2.6 Comentários Gerais
+Em nenhuma situação proposta houve similaridade entre Investigadores de Polícia e Papiloscopistas Policiais (valor sempre 1.0, de total dissimilaridade). A situação entre Perito Criminal e Papiloscopista Policial variou de 0.6 a 0.913043 nas situações atuais e LONPC com e sem correções, indicando dissimilaridade, mas ainda menor do que com o Investigador de Polícia. Poucos os valores eram menores que 0.5 na totalidade dos cálculos, com o menor encontrado sendo 0.43 (Papiloscopista Policial com Auxiliar de Papiloscopista Policial).
+
+Tal fato faz sentido, já que muita similaridade indicaria talvez o mesmo cargo com poucas diferenças. Ainda que dissimilar em certo grau, esse os valores entre Papiloscopistas Policiais e Peritos indicam similaridade de atribuições.
+
+Valores mais baixos com Auxiliar de Papiloscopista são esperados, já que Papiloscopista Policiais realizam tudo que Auxiliares de Papiloscopista realizam, e estes também estão afeitos a perícia, ainda que em apoio.
+
+Ao checar a proposta de reestruturação da PCSP, os valores aumentam, indicando uma movimento para a dissimilaridade entre Papiloscopista Policiais e Peritos Criminais. Não houve total dissimilaridade, mas outras táticas que poderiam indicar a tendencia de redução pericial para ir ao Investigador de Polícia seria retirar mais ainda as poucas atribuições que restariam e criar atribuições comuns a esses cargos, com exceção dos periciais e de apoio à perícia.
 
 #3 - Régua de Gower e Representação Linear
 A biblioteca Gower permite ordenar os cargos a partir das distâncias relativas, criando uma tabela e uma imagem linear de separação dos cargos. No geral, a régua de Gower e a representação linear, de todos os tipos de visualizações, foram os que apresentaram resultados mais pobres, apesar de oferecerem algumas intrepretações interessantes ao caso.
@@ -1708,7 +2027,124 @@ repr_linear, dist_linear = representacao_linear(titulo)
 
 Tal gráfico se demonstrou como um bom divisor, e uma forma de organização tanto em atribuições como em similaridade para os cargos.
 
-##3.5 - Comentários Gerais
+##3.5 Reestruturação proposta pela PCSP 2024
+
+####3.5.1 Original
+
+Início com a régua de Gower.
+"""
+
+def regua_gower(df):
+  quant_carreiras = len(df)
+
+  #Função que explora os cargos com mais similaridades (menores valores) criando uma régua de similaridade
+  #O cargo de Delegado de Polícia é o início da régua com valor zero
+  global regua_gower
+  regua_gower = gower.gower_topn(df.iloc[:,:], df, n = quant_carreiras)
+
+  return regua_gower
+
+regua_gower(cargos_atrib_restr)
+
+"""Gerando a tabela para melhor visualizar."""
+
+tabela_gower(cargos_atrib_restr)
+
+"""Ao seguir a reestruturação, é possível verificar:
+1. Delegado está no começo da lista com zero (Delegados).
+2. O Escrivão de Polícia segue em segundo.
+3. O Oficial Investigador de Polícia e o Agente de Polícia Judiciária são os próximos, com o mesmo valor devido terem idênticas as atribuições.
+4. O Agente de Perícia Criminalística segue em próximo.
+5. O Agente de Perícia Médico Legal vem depois,
+6. O Papiloscopista aparece em penúltimo lugar.
+7. O Médico Legista vem em penúltimo.
+8. Por fim, o Perito Criminal ocupa o extremo oposto.
+
+Curiosamente, essa régua apresenta uma lógica de disposição, com Delegados no início, Investigação (Escrivão de Polícia e Oficial Investigador de Polícia), apoio à investigação (Agente de Polícia Judiciária), apoio à perícia (Agente de Perícia Criminalística e Agente de Perícia Médico Legal), Papiloscopista Policial e peritos criminais (Médico Legista e Perito Criminal).
+
+Observando a tabela, considerando o ponto base o Delegado de Polícia, as posições dos cargos em pauta ficam.
+
+Oficial Investigador de Polícia: 0.171053.
+
+Papiloscopista Policial: 0.276316.
+
+Perito Criminal: 0.342105.
+
+
+A distância entre Oficial Investigador de Polícia e Papiloscopista é relativamente grande, com muitos cargos entre eles. Há distanciamento relativamente menor entre Papiloscopista Policial e Perito Crimnal. Como de praxe, observar a divisão proposta da representação linear. Voltamos a ter 5 grupos nesta representação: Delegados, Investigação, Apoio à Investigação, Apoio à Perícia e Perícia.
+"""
+
+n_grupos = 5 #Delegados, investigação, apoio à investigação, perícia e apoio a perícia.
+
+titulo = 'Distância Relativa - Restruturação PCSP 2024 Original'
+
+repr_linear, dist_linear = representacao_linear(titulo)
+
+"""Observando a representação linear proposta:
+1. Delegado de Polícia está na base separado, em vermelho.
+2. Um segundo grupo em vermelho é criado com o Escrivão de Polícia, de Cartório.
+3. Um terceiro grupo verde claro é composto do Oficial Investigador de Polícia, Agente de Polícia Judiciária e Agente de Perícia Criminal. Claramente, houve confusão na medição numérica destes cargos.
+4. O quarto grupo de cor azul é composto pelo Agente de Perícia Médico Legal e o Papiloscopista Policial, de apoio à perícia e papiloscopia.
+5. Por fim, o grupo dos Peritos Criminais explícitos em roxo, com o Médico Legista e Perito Criminal.
+
+Apesar de boa distribuição numérica, o algoritmo teve dificuldade em colocar os cargos centrais conforme delineados pela proposta de reestruturação. O Papiloscopista Papiloscopista ficou fora do grupo do Oficial Investigador de Polícia e Investigação, ficando pelo menos no apoio a perícia.
+
+####3.5.2 Condensada
+
+Início com a régua de Gower.
+"""
+
+def regua_gower(df):
+  quant_carreiras = len(df)
+
+  #Função que explora os cargos com mais similaridades (menores valores) criando uma régua de similaridade
+  #O cargo de Delegado de Polícia é o início da régua com valor zero
+  global regua_gower
+  regua_gower = gower.gower_topn(df.iloc[:,:], df, n = quant_carreiras)
+
+  return regua_gower
+
+regua_gower(cargos_atrib_restr_condensed)
+
+"""Gerando a tabela para melhor visualizar."""
+
+tabela_gower(cargos_atrib_restr_condensed)
+
+"""Observando a tabela gerada da reestruturação condensada:
+1. Delegado está no começo da lista com zero (Delegados).
+2. O Escrivão de Polícia, Oficial de Polícia Judiciária e o Agente de Polícia Judiciária ocupam a mesma posição, criando um grupo de Investigação e Apoio à Investigação.
+3. O Papiloscopista Policial vem em seguida, no centro da régua.
+4. O Agente de Perícia Criminalística e o Perito Criminal seguem, em um grupo de Perícia e Apoio à Perícia Criminalística.
+5. Por último, segue o Agente de Perícia Médico Legal (com mesma posição do Perito Criminal) e o Médico Legista, em um grupo de Perícia e apoio à perícia Medicina Legal.
+
+Vendo a Tabela de Gower Condensada, levando em consideração as distâncias relativas calculadas com a métrica de Jaccard, pode-se observar os valores de distância entre os cargos em pauta. Deve-se atentar que os valores estão em relação ao ponto zero (Delegado de Polícia).
+
+Oficial Investigador de Polícia : 0.210526.
+
+Perito Papiloscopista: 0.315789.
+
+Perito Criminal: 0.473684.
+
+
+A régua organiza as diferentes áreas periciais e até de investigação, reduzindo as distâcias entre Papiloscopistas Policiais e Oficiais Investigadores Policiais, e aumentando entre Papiloscopista Policial e Perito Criminal. Necessário verificar na Representação Linear como é feita a distribuição.
+"""
+
+n_grupos = 5 #Delegados, investigação, apoio à investigação, perícia e apoio a perícia.
+
+titulo = 'Distância Relativa - Restruturação PCSP 2024 Condensada'
+
+repr_linear, dist_linear = representacao_linear(titulo)
+
+"""Observando a representação linear proposta:
+1. Delegado de Polícia está na base separado, em laranja.
+2. O segundo grupo contemplar a investigação em azul, com o Escrivão de Polícia, Oficial Investigador de Polícia e Agente de Polícia Judiciária.
+3. O Papiloscopista fica sozinha em verde, num grupo relativo a papiloscopia.
+4. Um quarto grupo em roxo comtempla o Agente de Perícia Criminalística, o Perito Criminal e o Agente de Medicina Legal, colocando apoio a perícia com a Perícia Criminalística em um mesmo grupo.
+5. Por último, em vermelho, está o Médico Legista, com a Perícia Médico legal.
+
+Apesar de certa lógica, houve confusão nas perícias e apoios à perícia. Curiosamente, o Papiloscopista Policial continuou fora do grupo de Oficial Investigador de Polícia e Investigação.
+
+##3.6 - Comentários Gerais
 A situação atual sem correções já aponta proximidade entre o Perito Criminal com o Papiloscopista, principalmente quando a quantidade de atribuições não é reduzida. Tal fato é reduzido com a aglutinação de atribuições, mas ainda assim estão em grupos de perícia e apoio a essa.
 
 As correções propostas sempre levam Peritos Criminais e Papiloscopista Policiais a ficarem próximos, algumas vezes em mesma posição, distanciando do Investigador de Polícia.
@@ -1716,6 +2152,8 @@ As correções propostas sempre levam Peritos Criminais e Papiloscopista Policia
 Ao tentar adequar a LONPC, a mera transposição da situação dos editais leva o Investigador a ficar entre as perícias quando a tabela original não reduzida é utilizada. Ao condensar, o Papiloscopista Policial fica mais próximo do Investigador de Polícia, distantes dos outros peritos. Isso sugere que a adequação a LONPC deve vir acompanhada de correções para que todas as atribuições sejam levadas em conta, e uma má restruturação poderia deixar Papiloscopista em situação díspar dos outros peritos.
 
 Quando levadas a LONPC com correções, a situação fica mais estável, com pouco se divergindo, atingindo a melhor representação na condensada, onde os grupos gerados coadunaram com a proposta da LONPC e seguem a lógica de Delegados de Polícia, Investigação, Apoio à Perícia e Peritos.
+
+Ao atentar-se a reestruturação proposta, ainda houve separação do Oficial Investigador de Polícia com o Papiloscopista Policial. Contudo, este se afastou do Perito Criminal, sendo um perícia menor (Papiloscopia apenas) ou pelo menos um apoio à perícia.
 
 #4 - Dendogramas e Índice Cofenético
 Com os dados das tabelas de distâncias feitas no item 2, é possível gerar dendogramas similares a árvores taxônomicas para efeito comparativa.
@@ -1900,7 +2338,7 @@ dendograma(dict_pdict,cargos_atrib_atual_withcor, titulo)
 A organização demonstrou que o delegado e os cargos de investigação são mais basais, seguidos dos cargos intercalados sempre entre apoio as perícias e seus respectivos perito, na ordem de Criminalística, Papiloscopia e Medicina Legal. Aparentemente, uma boa organização, ainda que não tenha feito o apoio a perícia em um subgrupo e as perícias em si em outro. Deve-se verificar o índice cofenético.
 """
 
-titulo = "Índice Cofenético - Atual com correção"
+titulo = "Índice Cofenético - Atual Original com correção"
 
 cofenetico(dict_pdict, dict_pdist, titulo)
 
@@ -1978,7 +2416,7 @@ dendograma(dict_pdict,cargos_atrib_LONPC_nocor, titulo)
 Claramente houve desorganização nos cargos, deslocando os cargos de delegado, investigação, apoio a perícia e perícia. A mera adequação dos cargos sem correções enseja nesses erros. Necessário verificar o índice cofenético.
 """
 
-titulo = "Índice Cofenético - LONPC sem correção"
+titulo = "Índice Cofenético - LONPC Original sem correção"
 
 cofenetico(dict_pdict, dict_pdist, titulo)
 
@@ -2051,7 +2489,7 @@ dendograma(dict_pdict,cargos_atrib_LONPC_withcor, titulo)
 Aparentemente, excetuando a posição entre o Delegado de Polícia e do Oficial Investigador, há boa ordenação nos cargos, o que deve se refletir no índice cofenético.
 """
 
-titulo = "Índice Cofenético - LONPC com correção"
+titulo = "Índice Cofenético - LONPC Original com correção"
 
 cofenetico(dict_pdict, dict_pdist, titulo)
 
@@ -2077,7 +2515,7 @@ titulo = 'Dendograma - LONPC Condensada Com correções'
 
 dendograma(dict_pdict,cargos_atrib_LONPC_withcor_condensed, titulo)
 
-"""AO observar o dendograma gerado pelas atribuições condensadas, observa-se:
+"""Ao observar o dendograma gerado pelas atribuições condensadas, observa-se:
 1. O Oficial Investigador de Polícia é o cargo mais basal, conjuntamento com o Delegado de Polícia, nos clado em azul.
 2. O Agente de Perícia Crimin é o primeiro a derivar.
 3. Os próximos subgrupos assume valores mais expressivos, adotando a cor laranja para diferenciação. O Agente de Perícia Papiloscópica e o Perito Papiloscopista estão no próximo, com papiloscopia.
@@ -2087,18 +2525,96 @@ dendograma(dict_pdict,cargos_atrib_LONPC_withcor_condensed, titulo)
 As reduções melhoraram de alguma força dos cargos, mas ainda apresenta deorganizações. Deve-se calcular o índice cofenético para verificar se os dados coadunam.
 """
 
-titulo = "Índice Cofenético - LONPC com correção"
+titulo = "Índice Cofenético - LONPC Condensada com correção "
 
 cofenetico(dict_pdict, dict_pdist, titulo)
 
 """Melhorou um pouco em relação a não condensada, mas com valor ainda forte.
 
-##4.5 - Comentários Gerais
-Nas árvores hierárquicas, também chamadas de dendogramas, a situação atual, com e sem correções, aponta o Papiloscopista e Perito Criminais mais derivados, especializados e próximo, ao passo que o Investigador de Polícia está mais basal, próximos a cargos do cartório e apoio à investigação. Ao aglutinar atribuições, essa tendência aumenta.
+##4.5 Reestruturação proposta pela PCSP 2024
+
+####4.5.1 Original
+
+Primeiro, distâncias e dicionários.
+"""
+
+processamento_dados(cargos_atrib_restr)
+
+#Chamando as funções para definir as variáveis
+dict_pdist, dict_pdist_squared, tabelaDistCargos, tabelaCorrelation = tabelas_distancia(cargos_atrib_restr)
+
+"""Gerando o pdict."""
+
+gerando_dict_pdict(dict_pdist)
+
+"""Gerando o Dendograma."""
+
+titulo = 'Dendograma - Reestruturação PCSP 2024 Original'
+
+dendograma(dict_pdict,cargos_atrib_restr, titulo)
+
+"""Ao observar o dendograma gerado, observa-se:
+1. O Delegado de Polícia ocupa a posição mais basal do dendograma.
+2. Há um segundo clado bem basal afeito a Investigação, com o Escrivão de Polícia (cartório) em um braço mais próximo de Delegado e o Agente de Polícia Judiciária com o Oficial Investigador de Polícia (investigação e apoio à investigação).
+3. O Papiloscopista Policial vem basal com a Investigação, todos os listado em azul, mantendo-o em distância da perícia e do apoio à perícia, mas mais próximo em distância com essas em relação aos outros cargos listados.
+4. O clado mais derivado em verde é o de Medicina Legal e apoio à Medicina Legal, com o Agente de Perícia Médico Legal e o Médico Legista.
+5. Por último, também derivado, mas não tanto quanto o de Medicina Legal, está o clado vermelho de Perícia Criminalística com o Perito Criminal e o Agente de Perícia Criminal.
+
+Claramente, a manutanção das diferenças entre Papiloscopista Policial e os peritos explícitos além da criação de institutos não periciais colocou o Papiloscopista em grupo mais basal, mais relativo a Investigação, mas ainda respeitando uma pequena proximidade com as Perícias e seus apoios.
+
+Deve-se ver qual a força do índice cofenético para essa situação.
+"""
+
+titulo = "Índice Cofenético - Restruturação Original"
+
+cofenetico(dict_pdict, dict_pdist, titulo)
+
+"""O Índice apontou forte correlação, o que indica que a deliniação dessas propostas faria sentido somente a luz das adaptações.
+
+####4.5.2 Condensada
+
+Primeiro, distâncias e dicionários.
+"""
+
+processamento_dados(cargos_atrib_restr_condensed)
+
+#Chamando as funções para definir as variáveis
+dict_pdist, dict_pdist_squared, tabelaDistCargos, tabelaCorrelation = tabelas_distancia(cargos_atrib_restr_condensed)
+
+"""Gerando o pdict."""
+
+gerando_dict_pdict(dict_pdist)
+
+"""Gerando o Dendograma."""
+
+titulo = 'Dendograma - Restruturação Condensada'
+
+dendograma(dict_pdict,cargos_atrib_restr_condensed, titulo)
+
+"""Ao observar o dendograma gerado pelas atribuições condensadas, observa-se:
+1. O Delgado é o grupo mais basal, em azul.
+2. Um clado de Investigação e apoio à investigação surge em laranja, agora derivado em comparação ao não condensado.
+3. Um grande grupo em verde mais derivado surge, com a Papiloscopia, Apoio à Perícia e Perícias. O Papiloscopista ainda fica mais próximo à Investigação. O Agente de Perícia Criminalística segue na derivação,  com os três cargos mais derivados em memso nível o Agente de Perícia Medicina Legal (mais próximo do Agente de Perícia Criminalística), Médico legista e Perito Criminal.
+
+Ao se reduzir a magnitude das atribuições, é possível ver que o Papiloscopia ainda fica afeito as Perícias, mas mais basal em relação a outros apresentados. Isso indica que a redução de atribuições periciais e a criação de atribuições díspares afasta o Papiloscopista das suas reais atribuições.
+
+Abaixo o índice cofenético.
+"""
+
+titulo = "Índice Cofenético - Restruturação Condensada"
+
+cofenetico(dict_pdict, dict_pdist, titulo)
+
+"""A correlação também segue forte, ainda que tenha caído, apresentando a mesma situação da não condensada para a Reestruturação.
+
+##4.6 - Comentários Gerais
+Nas árvores hierárquicas, também chamadas de dendogramas, a situação atual, com e sem correções, aponta o Papiloscopista e Perito Criminais mais derivados, especializados e próximos, ao passo que o Investigador de Polícia está mais basal, próximos a cargos do cartório e apoio à investigação. Ao aglutinar atribuições, essa tendência aumenta.
 
 Quando as árvores da LONPC sem correções são geradas, a original sem aglutinações de atribuições, as árvores com Papiloscopista e Peritos Criminais estão próximos devido o peso da quantidade de atribuições. Ao condensar atribuições, Papiloscopista Policias ainda continuam derivados, nas perícias, mas um pouco menos próximos, com uma leve diminuição da sua derivação, o que indicaria que um adequação simplista das atribuições sem correções poderia suscitar uma proximidade com o cargo de investigação.
 
 Ao adequar a LONPC com correções, o Papiloscopista Policial está no grupo mais derivado com o Perito Criminal. Ao condensar as atribuições, o grupo pericial ainda se mantem coeso, indicando que correções ao adequar a LONPC são necessárias.
+
+Com a restruturação, claramente o Papiloscopista passa a integrar o grupo de investigação, indicando que a aglutinação com o Auxiliar de Papiloscopista e a criação de institutos alheios a perícia, sem a devida correção, joga o Papiloscopista a grupos mesmo afeitos a sua origem. Ao reduzir a magnitude das atribuições essa tendência diminuí, com o Papiloscopista pelo menos se mantendo no grupo de Perícias e apoio à Perícia.
 
 #5 - Diagrama de Grafos
 Uma outra opção de visualização dos cargos seria através do Diagrama de Grafos. Este tipo de visualização permite ver a conexão entre carreiras e sua disposição, de forma a ver suas relações de forma espacial e força o tamanho de arestas.
@@ -2188,8 +2704,9 @@ heatmap_tabela_adj(atrib_gerais_no_cor, matrix_adj, arestas, titulo, color_map)
 
 #Plotando Diagrama de Grafos
 def diagrama_grafo(cargos_delegado, cargos_investigacao,
-                   cargos_pericia, cargos_apoio_investigacao,
-                   cargos_apoio_pericia, df, titulo, tamanho_fonte):
+                   cargos_pericia, cargos_papiloscopia,
+                   cargos_apoio_investigacao, cargos_apoio_pericia, df, titulo,
+                   tamanho_fonte):
   fig = plt.figure(figsize=(12,12))
 
   #Matrix de Adjacência
@@ -2197,11 +2714,12 @@ def diagrama_grafo(cargos_delegado, cargos_investigacao,
   legenda_inicial = mpatches.Patch(color='white', label='LEGENDA:')
   handles = [legenda_inicial]
 
-  #Color Mapping e Legenda Cargos - ARRUMAR AQUI
+  #Color Mapping e Legenda Cargos
   color_map = []
   cor_cargos_delegado = cargos_delegado
   cor_cargos_investigacao = cargos_investigacao
   cor_cargos_pericia = cargos_pericia
+  cor_cargos_papiloscopia = cargos_papiloscopia
   cor_cargos_apoio_investigacao = cargos_apoio_investigacao
   cor_cargos_apoio_pericia = cargos_apoio_pericia
   lista_pesos = []
@@ -2217,6 +2735,9 @@ def diagrama_grafo(cargos_delegado, cargos_investigacao,
     elif (cargo in cor_cargos_pericia):
       nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"roxo"
       cor = "violet"
+    elif (cargo in cor_cargos_papiloscopia):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"cinza"
+      cor = "gray"
     elif (cargo in cor_cargos_apoio_investigacao):
       nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"laranja"
       cor = "orange"
@@ -2225,7 +2746,7 @@ def diagrama_grafo(cargos_delegado, cargos_investigacao,
       cor = "lightgreen"
     else:
       nome_variavel_legenda = "erro_legenda"
-      cor = "gray"
+      cor = "black"
     #Criando os patches e adicionando a legenda ao handles
     patch = mpatches.Patch(color=cor, label=descricao_legenda)
     handles.append(patch)
@@ -2270,6 +2791,7 @@ def diagrama_grafo(cargos_delegado, cargos_investigacao,
 cargos_delegado = ["Delegado de Polícia"]
 cargos_investigacao = ["Escrivão de Polícia", "Investigador de Polícia"]
 cargos_pericia = ["Perito Criminal", "Médico Legista", "Papiloscopista Policial"]
+cargos_papiloscopia = []
 cargos_apoio_investigacao = ["Carcereiro Policial", "Agente de Telecomunicações Policial", "Agente Policial"]
 cargos_apoio_pericia = ["Auxiliar de Papiloscopista Policial", "Fotógrafo Técnico Pericial",
             "Desenhista Técnico Pericial", "Auxiliar de Necrópsia Policial", "Atendente de Necrotério Policial"]
@@ -2279,8 +2801,9 @@ tamanho_fonte = 14
 titulo = 'Diagrama de Grafos - Cargos Atuais, Sem Correções'
 
 diagrama_grafo(cargos_delegado, cargos_investigacao, cargos_pericia,
-               cargos_apoio_investigacao, cargos_apoio_pericia, cargos_atrib_atual_nocor,
-               titulo, tamanho_fonte)
+               cargos_papiloscopia, cargos_apoio_investigacao,
+               cargos_apoio_pericia, cargos_atrib_atual_nocor, titulo,
+               tamanho_fonte)
 
 atrib_comp_cargos(atrib_gerais_no_cor)
 
@@ -2355,6 +2878,7 @@ heatmap_tabela_adj(atrib_gerais_with_cor, matrix_adj, arestas, titulo, color_map
 cargos_delegado = ["Delegado de Polícia"]
 cargos_investigacao = ["Escrivão de Polícia", "Investigador de Polícia (+ Agente de Telecomunicações Policial + Agente Policial + Carcereiro Policial)"]
 cargos_pericia = ["Perito Criminal", "Médico Legista", "Papiloscopista Policial"]
+cargos_papiloscopia = []
 cargos_apoio_investigacao = []
 cargos_apoio_pericia = ["Auxiliar de Papiloscopista Policial", "Fotógrafo Técnico Pericial",
             "Desenhista Técnico Pericial", "Auxiliar de Necrópsia Policial", "Atendente de Necrotério Policial"]
@@ -2363,7 +2887,8 @@ titulo = 'Diagrama de Grafos - Cargos Atuais, Com Correções'
 tamanho_fonte = 8.5
 
 diagrama_grafo(cargos_delegado, cargos_investigacao, cargos_pericia,
-               cargos_apoio_investigacao, cargos_apoio_pericia, cargos_atrib_atual_withcor,
+               cargos_papiloscopia, cargos_apoio_investigacao,
+               cargos_apoio_pericia, cargos_atrib_atual_withcor,
                titulo, tamanho_fonte)
 
 atrib_comp_cargos(cargos_atrib_atual_withcor)
@@ -2469,6 +2994,7 @@ heatmap_tabela_adj(atrib_gerais_LONPC_no_cor, matrix_adj, arestas, titulo, color
 cargos_delegado = ["Delegado de Polícia"]
 cargos_investigacao = ["Oficial Investigador de Polícia"]
 cargos_pericia = ["Perito Criminal", "Médico Legista", "Perito Papiloscopista"]
+cargos_papiloscopia = []
 cargos_apoio_investigacao = []
 cargos_apoio_pericia = ["Agente de Perícia Papiloscópica", "Agente de Perícia Criminalística",
             "Agente de Perícia Médico Legal"]
@@ -2477,7 +3003,8 @@ titulo = 'Diagrama de Grafos - LONPC, sem Correções'
 tamanho_fonte = 16
 
 diagrama_grafo(cargos_delegado, cargos_investigacao, cargos_pericia,
-               cargos_apoio_investigacao, cargos_apoio_pericia, cargos_atrib_LONPC_nocor,
+               cargos_papiloscopia, cargos_apoio_investigacao,
+               cargos_apoio_pericia, cargos_atrib_LONPC_nocor,
                titulo, tamanho_fonte)
 
 atrib_comp_cargos(atrib_gerais_LONPC_no_cor)
@@ -2537,6 +3064,7 @@ heatmap_tabela_adj(atrib_gerais_LONPC_with_cor, matrix_adj, arestas, titulo, col
 cargos_delegado = ["Delegado de Polícia"]
 cargos_investigacao = ["Oficial Investigador de Polícia"]
 cargos_pericia = ["Perito Criminal", "Médico Legista", "Perito Papiloscopista"]
+cargos_papiloscopia = []
 cargos_apoio_investigacao = []
 cargos_apoio_pericia = ["Agente de Perícia Papiloscópica", "Agente de Perícia Criminalística",
             "Agente de Perícia Médico Legal"]
@@ -2545,7 +3073,8 @@ titulo = 'Diagrama de Grafos - LONPC, com Correções'
 tamanho_fonte = 14
 
 diagrama_grafo(cargos_delegado, cargos_investigacao, cargos_pericia,
-               cargos_apoio_investigacao, cargos_apoio_pericia, cargos_atrib_LONPC_withcor,
+               cargos_papiloscopia, cargos_apoio_investigacao,
+               cargos_apoio_pericia, cargos_atrib_LONPC_withcor,
                titulo, tamanho_fonte)
 
 atrib_comp_cargos(atrib_gerais_LONPC_with_cor)
@@ -2598,23 +3127,107 @@ atrib_comp_cargos(atrib_gerais_LONPC_with_cor)
 
 No geral, o Delegado de Polícia não se conecta com nenhum cargo. O mesmo ocorre com o Oficial Investigador de Polícia. Cargos periciais e de apoio à perícia apresentam sólidas conexões entre si tanto em arestas como em atribuições.
 
-## 5.5 - Comentários Gerais
+## 5.5 Reestruturação proposta pela PCSP 2024
+Inicialmente, contruir a matriz de adjacência e as arestas.
+"""
+
+titulo = 'Cargos Reestruturação PCSP 2024'
+
+matrix_adjacencia(cargos_atrib_restr, titulo)
+
+"""Matrix de adjacência colorida."""
+
+titulo = "Tabela Adjacência com pesos- Reestruturação PCSP 2024"
+color_map = "RdYlBu"
+
+heatmap_tabela_adj(atrib_gerais_restr, matrix_adj, arestas, titulo, color_map)
+
+"""Plotando Diagrama de Grafos. Aqui, retorna o apoio à investigação e o Pàpiloscopista Policial, pela sua redução pericial e verificação de proximidade, fica em cor separada (cinza)."""
+
+#Plotando Diagrama de Grafos
+cargos_delegado = ["Delegado de Polícia"]
+cargos_investigacao = ["Escrivão de Polícia", "Oficial Investigador de Polícia"]
+cargos_pericia = ["Perito Criminal", "Médico Legista"]
+cargos_papiloscopia = ["Papiloscopista Policial"]
+cargos_apoio_investigacao = ["Agente de Polícia Judiciária"]
+cargos_apoio_pericia = ["Agente de Perícia Criminalística",
+            "Agente de Perícia Médico Legal"]
+titulo = 'Diagrama de Grafos - Reestruturação PCSP 2024'
+
+tamanho_fonte = 16
+
+diagrama_grafo(cargos_delegado, cargos_investigacao, cargos_pericia,
+               cargos_papiloscopia, cargos_apoio_investigacao,
+               cargos_apoio_pericia, cargos_atrib_restr,
+               titulo, tamanho_fonte)
+
+atrib_comp_cargos(atrib_gerais_restr)
+
+"""Observando o Diagrama, percebe-se que (a lista de atribuições compartilhadas está acima para conferência):
+
+1. Delegado de Polícia (0) não possuí atribuições compartilhadas.
+
+2. O Escrivão de Polícia (1) possuí atribuições compartilhadas com os cargos de investigação e apoio à investigação, entre eles:
+
+  2.1 - Oficial Investigador de Polícia (2) - 1 atribuição.
+
+  2.2 - Agente de Polícia Judiciária (6) - 1 atribuição.
+
+3. O Oficial Investigador de Polícia (2) possuí atribuições compartilhadas com o cargo de investigação (Escrivão de Polícia (1 - já listado)) e com o Agente de Polícia Judiciária (6), com 8 atribuições.
+
+4. O Perito Criminal (3) possuí atribuições compartilhadas com os cargos de perícia, apoio à perícia e papiloscopia, entre eles:
+
+  4.1 - Médico Legista (4) - 8 atribuições.
+
+  4.2 - Papiloscopista Policial (5) - 1 atribuição.
+
+  4.3 - Agente de Perícia Criminalística (7) - 7 atribuições.
+
+  4.4 - Agente de Perícia Médico Legal (8) - 3 atribuições.
+
+5. O Médico Legista possuí atribuições compartilhadas com os cargos de perícia (Perito Criminal (3 - já listado)), apoio à perícia e papiloscopia, entre eles:
+
+  5.1 - Papiloscopista Policial (5) - 2 atribuições.
+
+  5.2 - Agente de Perícia Criminalística (7) - 3 atribuições.
+
+  5.3 - Agente de Perícia Médico Legal (8) - 11 atribuições.
+
+6. O Papiloscopista Policial (5) possuí atribuições compartilhadas com os cargos de perícia (Perito Criminal (3) e Médico Legista (4 - já listado)), apoio à perícia e papiloscopia, entre eles:
+
+  6.1 - Agente de Perícia Criminalística (7) - 2 atribuições.
+
+  5.3 - Agente de Perícia Médico Legal (8) - 3 atribuições.
+
+7. O Agente de Polícia Judiciária (6) possuí atribuições compartilhadas com os cargos de investigação (Escrivão de Polícia (1) e Oficial Investigador de Polícia (2 - já listado))
+
+8. O Agente de Perícia Criminalística (7) possuí atribuições compartilhadas com os cargos de perícia (Perito Criminal (3) e Médico Legista (4 - já listado)), Papiloscopia (Papiloscopista Policial (5 - já listado)) e apoio à perícia, com o Agente de Perícia Médico Legal (8) com 3 atribuições.
+
+9. O Agente de Perícia Médico Legal (8) possuí possuí atribuições compartilhadas com os cargos de perícia (Perito Criminal (3) e Médico Legista (4 - já listado)), Papiloscopia (Papiloscopista Policial (5 - já listado)) e apoio à perícia (Agente de Perícia Criminalística (7 - já listado)).
+
+Com a restruturação, há a criação de um grupo de investigação (Oficial Investigador e Escrivão de Polícia) conectado com o apoio à investigação (Agente de Polícia Judiciária).
+
+Os peritos explícitos (Perito Criminal e Médico Legista) continuam bem conectado, assim como seus apoios (Agente de Perícia Criminalística e Agente de Perícia Médico Legal), formando um grande gupos relacionado a perícia.
+
+O Papiloscopista Policial continua minimamente conectado com o grande grupo de Perícia, mas minimamente, com poucas atribuições compartilhadas. Esse fato pode ocorrer para que a carreira não deixe de existir e continue com suas atribuições, de forma a ficar separada suficiente das perícias e não alçar novos patamares periciais, mantendo a situação paradoxal de perícia não pericial.
+
+## 5.6 Comentários Gerais
 Observando o diagrama de grafos da situação atual sem correção, é possível verificar muitas conexões entre cargos periciais e de apoio à perícia. Essas conexões possuem pesos baixos, mas demonstram a tendência de proximidade dos cargos periciais, incluindo Papiloscopista Policial e Perito Criminal.
 
 Ao se corrigir as atribuições, as conexões aumentam em peso e número nos cargos já citados, indicando ainda mais essa malha.
 
 Mesmo na situação de adequação a LONPC sem correções, há conexões somente entre peritos e apoio à perícia, ainda que com baixos pesos.
 
-Por fim, com as correções propostas, a malha se aumenta e reforça.
+Com as correções propostas, a malha se aumenta e reforça.
 
-Em nenhuma situação, Papiloscopista Policial e Investigadores de Polícia tiveram conexão.
+Em nenhuma situação, Papiloscopista Policial e Investigadores de Polícia tiveram conexão. Todavia, as restruturação enfraquece as conexões entre o Papiloscopista Policial e o grande grupo de Perícia, separando-o e reduzindo-o a atividade policial não pericial.
 
 #6 - Conclusões sobre o estudo
 Na maioria das visualizações, Papiloscopistas Policiais estão mais próximos dos Peritos Criminais do que de Investigadores de Polícia. Ademais, muitas das atribuições são periciais idênticas entre os Peritos Criminais e Papiloscopista.
 
 A indicação de Perito na área de Identificação pela LONPC deve ser feita por Perito da área. O Papiloscopista não é afeita a investigação, e realiza perícia na área da identificação. Logo, é o Perito da Identificação, no ramo biométrico, em especial o papiloscópico.
 
-Este estudo indica a similaridade, mas questões políticas, científicas e jurídicas também devem ser levadas em conta. Esse estudo tem por objetivo indicar a situação centenária dos Papiloscopista Policiais com a perícia, evitando disparates feito contra a ciência e seus profissionais.
+Este estudo indica a similaridade, mas questões políticas, científicas e jurídicas também devem ser levadas em conta. Esse estudo tem por objetivo indicar a situação centenária dos Papiloscopista Policiais com a perícia, evitando disparates feito contra a ciência e seus profissionais. O teste feito em relação a reestruturação indica os caminhas tomados, e para que direção a PCSP deseja ruamr em relação ao Papiloscopista Policial e a Papiloscopia. A manutenção de seu status não pericial a despeito do potencial de crescimento da ciência, carreira e utilização na investigação e ação penal é aparentemente o enfoque da direção atual das PCPS frente as novidades legislativas e judiciais, dermonstrando ostracismo no executivo da segurança pública.
 
-Em respeito a pluralidade de ideias e da construção do conhecimento científico, é possível alteração de valores e dados para verificação dos resultados. Estima-se a metotologia de caixa branca apresentada, com todos os processos sendo indicados, e estimasse que em todas as esferas, tal situação seja feita.
+Em respeito a pluralidade de ideias e da construção do conhecimento científico, é possível alteração de valores e dados para verificação dos resultados. Estima-se a metotologia de caixa branca apresentada, com todos os processos sendo indicados, e que em todas as esferas tal situação seja feita, com respeito a todos e levando-se em conta todos os direitos e deveres.
 """
