@@ -677,7 +677,7 @@ cargos_atrib_LONPC_nocor_condensed
 titulo = "Tabela Binária - LONPC Condensada Sem Correção"
 color_map = "RdGy"
 
-heatmap_tabela_atrib(atrib_gerais_LONPC_no_cor, titulo, color_map)
+heatmap_tabela_atrib(cargos_atrib_LONPC_nocor_condensed, titulo, color_map)
 
 cargos_atrib_LONPC_nocor_hist_redux
 
