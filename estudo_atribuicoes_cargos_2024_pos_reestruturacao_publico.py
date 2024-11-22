@@ -1488,11 +1488,11 @@ tabelaCorrelation
 
 """Verificando a similaridade entre os cargos em pauta, chegamos aos seguintes valores:
 
-Perito Criminal x Papiloscopista Policial: 0.900.
+Perito Criminal x Papiloscopista Policial: 0.900000.
 
 Papiloscopista Policial x Oficial Investigador de Polícia: 1.000000.
 
-Dissimilaridade entre o Oficial Investigador de Polícia e o Perito papiloscopista continua máxima. A similaridade com o Perito Criminal diminui menos, ainda tendendo a chegar a 1 (um), criando maior dissimilaridade.
+Dissimilaridade entre o Oficial Investigador de Polícia e o Papiloscopista Policial continua máxima. A similaridade com o Perito Criminal diminui menos, ainda tendendo a chegar a 1 (um), criando maior dissimilaridade.
 
 HeatMap gerado.
 """
@@ -2857,7 +2857,85 @@ atrib_comp_cargos(atrib_gerais_no_cor)
 
 No geral, o Delegado de Polícia não se conecta com nenhum cargo. Não há conexão intra e inter cargos de investigação e apoio à investigação. Há uma conexão de Investigador de Polícia com Desenhista Técnico Pericial, o qual aparenta ser espúria. Cargos periciais e de apoio à perícia apresenta maiores conexões entre si tanto em arestas como em atribuições.
 
-##5.2 Atual com correção
+Para facilitar a manipulação de imagens, foi criado o diagrama de grafos sem a legenda.
+"""
+
+#Plotando Diagrama de Grafos
+def diagrama_grafo(cargos_delegado, cargos_investigacao,
+                   cargos_pericia, cargos_papiloscopia,
+                   cargos_apoio_investigacao, cargos_apoio_pericia, df, titulo):
+  fig = plt.figure(figsize=(8,8))
+
+  #Matrix de Adjacência
+  G = nx.from_numpy_array(matrix_adj)
+
+  #Color Mapping e Legenda Cargos
+  color_map = []
+  cor_cargos_delegado = cargos_delegado
+  cor_cargos_investigacao = cargos_investigacao
+  cor_cargos_pericia = cargos_pericia
+  cor_cargos_papiloscopia = cargos_papiloscopia
+  cor_cargos_apoio_investigacao = cargos_apoio_investigacao
+  cor_cargos_apoio_pericia = cargos_apoio_pericia
+  lista_pesos = []
+
+  for i, cargo in enumerate(df["Carreira"]):
+    if (cargo in cor_cargos_delegado):
+      cor = "lightblue"
+    elif (cargo in cor_cargos_investigacao):
+      cor = "tomato"
+    elif (cargo in cor_cargos_pericia):
+      cor = "violet"
+    elif (cargo in cor_cargos_papiloscopia):
+      cor = "gray"
+    elif (cargo in cor_cargos_apoio_investigacao):
+      cor = "orange"
+    elif cargo in (cor_cargos_apoio_pericia):
+      cor = "lightgreen"
+    else:
+      cor = "black"
+    #Criando os patches e adicionando a legenda ao handles
+    color_map.append(cor)
+
+  #Arestas e pesos
+  peso_max = 0
+  labels_arestas = []
+  for i in range(len(arestas)):
+    inicio_aresta = arestas[i][0]
+    fim_aresta = arestas[i][1]
+    peso = arestas[i][2]
+    if peso > peso_max:
+      peso_max = peso
+    G.add_edge(inicio_aresta, fim_aresta, weight=peso)
+  edge_weights = nx.get_edge_attributes(G, 'weight')
+  width_scale = peso_max
+  min_width = 1
+  widths = [(edge_weights[edge] - min(edge_weights.values())) /
+            (max(edge_weights.values()) - min(edge_weights.values())) *
+            width_scale + min_width for edge in G.edges()]
+
+  nx.draw_circular(G, node_color=color_map, with_labels=True, width=widths)
+  nx.draw_networkx_edge_labels(G, pos=nx.circular_layout(G), label_pos=0.35)
+
+  plt.title(titulo)
+  plt.show()
+
+#Plotando Diagrama de Grafos Sem Legenda
+cargos_delegado = ["Delegado de Polícia"]
+cargos_investigacao = ["Escrivão de Polícia", "Investigador de Polícia"]
+cargos_pericia = ["Perito Criminal", "Médico Legista", "Papiloscopista Policial"]
+cargos_papiloscopia = []
+cargos_apoio_investigacao = ["Carcereiro Policial", "Agente de Telecomunicações Policial", "Agente Policial"]
+cargos_apoio_pericia = ["Auxiliar de Papiloscopista Policial", "Fotógrafo Técnico Pericial",
+            "Desenhista Técnico Pericial", "Auxiliar de Necrópsia Policial", "Atendente de Necrotério Policial"]
+
+titulo = 'Diagrama de Grafos - Cargos Atuais, Sem Correções'
+
+diagrama_grafo_clean(cargos_delegado, cargos_investigacao, cargos_pericia,
+               cargos_papiloscopia, cargos_apoio_investigacao,
+               cargos_apoio_pericia, cargos_atrib_atual_nocor, titulo)
+
+"""##5.2 Atual com correção
 Inicialmente, contruir a matriz de adjacência e as arestas.
 """
 
@@ -2873,6 +2951,91 @@ color_map = "PiYG"
 heatmap_tabela_adj(atrib_gerais_with_cor, matrix_adj, arestas, titulo, color_map)
 
 """Plotando Diagrama de Grafos."""
+
+#Plotando Diagrama de Grafos
+def diagrama_grafo(cargos_delegado, cargos_investigacao,
+                   cargos_pericia, cargos_papiloscopia,
+                   cargos_apoio_investigacao, cargos_apoio_pericia, df, titulo,
+                   tamanho_fonte):
+  fig = plt.figure(figsize=(12,12))
+
+  #Matrix de Adjacência
+  G = nx.from_numpy_array(matrix_adj)
+  legenda_inicial = mpatches.Patch(color='white', label='LEGENDA:')
+  handles = [legenda_inicial]
+
+  #Color Mapping e Legenda Cargos
+  color_map = []
+  cor_cargos_delegado = cargos_delegado
+  cor_cargos_investigacao = cargos_investigacao
+  cor_cargos_pericia = cargos_pericia
+  cor_cargos_papiloscopia = cargos_papiloscopia
+  cor_cargos_apoio_investigacao = cargos_apoio_investigacao
+  cor_cargos_apoio_pericia = cargos_apoio_pericia
+  lista_pesos = []
+
+  for i, cargo in enumerate(df["Carreira"]):
+    descricao_legenda = str(i)+": "+cargo
+    if (cargo in cor_cargos_delegado):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"azul"
+      cor = "lightblue"
+    elif (cargo in cor_cargos_investigacao):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"vermelho"
+      cor = "tomato"
+    elif (cargo in cor_cargos_pericia):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"roxo"
+      cor = "violet"
+    elif (cargo in cor_cargos_papiloscopia):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"cinza"
+      cor = "gray"
+    elif (cargo in cor_cargos_apoio_investigacao):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"laranja"
+      cor = "orange"
+    elif cargo in (cor_cargos_apoio_pericia):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"verde"
+      cor = "lightgreen"
+    else:
+      nome_variavel_legenda = "erro_legenda"
+      cor = "black"
+    #Criando os patches e adicionando a legenda ao handles
+    patch = mpatches.Patch(color=cor, label=descricao_legenda)
+    handles.append(patch)
+    color_map.append(cor)
+
+  #Arestas e pesos
+  peso_max = 0
+  labels_arestas = []
+  for i in range(len(arestas)):
+    inicio_aresta = arestas[i][0]
+    fim_aresta = arestas[i][1]
+    peso = arestas[i][2]
+    if peso > peso_max:
+      peso_max = peso
+    G.add_edge(inicio_aresta, fim_aresta, weight=peso)
+    #legendas das arestas
+    nome_variavel_legenda = "aresta_"+str(arestas[i][0])+"_"+str(arestas[i][1])
+    descricao_legenda = str(arestas[i][0])+" "+df["Carreira"].iloc[arestas[i][0]]+' <-> '+str(arestas[i][1])+" "+df["Carreira"].iloc[arestas[i][1]]+' - Peso: ' + str(peso)
+    patch = mpatches.Patch(color='black', label=descricao_legenda)
+    handles.append(patch)
+  edge_weights = nx.get_edge_attributes(G, 'weight')
+  width_scale = peso_max
+  min_width = 1
+  widths = [(edge_weights[edge] - min(edge_weights.values())) /
+            (max(edge_weights.values()) - min(edge_weights.values())) *
+            width_scale + min_width for edge in G.edges()]
+
+  aresta_outro = mpatches.Patch(color='white', label='outros cargos: Peso 0 <-> Sem conexão')
+  handles.append(aresta_outro)
+
+  font_prop = fm.FontProperties(size=tamanho_fonte) # Use fm instead of plt.font_manager
+
+  plt.legend(handles=handles, bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0., prop=font_prop)
+
+  nx.draw_circular(G, node_color=color_map, with_labels=True, width=widths)
+  nx.draw_networkx_edge_labels(G, pos=nx.circular_layout(G), label_pos=0.35)
+
+  plt.title(titulo)
+  plt.show()
 
 #Plotando Diagrama de Grafos
 cargos_delegado = ["Delegado de Polícia"]
@@ -2973,7 +3136,85 @@ atrib_comp_cargos(cargos_atrib_atual_withcor)
 
 No geral, o Delegado de Polícia não se conecta com nenhum cargo. Houve conexão cargos de investigação e um espúria entre Investigador de Polícia com Desenhista Técnico Pericial. Cargos periciais e de apoio à perícia apresenta sólidas conexões entre si tanto em arestas como em atribuições.
 
-##5.3 LONPC sem correção
+Diagrama de grafos sem a legenda.
+"""
+
+#Plotando Diagrama de Grafos
+def diagrama_grafo(cargos_delegado, cargos_investigacao,
+                   cargos_pericia, cargos_papiloscopia,
+                   cargos_apoio_investigacao, cargos_apoio_pericia, df, titulo):
+  fig = plt.figure(figsize=(8,8))
+
+  #Matrix de Adjacência
+  G = nx.from_numpy_array(matrix_adj)
+
+  #Color Mapping e Legenda Cargos
+  color_map = []
+  cor_cargos_delegado = cargos_delegado
+  cor_cargos_investigacao = cargos_investigacao
+  cor_cargos_pericia = cargos_pericia
+  cor_cargos_papiloscopia = cargos_papiloscopia
+  cor_cargos_apoio_investigacao = cargos_apoio_investigacao
+  cor_cargos_apoio_pericia = cargos_apoio_pericia
+  lista_pesos = []
+
+  for i, cargo in enumerate(df["Carreira"]):
+    if (cargo in cor_cargos_delegado):
+      cor = "lightblue"
+    elif (cargo in cor_cargos_investigacao):
+      cor = "tomato"
+    elif (cargo in cor_cargos_pericia):
+      cor = "violet"
+    elif (cargo in cor_cargos_papiloscopia):
+      cor = "gray"
+    elif (cargo in cor_cargos_apoio_investigacao):
+      cor = "orange"
+    elif cargo in (cor_cargos_apoio_pericia):
+      cor = "lightgreen"
+    else:
+      cor = "black"
+    #Criando os patches e adicionando a legenda ao handles
+    color_map.append(cor)
+
+  #Arestas e pesos
+  peso_max = 0
+  labels_arestas = []
+  for i in range(len(arestas)):
+    inicio_aresta = arestas[i][0]
+    fim_aresta = arestas[i][1]
+    peso = arestas[i][2]
+    if peso > peso_max:
+      peso_max = peso
+    G.add_edge(inicio_aresta, fim_aresta, weight=peso)
+  edge_weights = nx.get_edge_attributes(G, 'weight')
+  width_scale = peso_max
+  min_width = 1
+  widths = [(edge_weights[edge] - min(edge_weights.values())) /
+            (max(edge_weights.values()) - min(edge_weights.values())) *
+            width_scale + min_width for edge in G.edges()]
+
+  nx.draw_circular(G, node_color=color_map, with_labels=True, width=widths)
+  nx.draw_networkx_edge_labels(G, pos=nx.circular_layout(G), label_pos=0.35)
+
+  plt.title(titulo)
+  plt.show()
+
+#Plotando Diagrama de Grafos Clean
+cargos_delegado = ["Delegado de Polícia"]
+cargos_investigacao = ["Escrivão de Polícia", "Investigador de Polícia (+ Agente de Telecomunicações Policial + Agente Policial + Carcereiro Policial)"]
+cargos_pericia = ["Perito Criminal", "Médico Legista", "Papiloscopista Policial"]
+cargos_papiloscopia = []
+cargos_apoio_investigacao = []
+cargos_apoio_pericia = ["Auxiliar de Papiloscopista Policial", "Fotógrafo Técnico Pericial",
+            "Desenhista Técnico Pericial", "Auxiliar de Necrópsia Policial", "Atendente de Necrotério Policial"]
+titulo = 'Diagrama de Grafos - Cargos Atuais, Com Correções'
+
+diagrama_grafo(cargos_delegado, cargos_investigacao, cargos_pericia,
+               cargos_papiloscopia, cargos_apoio_investigacao,
+               cargos_apoio_pericia, cargos_atrib_atual_withcor,
+               titulo)
+
+"""##5.3 LONPC sem correção
 Inicialmente, contruir a matriz de adjacência e as arestas.
 """
 
@@ -2989,6 +3230,91 @@ color_map = "PuOr"
 heatmap_tabela_adj(atrib_gerais_LONPC_no_cor, matrix_adj, arestas, titulo, color_map)
 
 """Plotando Diagrama de Grafos."""
+
+#Plotando Diagrama de Grafos
+def diagrama_grafo(cargos_delegado, cargos_investigacao,
+                   cargos_pericia, cargos_papiloscopia,
+                   cargos_apoio_investigacao, cargos_apoio_pericia, df, titulo,
+                   tamanho_fonte):
+  fig = plt.figure(figsize=(12,12))
+
+  #Matrix de Adjacência
+  G = nx.from_numpy_array(matrix_adj)
+  legenda_inicial = mpatches.Patch(color='white', label='LEGENDA:')
+  handles = [legenda_inicial]
+
+  #Color Mapping e Legenda Cargos
+  color_map = []
+  cor_cargos_delegado = cargos_delegado
+  cor_cargos_investigacao = cargos_investigacao
+  cor_cargos_pericia = cargos_pericia
+  cor_cargos_papiloscopia = cargos_papiloscopia
+  cor_cargos_apoio_investigacao = cargos_apoio_investigacao
+  cor_cargos_apoio_pericia = cargos_apoio_pericia
+  lista_pesos = []
+
+  for i, cargo in enumerate(df["Carreira"]):
+    descricao_legenda = str(i)+": "+cargo
+    if (cargo in cor_cargos_delegado):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"azul"
+      cor = "lightblue"
+    elif (cargo in cor_cargos_investigacao):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"vermelho"
+      cor = "tomato"
+    elif (cargo in cor_cargos_pericia):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"roxo"
+      cor = "violet"
+    elif (cargo in cor_cargos_papiloscopia):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"cinza"
+      cor = "gray"
+    elif (cargo in cor_cargos_apoio_investigacao):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"laranja"
+      cor = "orange"
+    elif cargo in (cor_cargos_apoio_pericia):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"verde"
+      cor = "lightgreen"
+    else:
+      nome_variavel_legenda = "erro_legenda"
+      cor = "black"
+    #Criando os patches e adicionando a legenda ao handles
+    patch = mpatches.Patch(color=cor, label=descricao_legenda)
+    handles.append(patch)
+    color_map.append(cor)
+
+  #Arestas e pesos
+  peso_max = 0
+  labels_arestas = []
+  for i in range(len(arestas)):
+    inicio_aresta = arestas[i][0]
+    fim_aresta = arestas[i][1]
+    peso = arestas[i][2]
+    if peso > peso_max:
+      peso_max = peso
+    G.add_edge(inicio_aresta, fim_aresta, weight=peso)
+    #legendas das arestas
+    nome_variavel_legenda = "aresta_"+str(arestas[i][0])+"_"+str(arestas[i][1])
+    descricao_legenda = str(arestas[i][0])+" "+df["Carreira"].iloc[arestas[i][0]]+' <-> '+str(arestas[i][1])+" "+df["Carreira"].iloc[arestas[i][1]]+' - Peso: ' + str(peso)
+    patch = mpatches.Patch(color='black', label=descricao_legenda)
+    handles.append(patch)
+  edge_weights = nx.get_edge_attributes(G, 'weight')
+  width_scale = peso_max
+  min_width = 1
+  widths = [(edge_weights[edge] - min(edge_weights.values())) /
+            (max(edge_weights.values()) - min(edge_weights.values())) *
+            width_scale + min_width for edge in G.edges()]
+
+  aresta_outro = mpatches.Patch(color='white', label='outros cargos: Peso 0 <-> Sem conexão')
+  handles.append(aresta_outro)
+
+  font_prop = fm.FontProperties(size=tamanho_fonte) # Use fm instead of plt.font_manager
+
+  plt.legend(handles=handles, bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0., prop=font_prop)
+
+  nx.draw_circular(G, node_color=color_map, with_labels=True, width=widths)
+  nx.draw_networkx_edge_labels(G, pos=nx.circular_layout(G), label_pos=0.35)
+
+  plt.title(titulo)
+  plt.show()
 
 #Plotando Diagrama de Grafos
 cargos_delegado = ["Delegado de Polícia"]
@@ -3043,7 +3369,85 @@ atrib_comp_cargos(atrib_gerais_LONPC_no_cor)
 
 No geral, o Delegado de Polícia não se conecta com nenhum cargo. O mesmo ocorre com o Oficial Investigador de Polícia. Cargos periciais e de apoio à perícia apresentam mais conexões entre si tanto em arestas como em atribuições, apesar de algumas lacunas devido as ausência de correções.
 
-##5.4 LONPC com correção
+Diagrama de grafos sem a legenda.
+"""
+
+#Plotando Diagrama de Grafos
+def diagrama_grafo(cargos_delegado, cargos_investigacao,
+                   cargos_pericia, cargos_papiloscopia,
+                   cargos_apoio_investigacao, cargos_apoio_pericia, df, titulo):
+  fig = plt.figure(figsize=(8,8))
+
+  #Matrix de Adjacência
+  G = nx.from_numpy_array(matrix_adj)
+
+  #Color Mapping e Legenda Cargos
+  color_map = []
+  cor_cargos_delegado = cargos_delegado
+  cor_cargos_investigacao = cargos_investigacao
+  cor_cargos_pericia = cargos_pericia
+  cor_cargos_papiloscopia = cargos_papiloscopia
+  cor_cargos_apoio_investigacao = cargos_apoio_investigacao
+  cor_cargos_apoio_pericia = cargos_apoio_pericia
+  lista_pesos = []
+
+  for i, cargo in enumerate(df["Carreira"]):
+    if (cargo in cor_cargos_delegado):
+      cor = "lightblue"
+    elif (cargo in cor_cargos_investigacao):
+      cor = "tomato"
+    elif (cargo in cor_cargos_pericia):
+      cor = "violet"
+    elif (cargo in cor_cargos_papiloscopia):
+      cor = "gray"
+    elif (cargo in cor_cargos_apoio_investigacao):
+      cor = "orange"
+    elif cargo in (cor_cargos_apoio_pericia):
+      cor = "lightgreen"
+    else:
+      cor = "black"
+    #Criando os patches e adicionando a legenda ao handles
+    color_map.append(cor)
+
+  #Arestas e pesos
+  peso_max = 0
+  labels_arestas = []
+  for i in range(len(arestas)):
+    inicio_aresta = arestas[i][0]
+    fim_aresta = arestas[i][1]
+    peso = arestas[i][2]
+    if peso > peso_max:
+      peso_max = peso
+    G.add_edge(inicio_aresta, fim_aresta, weight=peso)
+  edge_weights = nx.get_edge_attributes(G, 'weight')
+  width_scale = peso_max
+  min_width = 1
+  widths = [(edge_weights[edge] - min(edge_weights.values())) /
+            (max(edge_weights.values()) - min(edge_weights.values())) *
+            width_scale + min_width for edge in G.edges()]
+
+  nx.draw_circular(G, node_color=color_map, with_labels=True, width=widths)
+  nx.draw_networkx_edge_labels(G, pos=nx.circular_layout(G), label_pos=0.35)
+
+  plt.title(titulo)
+  plt.show()
+
+#Plotando Diagrama de Grafos Clean
+cargos_delegado = ["Delegado de Polícia"]
+cargos_investigacao = ["Oficial Investigador de Polícia"]
+cargos_pericia = ["Perito Criminal", "Médico Legista", "Perito Papiloscopista"]
+cargos_papiloscopia = []
+cargos_apoio_investigacao = []
+cargos_apoio_pericia = ["Agente de Perícia Papiloscópica", "Agente de Perícia Criminalística",
+            "Agente de Perícia Médico Legal"]
+titulo = 'Diagrama de Grafos - LONPC, sem Correções'
+
+diagrama_grafo(cargos_delegado, cargos_investigacao, cargos_pericia,
+               cargos_papiloscopia, cargos_apoio_investigacao,
+               cargos_apoio_pericia, cargos_atrib_LONPC_nocor,
+               titulo)
+
+"""##5.4 LONPC com correção
 Inicialmente, contruir a matriz de adjacência e as arestas.
 """
 
@@ -3059,6 +3463,91 @@ color_map = "RdBu"
 heatmap_tabela_adj(atrib_gerais_LONPC_with_cor, matrix_adj, arestas, titulo, color_map)
 
 """Plotando Diagrama de Grafos."""
+
+#Plotando Diagrama de Grafos
+def diagrama_grafo(cargos_delegado, cargos_investigacao,
+                   cargos_pericia, cargos_papiloscopia,
+                   cargos_apoio_investigacao, cargos_apoio_pericia, df, titulo,
+                   tamanho_fonte):
+  fig = plt.figure(figsize=(12,12))
+
+  #Matrix de Adjacência
+  G = nx.from_numpy_array(matrix_adj)
+  legenda_inicial = mpatches.Patch(color='white', label='LEGENDA:')
+  handles = [legenda_inicial]
+
+  #Color Mapping e Legenda Cargos
+  color_map = []
+  cor_cargos_delegado = cargos_delegado
+  cor_cargos_investigacao = cargos_investigacao
+  cor_cargos_pericia = cargos_pericia
+  cor_cargos_papiloscopia = cargos_papiloscopia
+  cor_cargos_apoio_investigacao = cargos_apoio_investigacao
+  cor_cargos_apoio_pericia = cargos_apoio_pericia
+  lista_pesos = []
+
+  for i, cargo in enumerate(df["Carreira"]):
+    descricao_legenda = str(i)+": "+cargo
+    if (cargo in cor_cargos_delegado):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"azul"
+      cor = "lightblue"
+    elif (cargo in cor_cargos_investigacao):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"vermelho"
+      cor = "tomato"
+    elif (cargo in cor_cargos_pericia):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"roxo"
+      cor = "violet"
+    elif (cargo in cor_cargos_papiloscopia):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"cinza"
+      cor = "gray"
+    elif (cargo in cor_cargos_apoio_investigacao):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"laranja"
+      cor = "orange"
+    elif cargo in (cor_cargos_apoio_pericia):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"verde"
+      cor = "lightgreen"
+    else:
+      nome_variavel_legenda = "erro_legenda"
+      cor = "black"
+    #Criando os patches e adicionando a legenda ao handles
+    patch = mpatches.Patch(color=cor, label=descricao_legenda)
+    handles.append(patch)
+    color_map.append(cor)
+
+  #Arestas e pesos
+  peso_max = 0
+  labels_arestas = []
+  for i in range(len(arestas)):
+    inicio_aresta = arestas[i][0]
+    fim_aresta = arestas[i][1]
+    peso = arestas[i][2]
+    if peso > peso_max:
+      peso_max = peso
+    G.add_edge(inicio_aresta, fim_aresta, weight=peso)
+    #legendas das arestas
+    nome_variavel_legenda = "aresta_"+str(arestas[i][0])+"_"+str(arestas[i][1])
+    descricao_legenda = str(arestas[i][0])+" "+df["Carreira"].iloc[arestas[i][0]]+' <-> '+str(arestas[i][1])+" "+df["Carreira"].iloc[arestas[i][1]]+' - Peso: ' + str(peso)
+    patch = mpatches.Patch(color='black', label=descricao_legenda)
+    handles.append(patch)
+  edge_weights = nx.get_edge_attributes(G, 'weight')
+  width_scale = peso_max
+  min_width = 1
+  widths = [(edge_weights[edge] - min(edge_weights.values())) /
+            (max(edge_weights.values()) - min(edge_weights.values())) *
+            width_scale + min_width for edge in G.edges()]
+
+  aresta_outro = mpatches.Patch(color='white', label='outros cargos: Peso 0 <-> Sem conexão')
+  handles.append(aresta_outro)
+
+  font_prop = fm.FontProperties(size=tamanho_fonte) # Use fm instead of plt.font_manager
+
+  plt.legend(handles=handles, bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0., prop=font_prop)
+
+  nx.draw_circular(G, node_color=color_map, with_labels=True, width=widths)
+  nx.draw_networkx_edge_labels(G, pos=nx.circular_layout(G), label_pos=0.35)
+
+  plt.title(titulo)
+  plt.show()
 
 #Plotando Diagrama de Grafos
 cargos_delegado = ["Delegado de Polícia"]
@@ -3127,7 +3616,85 @@ atrib_comp_cargos(atrib_gerais_LONPC_with_cor)
 
 No geral, o Delegado de Polícia não se conecta com nenhum cargo. O mesmo ocorre com o Oficial Investigador de Polícia. Cargos periciais e de apoio à perícia apresentam sólidas conexões entre si tanto em arestas como em atribuições.
 
-## 5.5 Reestruturação proposta pela PCSP 2024
+Diagrama de grafos sem a legenda.
+"""
+
+#Plotando Diagrama de Grafos
+def diagrama_grafo(cargos_delegado, cargos_investigacao,
+                   cargos_pericia, cargos_papiloscopia,
+                   cargos_apoio_investigacao, cargos_apoio_pericia, df, titulo):
+  fig = plt.figure(figsize=(8,8))
+
+  #Matrix de Adjacência
+  G = nx.from_numpy_array(matrix_adj)
+
+  #Color Mapping e Legenda Cargos
+  color_map = []
+  cor_cargos_delegado = cargos_delegado
+  cor_cargos_investigacao = cargos_investigacao
+  cor_cargos_pericia = cargos_pericia
+  cor_cargos_papiloscopia = cargos_papiloscopia
+  cor_cargos_apoio_investigacao = cargos_apoio_investigacao
+  cor_cargos_apoio_pericia = cargos_apoio_pericia
+  lista_pesos = []
+
+  for i, cargo in enumerate(df["Carreira"]):
+    if (cargo in cor_cargos_delegado):
+      cor = "lightblue"
+    elif (cargo in cor_cargos_investigacao):
+      cor = "tomato"
+    elif (cargo in cor_cargos_pericia):
+      cor = "violet"
+    elif (cargo in cor_cargos_papiloscopia):
+      cor = "gray"
+    elif (cargo in cor_cargos_apoio_investigacao):
+      cor = "orange"
+    elif cargo in (cor_cargos_apoio_pericia):
+      cor = "lightgreen"
+    else:
+      cor = "black"
+    #Criando os patches e adicionando a legenda ao handles
+    color_map.append(cor)
+
+  #Arestas e pesos
+  peso_max = 0
+  labels_arestas = []
+  for i in range(len(arestas)):
+    inicio_aresta = arestas[i][0]
+    fim_aresta = arestas[i][1]
+    peso = arestas[i][2]
+    if peso > peso_max:
+      peso_max = peso
+    G.add_edge(inicio_aresta, fim_aresta, weight=peso)
+  edge_weights = nx.get_edge_attributes(G, 'weight')
+  width_scale = peso_max
+  min_width = 1
+  widths = [(edge_weights[edge] - min(edge_weights.values())) /
+            (max(edge_weights.values()) - min(edge_weights.values())) *
+            width_scale + min_width for edge in G.edges()]
+
+  nx.draw_circular(G, node_color=color_map, with_labels=True, width=widths)
+  nx.draw_networkx_edge_labels(G, pos=nx.circular_layout(G), label_pos=0.35)
+
+  plt.title(titulo)
+  plt.show()
+
+#Plotando Diagrama de Grafos Clean
+cargos_delegado = ["Delegado de Polícia"]
+cargos_investigacao = ["Oficial Investigador de Polícia"]
+cargos_pericia = ["Perito Criminal", "Médico Legista", "Perito Papiloscopista"]
+cargos_papiloscopia = []
+cargos_apoio_investigacao = []
+cargos_apoio_pericia = ["Agente de Perícia Papiloscópica", "Agente de Perícia Criminalística",
+            "Agente de Perícia Médico Legal"]
+titulo = 'Diagrama de Grafos - LONPC, com Correções'
+
+diagrama_grafo(cargos_delegado, cargos_investigacao, cargos_pericia,
+               cargos_papiloscopia, cargos_apoio_investigacao,
+               cargos_apoio_pericia, cargos_atrib_LONPC_withcor,
+               titulo)
+
+"""## 5.5 Reestruturação proposta pela PCSP 2024
 Inicialmente, contruir a matriz de adjacência e as arestas.
 """
 
@@ -3143,6 +3710,91 @@ color_map = "RdYlBu"
 heatmap_tabela_adj(atrib_gerais_restr, matrix_adj, arestas, titulo, color_map)
 
 """Plotando Diagrama de Grafos. Aqui, retorna o apoio à investigação e o Pàpiloscopista Policial, pela sua redução pericial e verificação de proximidade, fica em cor separada (cinza)."""
+
+#Plotando Diagrama de Grafos
+def diagrama_grafo(cargos_delegado, cargos_investigacao,
+                   cargos_pericia, cargos_papiloscopia,
+                   cargos_apoio_investigacao, cargos_apoio_pericia, df, titulo,
+                   tamanho_fonte):
+  fig = plt.figure(figsize=(12,12))
+
+  #Matrix de Adjacência
+  G = nx.from_numpy_array(matrix_adj)
+  legenda_inicial = mpatches.Patch(color='white', label='LEGENDA:')
+  handles = [legenda_inicial]
+
+  #Color Mapping e Legenda Cargos
+  color_map = []
+  cor_cargos_delegado = cargos_delegado
+  cor_cargos_investigacao = cargos_investigacao
+  cor_cargos_pericia = cargos_pericia
+  cor_cargos_papiloscopia = cargos_papiloscopia
+  cor_cargos_apoio_investigacao = cargos_apoio_investigacao
+  cor_cargos_apoio_pericia = cargos_apoio_pericia
+  lista_pesos = []
+
+  for i, cargo in enumerate(df["Carreira"]):
+    descricao_legenda = str(i)+": "+cargo
+    if (cargo in cor_cargos_delegado):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"azul"
+      cor = "lightblue"
+    elif (cargo in cor_cargos_investigacao):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"vermelho"
+      cor = "tomato"
+    elif (cargo in cor_cargos_pericia):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"roxo"
+      cor = "violet"
+    elif (cargo in cor_cargos_papiloscopia):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"cinza"
+      cor = "gray"
+    elif (cargo in cor_cargos_apoio_investigacao):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"laranja"
+      cor = "orange"
+    elif cargo in (cor_cargos_apoio_pericia):
+      nome_variavel_legenda = "cargo_"+str(cargo)+"_"+"verde"
+      cor = "lightgreen"
+    else:
+      nome_variavel_legenda = "erro_legenda"
+      cor = "black"
+    #Criando os patches e adicionando a legenda ao handles
+    patch = mpatches.Patch(color=cor, label=descricao_legenda)
+    handles.append(patch)
+    color_map.append(cor)
+
+  #Arestas e pesos
+  peso_max = 0
+  labels_arestas = []
+  for i in range(len(arestas)):
+    inicio_aresta = arestas[i][0]
+    fim_aresta = arestas[i][1]
+    peso = arestas[i][2]
+    if peso > peso_max:
+      peso_max = peso
+    G.add_edge(inicio_aresta, fim_aresta, weight=peso)
+    #legendas das arestas
+    nome_variavel_legenda = "aresta_"+str(arestas[i][0])+"_"+str(arestas[i][1])
+    descricao_legenda = str(arestas[i][0])+" "+df["Carreira"].iloc[arestas[i][0]]+' <-> '+str(arestas[i][1])+" "+df["Carreira"].iloc[arestas[i][1]]+' - Peso: ' + str(peso)
+    patch = mpatches.Patch(color='black', label=descricao_legenda)
+    handles.append(patch)
+  edge_weights = nx.get_edge_attributes(G, 'weight')
+  width_scale = peso_max
+  min_width = 1
+  widths = [(edge_weights[edge] - min(edge_weights.values())) /
+            (max(edge_weights.values()) - min(edge_weights.values())) *
+            width_scale + min_width for edge in G.edges()]
+
+  aresta_outro = mpatches.Patch(color='white', label='outros cargos: Peso 0 <-> Sem conexão')
+  handles.append(aresta_outro)
+
+  font_prop = fm.FontProperties(size=tamanho_fonte) # Use fm instead of plt.font_manager
+
+  plt.legend(handles=handles, bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0., prop=font_prop)
+
+  nx.draw_circular(G, node_color=color_map, with_labels=True, width=widths)
+  nx.draw_networkx_edge_labels(G, pos=nx.circular_layout(G), label_pos=0.35)
+
+  plt.title(titulo)
+  plt.show()
 
 #Plotando Diagrama de Grafos
 cargos_delegado = ["Delegado de Polícia"]
@@ -3211,7 +3863,85 @@ Os peritos explícitos (Perito Criminal e Médico Legista) continuam bem conecta
 
 O Papiloscopista Policial continua minimamente conectado com o grande grupo de Perícia, mas minimamente, com poucas atribuições compartilhadas. Esse fato pode ocorrer para que a carreira não deixe de existir e continue com suas atribuições, de forma a ficar separada suficiente das perícias e não alçar novos patamares periciais, mantendo a situação paradoxal de perícia não pericial.
 
-## 5.6 Comentários Gerais
+Diagrama de grafos sem a legenda.
+"""
+
+#Plotando Diagrama de Grafos
+def diagrama_grafo(cargos_delegado, cargos_investigacao,
+                   cargos_pericia, cargos_papiloscopia,
+                   cargos_apoio_investigacao, cargos_apoio_pericia, df, titulo):
+  fig = plt.figure(figsize=(8,8))
+
+  #Matrix de Adjacência
+  G = nx.from_numpy_array(matrix_adj)
+
+  #Color Mapping e Legenda Cargos
+  color_map = []
+  cor_cargos_delegado = cargos_delegado
+  cor_cargos_investigacao = cargos_investigacao
+  cor_cargos_pericia = cargos_pericia
+  cor_cargos_papiloscopia = cargos_papiloscopia
+  cor_cargos_apoio_investigacao = cargos_apoio_investigacao
+  cor_cargos_apoio_pericia = cargos_apoio_pericia
+  lista_pesos = []
+
+  for i, cargo in enumerate(df["Carreira"]):
+    if (cargo in cor_cargos_delegado):
+      cor = "lightblue"
+    elif (cargo in cor_cargos_investigacao):
+      cor = "tomato"
+    elif (cargo in cor_cargos_pericia):
+      cor = "violet"
+    elif (cargo in cor_cargos_papiloscopia):
+      cor = "gray"
+    elif (cargo in cor_cargos_apoio_investigacao):
+      cor = "orange"
+    elif cargo in (cor_cargos_apoio_pericia):
+      cor = "lightgreen"
+    else:
+      cor = "black"
+    #Criando os patches e adicionando a legenda ao handles
+    color_map.append(cor)
+
+  #Arestas e pesos
+  peso_max = 0
+  labels_arestas = []
+  for i in range(len(arestas)):
+    inicio_aresta = arestas[i][0]
+    fim_aresta = arestas[i][1]
+    peso = arestas[i][2]
+    if peso > peso_max:
+      peso_max = peso
+    G.add_edge(inicio_aresta, fim_aresta, weight=peso)
+  edge_weights = nx.get_edge_attributes(G, 'weight')
+  width_scale = peso_max
+  min_width = 1
+  widths = [(edge_weights[edge] - min(edge_weights.values())) /
+            (max(edge_weights.values()) - min(edge_weights.values())) *
+            width_scale + min_width for edge in G.edges()]
+
+  nx.draw_circular(G, node_color=color_map, with_labels=True, width=widths)
+  nx.draw_networkx_edge_labels(G, pos=nx.circular_layout(G), label_pos=0.35)
+
+  plt.title(titulo)
+  plt.show()
+
+#Plotando Diagrama de Grafos Clean
+cargos_delegado = ["Delegado de Polícia"]
+cargos_investigacao = ["Escrivão de Polícia", "Oficial Investigador de Polícia"]
+cargos_pericia = ["Perito Criminal", "Médico Legista"]
+cargos_papiloscopia = ["Papiloscopista Policial"]
+cargos_apoio_investigacao = ["Agente de Polícia Judiciária"]
+cargos_apoio_pericia = ["Agente de Perícia Criminalística",
+            "Agente de Perícia Médico Legal"]
+titulo = 'Diagrama de Grafos - Reestruturação PCSP 2024'
+
+diagrama_grafo(cargos_delegado, cargos_investigacao, cargos_pericia,
+               cargos_papiloscopia, cargos_apoio_investigacao,
+               cargos_apoio_pericia, cargos_atrib_restr,
+               titulo)
+
+"""## 5.6 Comentários Gerais
 Observando o diagrama de grafos da situação atual sem correção, é possível verificar muitas conexões entre cargos periciais e de apoio à perícia. Essas conexões possuem pesos baixos, mas demonstram a tendência de proximidade dos cargos periciais, incluindo Papiloscopista Policial e Perito Criminal.
 
 Ao se corrigir as atribuições, as conexões aumentam em peso e número nos cargos já citados, indicando ainda mais essa malha.
