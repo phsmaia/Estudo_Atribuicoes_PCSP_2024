@@ -1021,7 +1021,7 @@ def heatmap_tabela_dist(tabelaCorrelation, titulo, color_map):
   plt.title(titulo, fontsize=20)
   plt.show()
 
-titulo = "Heat Map - Atual Original Sem Correção"
+titulo = "A) Heat Map - Atual Original Sem Correção"
 color_map = "BrBG"
 
 heatmap_tabela_dist(tabelaCorrelation, titulo, color_map)
@@ -1062,7 +1062,7 @@ def heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_m
   plt.title(titulo, fontsize=10)
   plt.show()
 
-titulo = "Heat Map - Atual Original Sem Correção Selecionados"
+titulo = "A) Heat Map - Atual Original Sem Correção Selecionados"
 color_map = "BrBG"
 
 heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_map)
@@ -1099,7 +1099,7 @@ A similaridade com o Perito Criminal com Papiloscopista Policial cresceu com o c
 Verificando o HeatMap.
 """
 
-titulo = "Heat Map - Atual Condensada Sem Correção"
+titulo = "A) Heat Map - Atual Condensada Sem Correção"
 
 color_map = "PRGn"
 
@@ -1111,7 +1111,7 @@ carreiras_selecionadas = ['Carreira','Perito Criminal', 'Papiloscopista Policial
 
 tabela_correlation_selecionados(carreiras_selecionadas)
 
-titulo = "Heat Map - Atual Condensada Sem Correção Selecionados"
+titulo = "A) Heat Map - Atual Condensada Sem Correção Selecionados"
 color_map = "PRGn"
 
 heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_map)
@@ -1150,7 +1150,7 @@ A similaridade com o Perito Criminal cresceu ainda mais, ainda demonstrando a te
 Verificando o HeatMap.
 """
 
-titulo = "Heat Map - Atual Original Com Correção"
+titulo = "B) Heat Map - Atual Original Com Correção"
 
 color_map = "PiYG"
 
@@ -1162,7 +1162,7 @@ carreiras_selecionadas = ['Carreira','Perito Criminal', 'Papiloscopista Policial
 
 tabela_correlation_selecionados(carreiras_selecionadas)
 
-titulo = "Heat Map - Atual Original Com Correção Selecionados"
+titulo = "B) Heat Map - Atual Original Com Correção Selecionados"
 color_map = "PiYG"
 
 heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_map)
@@ -1197,7 +1197,7 @@ Papiloscopista Policial x Investigador de Polícia (+ Agente de Telecomunicaçõ
 A similaridade com o Perito Criminal com Papiloscopista Policial cresceu com o condensamento de atribuições e correções. Com o Investigador de Polícia, a dissimilaridade continua total.
 """
 
-titulo = "Heat Map - Atual Condensada Com Correção"
+titulo = "B) Heat Map - Atual Condensada Com Correção"
 
 color_map = "BrBG"
 
@@ -1209,10 +1209,17 @@ carreiras_selecionadas = ['Carreira','Perito Criminal', 'Papiloscopista Policial
 
 tabela_correlation_selecionados(carreiras_selecionadas)
 
-titulo = "Heat Map - Atual Condensada Com Correção Selecionados"
+"""Para facilitar a leitura, reduzimos o nome do cargo 'Investigador de Polícia (+ Agente de Telecomunicações Policial + Agente Policial + Carcereiro Policial)' para Investigador de Polícia."""
+
+result = tabela_correlation_selecionados(carreiras_selecionadas)
+result['Carreira'] = ['Investigador de Polícia', 'Perito Criminal', 'Papiloscopista Policial']
+result.columns = ['Carreira', 'Perito Criminal', 'Papiloscopista Policial', 'Investigador de Polícia']
+result
+
+titulo = "B) Heat Map - Atual Condensada Com Correção Selecionados"
 color_map = "BrBG"
 
-heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_map)
+heatmap_tabela_dist_selecionados(result, titulo, color_map)
 
 """##2.3 LONPC sem correção
 
@@ -1248,7 +1255,7 @@ Perito Papiloscopista  x Oficial Investigador de Polícia: 1.000000.
 HeatMap.
 """
 
-titulo = "Heat Map - LONPC Original Sem Correção"
+titulo = "C) Heat Map - LONPC Original Sem Correção"
 
 color_map = "PuOr"
 
@@ -1260,7 +1267,7 @@ carreiras_selecionadas = ['Carreira','Perito Criminal', 'Perito Papiloscopista',
 
 tabela_correlation_selecionados(carreiras_selecionadas)
 
-titulo = "Heat Map - LONPC Original Sem Correção Selecionados"
+titulo = "C) Heat Map - LONPC Original Sem Correção Selecionados"
 color_map = "PuOr"
 
 heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_map)
@@ -1297,7 +1304,7 @@ A dissimilaridade com o Oficial Investigador de Polícia e o Perito Papiloscopis
 HeatMap gerado.
 """
 
-titulo = "Heat Map - LONPC Condensado Sem Correção"
+titulo = "C) Heat Map - LONPC Condensado Sem Correção"
 
 color_map = "RdGy"
 
@@ -1309,7 +1316,7 @@ carreiras_selecionadas = ['Carreira','Perito Criminal', 'Perito Papiloscopista',
 
 tabela_correlation_selecionados(carreiras_selecionadas)
 
-titulo = "Heat Map - LONPC Condensada Sem Correção Selecionados"
+titulo = "C) Heat Map - LONPC Condensada Sem Correção Selecionados"
 color_map = "RdGy"
 
 heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_map)
@@ -1348,7 +1355,7 @@ Dissimilaridade entre o Oficial Investigador de Polícia e o Perito papiloscopis
 HeatMap gerado.
 """
 
-titulo = "Heat Map - LONPC Original Com Correção"
+titulo = "D) Heat Map - LONPC Original Com Correção"
 
 color_map = "RdBu"
 
@@ -1360,7 +1367,7 @@ carreiras_selecionadas = ['Carreira','Perito Criminal', 'Perito Papiloscopista',
 
 tabela_correlation_selecionados(carreiras_selecionadas)
 
-titulo = "Heat Map - LONPC Original Com Correção Selecionados"
+titulo = "D) Heat Map - LONPC Original Com Correção Selecionados"
 color_map = "RdBu"
 
 heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_map)
@@ -1397,7 +1404,7 @@ A dissimilaridade com o Oficial Investigador de Polícia e o Perito Papiloscopis
 HeatMap gerado.
 """
 
-titulo = "Heat Map - LONPC Condensado Com Correção"
+titulo = "D) Heat Map - LONPC Condensado Com Correção"
 
 color_map = "RdYlBu"
 
@@ -1409,7 +1416,7 @@ carreiras_selecionadas = ['Carreira','Perito Criminal', 'Perito Papiloscopista',
 
 tabela_correlation_selecionados(carreiras_selecionadas)
 
-titulo = "Heat Map - LONPC Condensada Com Correção Selecionados"
+titulo = "D) Heat Map - LONPC Condensada Com Correção Selecionados"
 color_map = "RdYlBu"
 
 heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_map)
@@ -1448,7 +1455,7 @@ Dissimilaridade entre o Oficial Investigador de Polícia e o Perito papiloscopis
 HeatMap gerado.
 """
 
-titulo = "Heat Map - Restruturação PCSP 2024 Original"
+titulo = "E) Heat Map - Restruturação PCSP 2024 Original"
 
 color_map = "RdYlBu"
 
@@ -1460,7 +1467,7 @@ carreiras_selecionadas = ['Carreira','Perito Criminal', 'Papiloscopista Policial
 
 tabela_correlation_selecionados(carreiras_selecionadas)
 
-titulo = "Heat Map - Restruturação PCSP 2024 Original Selecionados"
+titulo = "E) Heat Map - Restruturação PCSP 2024 Original Selecionados"
 color_map = "RdYlBu"
 
 heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_map)
@@ -1497,7 +1504,7 @@ Dissimilaridade entre o Oficial Investigador de Polícia e o Papiloscopista Poli
 HeatMap gerado.
 """
 
-titulo = "Heat Map - Restruturação PCSP 2024 Condensado"
+titulo = "E) Heat Map - Restruturação PCSP 2024 Condensado"
 
 color_map = "RdYlGn"
 
@@ -1509,7 +1516,7 @@ carreiras_selecionadas = ['Carreira','Perito Criminal', 'Papiloscopista Policial
 
 tabela_correlation_selecionados(carreiras_selecionadas)
 
-titulo = "Heat Map - Restruturação PCSP 2024 Condensada Selecionados"
+titulo = "E) Heat Map - Restruturação PCSP 2024 Condensada Selecionados"
 color_map = "RdYlBu"
 
 heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_map)
@@ -1625,7 +1632,7 @@ def representacao_linear(titulo):
 
 n_grupos = 5 #Delegados, investigação, apoio investigação, perícia e apoio a perícia
 
-titulo = 'Distância Relativa - Cargos Atuais Original Sem correções'
+titulo = 'A) Distância Relativa - Cargos Atuais Original Sem correções'
 
 repr_linear, dist_linear = representacao_linear(titulo)
 
@@ -1683,7 +1690,7 @@ No geral, a régua ficou desorganizada, misturando boa parte dos grupos. Investi
 
 n_grupos = 5 #Delegados, investigação, perícia, apoio a perícia e apoio a investigação.
 
-titulo = 'Distância Relativa - Cargos Atuais Condensados sem correções'
+titulo = 'A) Distância Relativa - Cargos Atuais Condensados sem correções'
 
 repr_linear, dist_linear = representacao_linear(titulo)
 
@@ -1741,7 +1748,7 @@ Com as correções, o Papiloscopista Policial passa a ficar mais próximo do per
 
 n_grupos = 4 #Delegados, investigação, perícia e apoio a perícia. Apoio a investigação é suprimido devido a aglutinação de cargos.
 
-titulo = 'Distância Relativa - Cargos Atuais Original Com correções'
+titulo = 'B) Distância Relativa - Cargos Atuais Original Com correções'
 
 repr_linear, dist_linear = representacao_linear(titulo)
 
@@ -1791,7 +1798,7 @@ A regua se tornou bastante organizada, juntos cargos similares. Não só o Papil
 
 n_grupos = 4 #Delegados, investigação, perícia e apoio a perícia.
 
-titulo = 'Distância Relativa - Atual Condensada Com correções'
+titulo = 'B) Distância Relativa - Atual Condensada Com correções'
 
 repr_linear, dist_linear = representacao_linear(titulo)
 
@@ -1849,7 +1856,7 @@ O Perito Papiloscopista fica mais basal em comparação ao Oficial Investigador 
 
 n_grupos = 4 #Delegados, investigação, perícia e apoio a perícia.
 
-titulo = 'Distância Relativa - LONPC Original Sem correções'
+titulo = 'C) Distância Relativa - LONPC Original Sem correções'
 
 repr_linear, dist_linear = representacao_linear(titulo)
 
@@ -1901,7 +1908,7 @@ A régua está relativamente organizada com menos cargos e condensada, mas a fal
 
 n_grupos = 4 #Delegados, investigação, perícia e apoio a perícia.
 
-titulo = 'Distância Relativa - LONPC Condensada Sem correções'
+titulo = 'C) Distância Relativa - LONPC Condensada Sem correções'
 
 repr_linear, dist_linear = representacao_linear(titulo)
 
@@ -1959,7 +1966,7 @@ Não só o Oficial Investigador de Polícia fica mais basal como o Perito Crimin
 
 n_grupos = 4 #Delegados, investigação, perícia e apoio a perícia.
 
-titulo = 'Distância Relativa - LONPC, Original com correções'
+titulo = 'D) Distância Relativa - LONPC, Original com correções'
 
 repr_linear, dist_linear = representacao_linear(titulo)
 
@@ -2011,7 +2018,7 @@ A régua está bem organizada, apresentando boa classificação e distanciamento
 
 n_grupos = 4 #Delegados, investigação, perícia e apoio a perícia.
 
-titulo = 'Distância Relativa - LONPC, Condensada com correções'
+titulo = 'D) Distância Relativa - LONPC, Condensada com correções'
 
 repr_linear, dist_linear = representacao_linear(titulo)
 
@@ -2076,7 +2083,7 @@ A distância entre Oficial Investigador de Polícia e Papiloscopista é relativa
 
 n_grupos = 5 #Delegados, investigação, apoio à investigação, perícia e apoio a perícia.
 
-titulo = 'Distância Relativa - Restruturação PCSP 2024 Original'
+titulo = 'E) Distância Relativa - Restruturação PCSP 2024 Original'
 
 repr_linear, dist_linear = representacao_linear(titulo)
 
@@ -2131,7 +2138,7 @@ A régua organiza as diferentes áreas periciais e até de investigação, reduz
 
 n_grupos = 5 #Delegados, investigação, apoio à investigação, perícia e apoio a perícia.
 
-titulo = 'Distância Relativa - Restruturação PCSP 2024 Condensada'
+titulo = 'E) Distância Relativa - Restruturação PCSP 2024 Condensada'
 
 repr_linear, dist_linear = representacao_linear(titulo)
 
@@ -2222,7 +2229,7 @@ def dendograma(dict_pdict, df, titulo):
 
 """O dendograma permite verificar quais são mais derivados / especializados (aqueles com alturas mais baixas) ou basais / generalistas (aqueles com alturas mais altas) e também a proximidade de cada cargo (proximidade horizontal)."""
 
-titulo = 'Dendograma - Cargos Atuais Original Sem correções'
+titulo = 'A) Dendograma - Cargos Atuais Original Sem correções'
 
 dendograma(dict_pdict,cargos_atrib_atual_nocor, titulo)
 
@@ -2282,7 +2289,7 @@ gerando_dict_pdict(dict_pdist)
 
 """Gerando novo dendograma."""
 
-titulo = 'Dendograma - Cargos Atuais Condensado Sem correções'
+titulo = 'A) Dendograma - Cargos Atuais Condensado Sem correções'
 
 dendograma(dict_pdict,cargos_atrib_atual_nocor_condensed, titulo)
 
@@ -2323,7 +2330,7 @@ gerando_dict_pdict(dict_pdist)
 
 """Gerando novo dendograma."""
 
-titulo = 'Dendograma - Cargos Atuais Original Com correções'
+titulo = 'B) Dendograma - Cargos Atuais Original Com correções'
 
 dendograma(dict_pdict,cargos_atrib_atual_withcor, titulo)
 
@@ -2360,7 +2367,7 @@ gerando_dict_pdict(dict_pdist)
 
 """Dendograma da tabela original com correções."""
 
-titulo = 'Dendograma - Original Condensada Com correções'
+titulo = 'B) Dendograma - Original Condensada Com correções'
 
 dendograma(dict_pdict,cargos_atrib_atual_withcor_condensed, titulo)
 
@@ -2402,7 +2409,7 @@ gerando_dict_pdict(dict_pdist)
 
 """Dendograma da LONPC sem correções."""
 
-titulo = 'Dendograma - LONPC, Original Sem correções'
+titulo = 'C) Dendograma - LONPC, Original Sem correções'
 
 dendograma(dict_pdict,cargos_atrib_LONPC_nocor, titulo)
 
@@ -2438,7 +2445,7 @@ gerando_dict_pdict(dict_pdist)
 
 """Dendograma da LONPC condensada sem correções."""
 
-titulo = 'Dendograma - LONPC Condensada Sem correções'
+titulo = 'C) Dendograma - LONPC Condensada Sem correções'
 
 dendograma(dict_pdict,cargos_atrib_LONPC_nocor_condensed, titulo)
 
@@ -2475,7 +2482,7 @@ gerando_dict_pdict(dict_pdist)
 
 """Gerando o Dendograma."""
 
-titulo = 'Dendograma - LONPC Original Com correções'
+titulo = 'D) Dendograma - LONPC Original Com correções'
 
 dendograma(dict_pdict,cargos_atrib_LONPC_withcor, titulo)
 
@@ -2511,7 +2518,7 @@ gerando_dict_pdict(dict_pdist)
 
 """Dendograma da LONPC condensada com correções."""
 
-titulo = 'Dendograma - LONPC Condensada Com correções'
+titulo = 'D) Dendograma - LONPC Condensada Com correções'
 
 dendograma(dict_pdict,cargos_atrib_LONPC_withcor_condensed, titulo)
 
@@ -2549,7 +2556,7 @@ gerando_dict_pdict(dict_pdist)
 
 """Gerando o Dendograma."""
 
-titulo = 'Dendograma - Reestruturação PCSP 2024 Original'
+titulo = 'E) Dendograma - Reestruturação PCSP 2024 Original'
 
 dendograma(dict_pdict,cargos_atrib_restr, titulo)
 
@@ -2587,7 +2594,7 @@ gerando_dict_pdict(dict_pdist)
 
 """Gerando o Dendograma."""
 
-titulo = 'Dendograma - Restruturação Condensada'
+titulo = 'E) Dendograma - Restruturação Condensada'
 
 dendograma(dict_pdict,cargos_atrib_restr_condensed, titulo)
 
@@ -2798,7 +2805,7 @@ cargos_apoio_pericia = ["Auxiliar de Papiloscopista Policial", "Fotógrafo Técn
 
 tamanho_fonte = 14
 
-titulo = 'Diagrama de Grafos - Cargos Atuais, Sem Correções'
+titulo = 'A) Diagrama de Grafos - Cargos Atuais, Sem Correções'
 
 diagrama_grafo(cargos_delegado, cargos_investigacao, cargos_pericia,
                cargos_papiloscopia, cargos_apoio_investigacao,
@@ -2860,11 +2867,12 @@ No geral, o Delegado de Polícia não se conecta com nenhum cargo. Não há cone
 Para facilitar a manipulação de imagens, foi criado o diagrama de grafos sem a legenda.
 """
 
-#Plotando Diagrama de Grafos
-def diagrama_grafo(cargos_delegado, cargos_investigacao,
+#Plotando Diagrama de Grafos Clean
+def diagrama_grafo_clean(cargos_delegado, cargos_investigacao,
                    cargos_pericia, cargos_papiloscopia,
-                   cargos_apoio_investigacao, cargos_apoio_pericia, df, titulo):
-  fig = plt.figure(figsize=(8,8))
+                   cargos_apoio_investigacao, cargos_apoio_pericia, df, titulo,
+                         tamanho_fonte):
+  fig = plt.figure(figsize=(24,24))
 
   #Matrix de Adjacência
   G = nx.from_numpy_array(matrix_adj)
@@ -2914,10 +2922,25 @@ def diagrama_grafo(cargos_delegado, cargos_investigacao,
             (max(edge_weights.values()) - min(edge_weights.values())) *
             width_scale + min_width for edge in G.edges()]
 
-  nx.draw_circular(G, node_color=color_map, with_labels=True, width=widths)
-  nx.draw_networkx_edge_labels(G, pos=nx.circular_layout(G), label_pos=0.35)
+  # Trocando números por nomes
+  node_labels = {}
+  for i, carreira in enumerate(df["Carreira"]):
+    node_labels[i] = carreira
 
-  plt.title(titulo)
+  # Draw nodes and edges without labels
+  pos = nx.circular_layout(G)  # Get the circular layout positions
+  nx.draw_circular(G, node_size=1000,  node_color=color_map, with_labels=False,
+                   width=widths)
+
+  # Draw labels separately with fontsize
+  nx.draw_networkx_labels(G, pos, labels=node_labels, font_size=tamanho_fonte,
+                          font_color='red', font_weight='bold',
+                          horizontalalignment='center',
+                          verticalalignment='top')
+  nx.draw_networkx_edge_labels(G, pos=nx.circular_layout(G),
+                               label_pos=0.35, font_size=tamanho_fonte)
+
+  plt.title(titulo, fontsize = 40)
   plt.show()
 
 #Plotando Diagrama de Grafos Sem Legenda
@@ -2929,11 +2952,12 @@ cargos_apoio_investigacao = ["Carcereiro Policial", "Agente de Telecomunicaçõe
 cargos_apoio_pericia = ["Auxiliar de Papiloscopista Policial", "Fotógrafo Técnico Pericial",
             "Desenhista Técnico Pericial", "Auxiliar de Necrópsia Policial", "Atendente de Necrotério Policial"]
 
-titulo = 'Diagrama de Grafos - Cargos Atuais, Sem Correções'
+titulo = 'A) Diagrama de Grafos - Cargos Atuais, Sem Correções'
+tamanho_fonte=24
 
 diagrama_grafo_clean(cargos_delegado, cargos_investigacao, cargos_pericia,
                cargos_papiloscopia, cargos_apoio_investigacao,
-               cargos_apoio_pericia, cargos_atrib_atual_nocor, titulo)
+               cargos_apoio_pericia, cargos_atrib_atual_nocor, titulo, tamanho_fonte)
 
 """##5.2 Atual com correção
 Inicialmente, contruir a matriz de adjacência e as arestas.
@@ -3045,7 +3069,7 @@ cargos_papiloscopia = []
 cargos_apoio_investigacao = []
 cargos_apoio_pericia = ["Auxiliar de Papiloscopista Policial", "Fotógrafo Técnico Pericial",
             "Desenhista Técnico Pericial", "Auxiliar de Necrópsia Policial", "Atendente de Necrotério Policial"]
-titulo = 'Diagrama de Grafos - Cargos Atuais, Com Correções'
+titulo = 'B) Diagrama de Grafos - Cargos Atuais, Com Correções'
 
 tamanho_fonte = 8.5
 
@@ -3139,11 +3163,12 @@ No geral, o Delegado de Polícia não se conecta com nenhum cargo. Houve conexã
 Diagrama de grafos sem a legenda.
 """
 
-#Plotando Diagrama de Grafos
-def diagrama_grafo(cargos_delegado, cargos_investigacao,
+#Plotando Diagrama de Grafos Clean
+def diagrama_grafo_clean(cargos_delegado, cargos_investigacao,
                    cargos_pericia, cargos_papiloscopia,
-                   cargos_apoio_investigacao, cargos_apoio_pericia, df, titulo):
-  fig = plt.figure(figsize=(8,8))
+                   cargos_apoio_investigacao, cargos_apoio_pericia, df, titulo,
+                         tamanho_fonte):
+  fig = plt.figure(figsize=(24,24))
 
   #Matrix de Adjacência
   G = nx.from_numpy_array(matrix_adj)
@@ -3193,10 +3218,25 @@ def diagrama_grafo(cargos_delegado, cargos_investigacao,
             (max(edge_weights.values()) - min(edge_weights.values())) *
             width_scale + min_width for edge in G.edges()]
 
-  nx.draw_circular(G, node_color=color_map, with_labels=True, width=widths)
-  nx.draw_networkx_edge_labels(G, pos=nx.circular_layout(G), label_pos=0.35)
+  # Trocando números por nomes
+  node_labels = {}
+  for i, carreira in enumerate(df["Carreira"]):
+    node_labels[i] = carreira
 
-  plt.title(titulo)
+  # Draw nodes and edges without labels
+  pos = nx.circular_layout(G)  # Get the circular layout positions
+  nx.draw_circular(G, node_size=1000,  node_color=color_map, with_labels=False,
+                   width=widths)
+
+  # Draw labels separately with fontsize
+  nx.draw_networkx_labels(G, pos, labels=node_labels, font_size=tamanho_fonte,
+                          font_color='red', font_weight='bold',
+                          horizontalalignment='center',
+                          verticalalignment='top')
+  nx.draw_networkx_edge_labels(G, pos=nx.circular_layout(G),
+                               label_pos=0.35, font_size=tamanho_fonte)
+
+  plt.title(titulo, fontsize = 40)
   plt.show()
 
 #Plotando Diagrama de Grafos Clean
@@ -3207,12 +3247,13 @@ cargos_papiloscopia = []
 cargos_apoio_investigacao = []
 cargos_apoio_pericia = ["Auxiliar de Papiloscopista Policial", "Fotógrafo Técnico Pericial",
             "Desenhista Técnico Pericial", "Auxiliar de Necrópsia Policial", "Atendente de Necrotério Policial"]
-titulo = 'Diagrama de Grafos - Cargos Atuais, Com Correções'
+titulo = 'B) Diagrama de Grafos - Cargos Atuais, Com Correções'
+tamanho_fonte=24
 
-diagrama_grafo(cargos_delegado, cargos_investigacao, cargos_pericia,
+diagrama_grafo_clean(cargos_delegado, cargos_investigacao, cargos_pericia,
                cargos_papiloscopia, cargos_apoio_investigacao,
                cargos_apoio_pericia, cargos_atrib_atual_withcor,
-               titulo)
+               titulo, tamanho_fonte)
 
 """##5.3 LONPC sem correção
 Inicialmente, contruir a matriz de adjacência e as arestas.
@@ -3324,7 +3365,7 @@ cargos_papiloscopia = []
 cargos_apoio_investigacao = []
 cargos_apoio_pericia = ["Agente de Perícia Papiloscópica", "Agente de Perícia Criminalística",
             "Agente de Perícia Médico Legal"]
-titulo = 'Diagrama de Grafos - LONPC, sem Correções'
+titulo = 'C) Diagrama de Grafos - LONPC, sem Correções'
 
 tamanho_fonte = 16
 
@@ -3372,11 +3413,12 @@ No geral, o Delegado de Polícia não se conecta com nenhum cargo. O mesmo ocorr
 Diagrama de grafos sem a legenda.
 """
 
-#Plotando Diagrama de Grafos
-def diagrama_grafo(cargos_delegado, cargos_investigacao,
+#Plotando Diagrama de Grafos Clean
+def diagrama_grafo_clean(cargos_delegado, cargos_investigacao,
                    cargos_pericia, cargos_papiloscopia,
-                   cargos_apoio_investigacao, cargos_apoio_pericia, df, titulo):
-  fig = plt.figure(figsize=(8,8))
+                   cargos_apoio_investigacao, cargos_apoio_pericia, df, titulo,
+                         tamanho_fonte):
+  fig = plt.figure(figsize=(24,24))
 
   #Matrix de Adjacência
   G = nx.from_numpy_array(matrix_adj)
@@ -3426,10 +3468,25 @@ def diagrama_grafo(cargos_delegado, cargos_investigacao,
             (max(edge_weights.values()) - min(edge_weights.values())) *
             width_scale + min_width for edge in G.edges()]
 
-  nx.draw_circular(G, node_color=color_map, with_labels=True, width=widths)
-  nx.draw_networkx_edge_labels(G, pos=nx.circular_layout(G), label_pos=0.35)
+  # Trocando números por nomes
+  node_labels = {}
+  for i, carreira in enumerate(df["Carreira"]):
+    node_labels[i] = carreira
 
-  plt.title(titulo)
+  # Draw nodes and edges without labels
+  pos = nx.circular_layout(G)  # Get the circular layout positions
+  nx.draw_circular(G, node_size=1000,  node_color=color_map, with_labels=False,
+                   width=widths)
+
+  # Draw labels separately with fontsize
+  nx.draw_networkx_labels(G, pos, labels=node_labels, font_size=tamanho_fonte,
+                          font_color='red', font_weight='bold',
+                          horizontalalignment='center',
+                          verticalalignment='top')
+  nx.draw_networkx_edge_labels(G, pos=nx.circular_layout(G),
+                               label_pos=0.35, font_size=tamanho_fonte)
+
+  plt.title(titulo, fontsize = 40)
   plt.show()
 
 #Plotando Diagrama de Grafos Clean
@@ -3440,12 +3497,13 @@ cargos_papiloscopia = []
 cargos_apoio_investigacao = []
 cargos_apoio_pericia = ["Agente de Perícia Papiloscópica", "Agente de Perícia Criminalística",
             "Agente de Perícia Médico Legal"]
-titulo = 'Diagrama de Grafos - LONPC, sem Correções'
+titulo = 'C) Diagrama de Grafos - LONPC, sem Correções'
+tamanho_fonte=24
 
-diagrama_grafo(cargos_delegado, cargos_investigacao, cargos_pericia,
+diagrama_grafo_clean(cargos_delegado, cargos_investigacao, cargos_pericia,
                cargos_papiloscopia, cargos_apoio_investigacao,
                cargos_apoio_pericia, cargos_atrib_LONPC_nocor,
-               titulo)
+               titulo, tamanho_fonte)
 
 """##5.4 LONPC com correção
 Inicialmente, contruir a matriz de adjacência e as arestas.
@@ -3557,7 +3615,7 @@ cargos_papiloscopia = []
 cargos_apoio_investigacao = []
 cargos_apoio_pericia = ["Agente de Perícia Papiloscópica", "Agente de Perícia Criminalística",
             "Agente de Perícia Médico Legal"]
-titulo = 'Diagrama de Grafos - LONPC, com Correções'
+titulo = 'D) Diagrama de Grafos - LONPC, com Correções'
 
 tamanho_fonte = 14
 
@@ -3619,11 +3677,12 @@ No geral, o Delegado de Polícia não se conecta com nenhum cargo. O mesmo ocorr
 Diagrama de grafos sem a legenda.
 """
 
-#Plotando Diagrama de Grafos
-def diagrama_grafo(cargos_delegado, cargos_investigacao,
+#Plotando Diagrama de Grafos Clean
+def diagrama_grafo_clean(cargos_delegado, cargos_investigacao,
                    cargos_pericia, cargos_papiloscopia,
-                   cargos_apoio_investigacao, cargos_apoio_pericia, df, titulo):
-  fig = plt.figure(figsize=(8,8))
+                   cargos_apoio_investigacao, cargos_apoio_pericia, df, titulo,
+                         tamanho_fonte):
+  fig = plt.figure(figsize=(24,24))
 
   #Matrix de Adjacência
   G = nx.from_numpy_array(matrix_adj)
@@ -3673,10 +3732,25 @@ def diagrama_grafo(cargos_delegado, cargos_investigacao,
             (max(edge_weights.values()) - min(edge_weights.values())) *
             width_scale + min_width for edge in G.edges()]
 
-  nx.draw_circular(G, node_color=color_map, with_labels=True, width=widths)
-  nx.draw_networkx_edge_labels(G, pos=nx.circular_layout(G), label_pos=0.35)
+  # Trocando números por nomes
+  node_labels = {}
+  for i, carreira in enumerate(df["Carreira"]):
+    node_labels[i] = carreira
 
-  plt.title(titulo)
+  # Draw nodes and edges without labels
+  pos = nx.circular_layout(G)  # Get the circular layout positions
+  nx.draw_circular(G, node_size=1000,  node_color=color_map, with_labels=False,
+                   width=widths)
+
+  # Draw labels separately with fontsize
+  nx.draw_networkx_labels(G, pos, labels=node_labels, font_size=tamanho_fonte,
+                          font_color='red', font_weight='bold',
+                          horizontalalignment='center',
+                          verticalalignment='top')
+  nx.draw_networkx_edge_labels(G, pos=nx.circular_layout(G),
+                               label_pos=0.35, font_size=tamanho_fonte)
+
+  plt.title(titulo, fontsize = 40)
   plt.show()
 
 #Plotando Diagrama de Grafos Clean
@@ -3687,12 +3761,13 @@ cargos_papiloscopia = []
 cargos_apoio_investigacao = []
 cargos_apoio_pericia = ["Agente de Perícia Papiloscópica", "Agente de Perícia Criminalística",
             "Agente de Perícia Médico Legal"]
-titulo = 'Diagrama de Grafos - LONPC, com Correções'
+titulo = 'D) Diagrama de Grafos - LONPC, com Correções'
+tamanho_fonte=24
 
-diagrama_grafo(cargos_delegado, cargos_investigacao, cargos_pericia,
+diagrama_grafo_clean(cargos_delegado, cargos_investigacao, cargos_pericia,
                cargos_papiloscopia, cargos_apoio_investigacao,
                cargos_apoio_pericia, cargos_atrib_LONPC_withcor,
-               titulo)
+               titulo, tamanho_fonte)
 
 """## 5.5 Reestruturação proposta pela PCSP 2024
 Inicialmente, contruir a matriz de adjacência e as arestas.
@@ -3804,7 +3879,7 @@ cargos_papiloscopia = ["Papiloscopista Policial"]
 cargos_apoio_investigacao = ["Agente de Polícia Judiciária"]
 cargos_apoio_pericia = ["Agente de Perícia Criminalística",
             "Agente de Perícia Médico Legal"]
-titulo = 'Diagrama de Grafos - Reestruturação PCSP 2024'
+titulo = 'E) Diagrama de Grafos - Reestruturação PCSP 2024'
 
 tamanho_fonte = 16
 
@@ -3866,11 +3941,12 @@ O Papiloscopista Policial continua minimamente conectado com o grande grupo de P
 Diagrama de grafos sem a legenda.
 """
 
-#Plotando Diagrama de Grafos
-def diagrama_grafo(cargos_delegado, cargos_investigacao,
+#Plotando Diagrama de Grafos Clean
+def diagrama_grafo_clean(cargos_delegado, cargos_investigacao,
                    cargos_pericia, cargos_papiloscopia,
-                   cargos_apoio_investigacao, cargos_apoio_pericia, df, titulo):
-  fig = plt.figure(figsize=(8,8))
+                   cargos_apoio_investigacao, cargos_apoio_pericia, df, titulo,
+                         tamanho_fonte):
+  fig = plt.figure(figsize=(24,24))
 
   #Matrix de Adjacência
   G = nx.from_numpy_array(matrix_adj)
@@ -3920,10 +3996,25 @@ def diagrama_grafo(cargos_delegado, cargos_investigacao,
             (max(edge_weights.values()) - min(edge_weights.values())) *
             width_scale + min_width for edge in G.edges()]
 
-  nx.draw_circular(G, node_color=color_map, with_labels=True, width=widths)
-  nx.draw_networkx_edge_labels(G, pos=nx.circular_layout(G), label_pos=0.35)
+  # Trocando números por nomes
+  node_labels = {}
+  for i, carreira in enumerate(df["Carreira"]):
+    node_labels[i] = carreira
 
-  plt.title(titulo)
+  # Draw nodes and edges without labels
+  pos = nx.circular_layout(G)  # Get the circular layout positions
+  nx.draw_circular(G, node_size=1000,  node_color=color_map, with_labels=False,
+                   width=widths)
+
+  # Draw labels separately with fontsize
+  nx.draw_networkx_labels(G, pos, labels=node_labels, font_size=tamanho_fonte,
+                          font_color='red', font_weight='bold',
+                          horizontalalignment='center',
+                          verticalalignment='top')
+  nx.draw_networkx_edge_labels(G, pos=nx.circular_layout(G),
+                               label_pos=0.35, font_size=tamanho_fonte)
+
+  plt.title(titulo, fontsize = 40)
   plt.show()
 
 #Plotando Diagrama de Grafos Clean
@@ -3934,12 +4025,13 @@ cargos_papiloscopia = ["Papiloscopista Policial"]
 cargos_apoio_investigacao = ["Agente de Polícia Judiciária"]
 cargos_apoio_pericia = ["Agente de Perícia Criminalística",
             "Agente de Perícia Médico Legal"]
-titulo = 'Diagrama de Grafos - Reestruturação PCSP 2024'
+titulo = 'E) Diagrama de Grafos - Reestruturação PCSP 2024'
+tamanho_fonte=24
 
-diagrama_grafo(cargos_delegado, cargos_investigacao, cargos_pericia,
+diagrama_grafo_clean(cargos_delegado, cargos_investigacao, cargos_pericia,
                cargos_papiloscopia, cargos_apoio_investigacao,
                cargos_apoio_pericia, cargos_atrib_restr,
-               titulo)
+               titulo, tamanho_fonte)
 
 """## 5.6 Comentários Gerais
 Observando o diagrama de grafos da situação atual sem correção, é possível verificar muitas conexões entre cargos periciais e de apoio à perícia. Essas conexões possuem pesos baixos, mas demonstram a tendência de proximidade dos cargos periciais, incluindo Papiloscopista Policial e Perito Criminal.
