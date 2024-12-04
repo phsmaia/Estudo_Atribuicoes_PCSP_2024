@@ -880,13 +880,6 @@ atrib_cond_por_carreira(cargos_atrib_restr_condensed)
 
 """Observando as atribuições exclusivas e compartilhadas, a lista se tornou uma apresentação das atribuições compartilhadas entre peritos explícitos (Perito Criminal e Médico Legista) e apoio a perícia (Agente de Perícia Criminalística e Agente de Perícia Médico Legal), com poucas exceções com o Papiloscopista Policial (identificação do cadáver latu sensu com o médico; e Suporte a desastres com o apoio a perícia criminal). Há o total compartilhamento entre atribuições do Oficial Investigador de Polícia e Agente de Polícia Judiciária.
 
-###1.1.6 - Comentários Gerais
-Com as listas exclusivas e compartilhadas, é possível verificar que em nenhum momento existem atribuições compartilhadas entre Papiloscopistas Policias e Investigadores de Polícia. A quantidade de atribuições compartilhadas varia de 2 a 10 entre Perito Criminal e Papiloscopistanas situações atuais e LONPC com e sem correções, já indicando atribuições compartilhadas entre esses cargos, como a presença de atribuições periciais para ambos. Todavia, há redução na restruturação proposta, afastando das questões periciais
-
-Interessante notar que o Perito Criminal só atua com papiloscopia na fase externa, e realiza perícia de coleta na papiloscopia, e outras mais no local e com suas diferentes expertises. O Papiloscopista Policial atua em todo o ciclo da cadeia de custódia na papiloscopia, fase externa de coleta, e é o único Perito na identificação Papiloscópica a fazer perícia de fase interna na papiloscopia, a qual é o processamento (a perícia em si). Auxiliariares de papiloscopia auxiliam papiloscopistas na parte externa de coleta, e não possuem as condições necessárias para realizar perícia na parte externa, somente coleta auxiliar ao do papiloscopista. Com a alterações propostas, não haveria tanto perícia quanto prova pericial papiloscópica, abolindo tais na esfera pericial e policial do Estado de São Paulo.
-
-Indicar que o papiloscopista realizaria assessoramento ao invés de perícia seria, no mínimo, duvidoso, haja vista enfrequecer uma prova sólida que é a mesma que o perito criminal trabalha. Ademais, os papiloscopistas trabalham com excelência, produzindo mais resultados que peritos pelo seu enfoque. Isto seria deturpar a ciência em um espaço geográfico ficcional de forma a funcionar como o humano deseja, e não a natureza, retirando o poder probatório dessa prova e a deixando mais frágil. Dessa forma, coloca-se em risco todas as operações, investigações e condenações por impressões digitais, além de criar ineficiência para a perícia, investigação, segurança pública e sociedade. Pode-se com isso criar desnecessidade da parte criminal do Instituto de Identificação, por criar retrabalho no ramo pericial da identificação. Além disso, cria-se castas entre peritos (explícitos e tácitos) e policias, acentuando diferenças sem motivos justos ou plausíveis.
-
 #2 - Cálculo de Distâncias e HeatMaps das Similaridades
 O cálculo de distância utiliza medidas relativas comparativas na tabela binária para verificar a proximidade com bases nos números e atributos. Desde que os dados estejam bem processados e sejam bem interpretados, é possível extrair algumas informações.
 
@@ -1521,16 +1514,7 @@ color_map = "RdYlBu"
 
 heatmap_tabela_dist_selecionados(tabelaCorrelation_selected, titulo, color_map)
 
-"""##2.6 Comentários Gerais
-Em nenhuma situação proposta houve similaridade entre Investigadores de Polícia e Papiloscopistas Policiais (valor sempre 1.0, de total dissimilaridade). A situação entre Perito Criminal e Papiloscopista Policial variou de 0.6 a 0.913043 nas situações atuais e LONPC com e sem correções, indicando dissimilaridade, mas ainda menor do que com o Investigador de Polícia. Poucos os valores eram menores que 0.5 na totalidade dos cálculos, com o menor encontrado sendo 0.43 (Papiloscopista Policial com Auxiliar de Papiloscopista Policial).
-
-Tal fato faz sentido, já que muita similaridade indicaria talvez o mesmo cargo com poucas diferenças. Ainda que dissimilar em certo grau, esse os valores entre Papiloscopistas Policiais e Peritos indicam similaridade de atribuições.
-
-Valores mais baixos com Auxiliar de Papiloscopista são esperados, já que Papiloscopista Policiais realizam tudo que Auxiliares de Papiloscopista realizam, e estes também estão afeitos a perícia, ainda que em apoio.
-
-Ao checar a proposta de reestruturação da PCSP, os valores aumentam, indicando uma movimento para a dissimilaridade entre Papiloscopista Policiais e Peritos Criminais. Não houve total dissimilaridade, mas outras táticas que poderiam indicar a tendencia de redução pericial para ir ao Investigador de Polícia seria retirar mais ainda as poucas atribuições que restariam e criar atribuições comuns a esses cargos, com exceção dos periciais e de apoio à perícia.
-
-#3 - Régua de Gower e Representação Linear
+"""#3 - Régua de Gower e Representação Linear
 A biblioteca Gower permite ordenar os cargos a partir das distâncias relativas, criando uma tabela e uma imagem linear de separação dos cargos. No geral, a régua de Gower e a representação linear, de todos os tipos de visualizações, foram os que apresentaram resultados mais pobres, apesar de oferecerem algumas intrepretações interessantes ao caso.
 
 ##3.1 Atual sem correção
@@ -2151,17 +2135,6 @@ repr_linear, dist_linear = representacao_linear(titulo)
 
 Apesar de certa lógica, houve confusão nas perícias e apoios à perícia. Curiosamente, o Papiloscopista Policial continuou fora do grupo de Oficial Investigador de Polícia e Investigação.
 
-##3.6 - Comentários Gerais
-A situação atual sem correções já aponta proximidade entre o Perito Criminal com o Papiloscopista, principalmente quando a quantidade de atribuições não é reduzida. Tal fato é reduzido com a aglutinação de atribuições, mas ainda assim estão em grupos de perícia e apoio a essa.
-
-As correções propostas sempre levam Peritos Criminais e Papiloscopista Policiais a ficarem próximos, algumas vezes em mesma posição, distanciando do Investigador de Polícia.
-
-Ao tentar adequar a LONPC, a mera transposição da situação dos editais leva o Investigador a ficar entre as perícias quando a tabela original não reduzida é utilizada. Ao condensar, o Papiloscopista Policial fica mais próximo do Investigador de Polícia, distantes dos outros peritos. Isso sugere que a adequação a LONPC deve vir acompanhada de correções para que todas as atribuições sejam levadas em conta, e uma má restruturação poderia deixar Papiloscopista em situação díspar dos outros peritos.
-
-Quando levadas a LONPC com correções, a situação fica mais estável, com pouco se divergindo, atingindo a melhor representação na condensada, onde os grupos gerados coadunaram com a proposta da LONPC e seguem a lógica de Delegados de Polícia, Investigação, Apoio à Perícia e Peritos.
-
-Ao atentar-se a reestruturação proposta, ainda houve separação do Oficial Investigador de Polícia com o Papiloscopista Policial. Contudo, este se afastou do Perito Criminal, sendo um perícia menor (Papiloscopia apenas) ou pelo menos um apoio à perícia.
-
 #4 - Dendogramas e Índice Cofenético
 Com os dados das tabelas de distâncias feitas no item 2, é possível gerar dendogramas similares a árvores taxônomicas para efeito comparativa.
 Após a criação, pode-se calcular o índice cofenético para verificar a correlação entre a tabela de distância e o dendograma. É utilizado a mesma lógica do coeficiente de Pearson. Valores próximos a 1 indicam correlação positiva forte, próximos a -1, correlação negativa forte, próximos a 0, não há correlação.
@@ -2613,15 +2586,6 @@ titulo = "Índice Cofenético - Restruturação Condensada"
 cofenetico(dict_pdict, dict_pdist, titulo)
 
 """A correlação também segue forte, ainda que tenha caído, apresentando a mesma situação da não condensada para a Reestruturação.
-
-##4.6 - Comentários Gerais
-Nas árvores hierárquicas, também chamadas de dendogramas, a situação atual, com e sem correções, aponta o Papiloscopista e Perito Criminais mais derivados, especializados e próximos, ao passo que o Investigador de Polícia está mais basal, próximos a cargos do cartório e apoio à investigação. Ao aglutinar atribuições, essa tendência aumenta.
-
-Quando as árvores da LONPC sem correções são geradas, a original sem aglutinações de atribuições, as árvores com Papiloscopista e Peritos Criminais estão próximos devido o peso da quantidade de atribuições. Ao condensar atribuições, Papiloscopista Policias ainda continuam derivados, nas perícias, mas um pouco menos próximos, com uma leve diminuição da sua derivação, o que indicaria que um adequação simplista das atribuições sem correções poderia suscitar uma proximidade com o cargo de investigação.
-
-Ao adequar a LONPC com correções, o Papiloscopista Policial está no grupo mais derivado com o Perito Criminal. Ao condensar as atribuições, o grupo pericial ainda se mantem coeso, indicando que correções ao adequar a LONPC são necessárias.
-
-Com a restruturação, claramente o Papiloscopista passa a integrar o grupo de investigação, indicando que a aglutinação com o Auxiliar de Papiloscopista e a criação de institutos alheios a perícia, sem a devida correção, joga o Papiloscopista a grupos mesmo afeitos a sua origem. Ao reduzir a magnitude das atribuições essa tendência diminuí, com o Papiloscopista pelo menos se mantendo no grupo de Perícias e apoio à Perícia.
 
 #5 - Diagrama de Grafos
 Uma outra opção de visualização dos cargos seria através do Diagrama de Grafos. Este tipo de visualização permite ver a conexão entre carreiras e sua disposição, de forma a ver suas relações de forma espacial e força o tamanho de arestas.
@@ -4032,24 +3996,3 @@ diagrama_grafo_clean(cargos_delegado, cargos_investigacao, cargos_pericia,
                cargos_papiloscopia, cargos_apoio_investigacao,
                cargos_apoio_pericia, cargos_atrib_restr,
                titulo, tamanho_fonte)
-
-"""## 5.6 Comentários Gerais
-Observando o diagrama de grafos da situação atual sem correção, é possível verificar muitas conexões entre cargos periciais e de apoio à perícia. Essas conexões possuem pesos baixos, mas demonstram a tendência de proximidade dos cargos periciais, incluindo Papiloscopista Policial e Perito Criminal.
-
-Ao se corrigir as atribuições, as conexões aumentam em peso e número nos cargos já citados, indicando ainda mais essa malha.
-
-Mesmo na situação de adequação a LONPC sem correções, há conexões somente entre peritos e apoio à perícia, ainda que com baixos pesos.
-
-Com as correções propostas, a malha se aumenta e reforça.
-
-Em nenhuma situação, Papiloscopista Policial e Investigadores de Polícia tiveram conexão. Todavia, as restruturação enfraquece as conexões entre o Papiloscopista Policial e o grande grupo de Perícia, separando-o e reduzindo-o a atividade policial não pericial.
-
-#6 - Conclusões sobre o estudo
-Na maioria das visualizações, Papiloscopistas Policiais estão mais próximos dos Peritos Criminais do que de Investigadores de Polícia. Ademais, muitas das atribuições são periciais idênticas entre os Peritos Criminais e Papiloscopista.
-
-A indicação de Perito na área de Identificação pela LONPC deve ser feita por Perito da área. O Papiloscopista não é afeita a investigação, e realiza perícia na área da identificação. Logo, é o Perito da Identificação, no ramo biométrico, em especial o papiloscópico.
-
-Este estudo indica a similaridade, mas questões políticas, científicas e jurídicas também devem ser levadas em conta. Esse estudo tem por objetivo indicar a situação centenária dos Papiloscopista Policiais com a perícia, evitando disparates feito contra a ciência e seus profissionais. O teste feito em relação a reestruturação indica os caminhas tomados, e para que direção a PCSP deseja ruamr em relação ao Papiloscopista Policial e a Papiloscopia. A manutenção de seu status não pericial a despeito do potencial de crescimento da ciência, carreira e utilização na investigação e ação penal é aparentemente o enfoque da direção atual das PCPS frente as novidades legislativas e judiciais, dermonstrando ostracismo no executivo da segurança pública.
-
-Em respeito a pluralidade de ideias e da construção do conhecimento científico, é possível alteração de valores e dados para verificação dos resultados. Estima-se a metotologia de caixa branca apresentada, com todos os processos sendo indicados, e que em todas as esferas tal situação seja feita, com respeito a todos e levando-se em conta todos os direitos e deveres.
-"""
