@@ -466,33 +466,31 @@ As atribuições que não estão listadas para os cargos mas as quais esses exer
 
 A.	Atributo “Atuar na investigação”: investigador recebe valor 1, por obviedade. Agente policial também recebe valor 1, já que vem realizando o trabalho de investigadores.
 
-B.	Agente policial recebe os seguintes valores positivos: diligência e prevenção especializada de crimes, cumprir mandados, realizar prisões, segurança de locais de polícia judiciária, intervir em ocorrência policiais, transporte de pessoas / coisas de ocorrência policial, manusear armas de fogo e menos letais.
+B.	Análise de vestígios em local de crime ou laboratório: papiloscopista e auxiliar de papiloscopista recebem valor 1, haja vista laboratório e revelação em peças no IIRGD (e câmarasem delegacias) e verificar locais de crime em busca de vestígios materiais de natureza biológica do tipo papiloscópica.
 
-C.	Análise de vestígios em local de crime ou laboratório: papiloscopista e auxiliar de papiloscopista recebem valor 1, haja vista laboratório e revelação em peças no IIRGD (e câmaras improvisadas em delegacias) e verificar locais de crime em busca de vestígios materiais de natureza biológica do tipo papiloscópica.
+C.	cumprir requisições do ramo da criminalística / operar equipamentos forenses: médico legista e papiloscopista recebem valor 1, haja vista as ciências da Medicina legal atuar nos vestígios materiais superficiais e internos do corpo humano, e a Papiloscopia estar abarcada no rol de disciplinas da criminalística por tratar de vestígios materiais em locais de crime com perícia. Ambos são inqueridos pelo juiz para explicar suas artes como especialistas na área. Ademais, ambos operam equipamentos forenses para fazerem suas perícias.
 
-D.	cumprir requisições do ramo da criminalística / operar equipamentos: médico legista e papiloscopista recebem valor 1, haja vista as ciências da Medicina legal atuar nos vestígios materiais superficiais e internos do corpo humano, e a Papiloscopia estar abarcada no rol de disciplinas da criminalística por tratar de vestígios materiais em locais de crime com perícia. Ambos são inqueridos pelo juiz para explicar suas artes como especialistas na área. Ademais, ambos operam equipamentos para fazerem suas perícias.
+D.	examinar locais de crime: papiloscopista e auxiliar de papiloscopista recebem valor 1, haja vista o trabalho pericial em locais de crime em busca de vestígios materiais de natureza biológica do tipo papiloscópica.
 
-E.	examinar locais de crime: papiloscopista e auxiliar de papiloscopista recebem valor 1, haja vista o trabalho pericial em locais de crime em busca de vestígios materiais de natureza biológica do tipo papiloscópica.
+E.	manusear materiais biológico: papiloscopista e auxiliar de papiloscopista recebem valor 1, haja vista o trabalho pericial em locais de crime com objetos contaminados em busca de vestígios materiais de natureza biológica do tipo papiloscópica.
 
-F.	manusear materiais biológico: papiloscopista e auxiliar de papiloscopista recebem valor 1, haja vista o trabalho pericial em locais de crime com objetos contaminados em busca de vestígios materiais de natureza biológica do tipo papiloscópica.
+F.	zelar pela cadeia de custódia: todos os cargos afeitos a perícia recebem valor 1 (perito criminal, médico legista, papiloscopista policial, auxiliar de papiloscopista policial, fotógrafo técnico policial, desenhista técnico policial, auxiliar de necrópsia e atendente de necrotério.
 
-G.	zelar pela cadeia de custódia: todos os cargos afeitos a perícia recebem valor 1 (perito criminal, médico legista, papiloscopista policial, auxiliar de papiloscopista policial, fotógrafo técnico policial, desenhista técnico policial, auxiliar de necrópsia e atendente de necrotério.
+G.	papiloscopia em pessoas desaparecidas: auxiliar de papiloscopista recebe valor 1, haja vista realizar este trabalho em delegacia e desaparecidos.
 
-H.	papiloscopia em pessoas desaparecidas: auxiliar de papiloscopista recebe valor 1, haja vista realizar este trabalho em delegacia e desaparecidos.
+H.	O papiloscopista recebe valor 1 em todos as atribuições do auxiliar de papiloscopista. O contrário não ocorre por não previsão pericial do cargo.
 
-I.	O papiloscopista recebe valor 1 em todos as atribuições do auxiliar de papiloscopista. O contrário não ocorre por não previsão pericial do cargo.
+I.	O perito criminal recebe valor 1 em todas dos fotógrafos técnicos periciais e desenhistas técnicos periciais, com exceção de auxiliar a perícia SPTC.
 
-J.	O perito criminal recebe valor 1 em todas dos fotógrafos técnicos periciais e desenhistas técnicos periciais, com exceção de auxiliar a perícia SPTC.
+J.	O médico legista recebe todas as atribuições do auxiliar de necrópsia e do atendente de necrotério, com exceção de transporte de cadáveres e limpar cadáveres.
 
-K.	O médico legista recebe todas as atribuições do auxiliar de necrópsia e do atendente de necrotério, com exceção de transporte de cadáveres e limpar cadáveres.
+K.	Editar laudos tem valor 1 para perito criminal, médico legista e papiloscopista policial, e o fotógrafo técnico pericial recebe valor 0, já que essa edição é feita pelo perito em si, e não por um agente de apoio à perícia.
 
-L.	Editar laudos tem valor 1 para perito criminal, médico legista e papiloscopista policial, e o fotógrafo técnico pericial recebe valor 0, já que essa edição é feita pelo perito em si, e não por um agente de apoio à perícia.
+L.	projeções de envelhecimento e rejuvenecimento: desenhista técnico pericial recebe valor 1, haja vista o trabalho desse cargo em retratos falados.
 
-M.	projeções de envelhecimento e rejuvenecimento: desenhista técnico pericial recebe valor 1, haja vista o trabalho desse cargo em retratos falados.
+M.	elaborar recognição visuográfica: todos os cargos recebem 1, haja vista este documento ser passado a todos eles durante o curso da academia, reduzindo o número total de atribuições sem as comuns a todos de 62 para 61.
 
-N.	elaborar recognição visuográfica: todos os cargos recebem 1, haja vista este documento ser passado a todos eles durante o curso da academia, reduzindo o número total de atribuições sem as comuns a todos de 62 para 61.
-
-O.	Retrato Falado: desenhista técnico pericial recebe 1, já que faz também tal parte.
+N.	Retrato Falado: desenhista técnico pericial recebe 1, já que faz também tal parte.
 
 Abaixo leitura da tabela CSV.
 
@@ -585,7 +583,7 @@ atrib_cond_por_carreira(cargos_atrib_atual_withcor_condensed)
 4. Perito Criminal e Fotógrafo Técnico Pericial se aproximam pois o Perito Criminal recebe as funções do Fotógrafo.
 5. Perito Criminal e Desenhista Técnico Pericial se aproximam por trabalharem com desenhos planimétricos.
 6. Médico Legista se aproxima do Auxiliar de Necrópsia Policial e Atendente de Necrotério Policial pois recebe boa parte das funções desses.
-7. Perito Criminal, Papiloscopista Policial e Auxiliar de Papiloscopista Policial se aproximam por trabalharem com análise de análises de papiloscopia em local de crime.
+7. Perito Criminal, Papiloscopista Policial e Auxiliar de Papiloscopista Policial se aproximam por trabalharem com análises de papiloscopia em local de crime.
 8. Perito Criminal, Papiloscopista Policial e Médico Legista se aproximam pois executam muitas de atribuições periciais, como cumprir requisições do ramo da criminalística / atender ocorrências de desastres / operar aparelhos forenses / editar laudos periciais.
 9. Médico Legista, Papiloscopista Policial e Auxiliar de Necrópsia se aproximam por estarem afeitos na identificação de cadáveres.
 10. Perito Criminal, Médico Legista, Papiloscopista Policial e Auxiliar de Papiloscopista Policial se aproximam pois examinam locais de crime.
@@ -692,7 +690,7 @@ A seguir as atribuições condensadas por carreiras.
 
 atrib_cond_por_carreira(cargos_atrib_LONPC_nocor_condensed)
 
-"""As simples condensações do editais não corrigidos geraram muitas atribuições condensadas exclusivas, o que pode faciliar na classificação. Contudo, deve-se aferir a validade dessas aglutinações e possíveis distorções desse modo simplista. Compartilhando de forma direta só há o Perito Criminal e o Médico Legista, o quais examinam locais de crime. Aparentemente, nem mesmo o grupo de apoio à perícia, o qual era conectado sem condensar, praticamente desaparece nesta análise.
+"""As simples condensações do editais não corrigidos geraram muitas atribuições condensadas exclusivas, o que pode facilitar na classificação. Contudo, deve-se aferir a validade dessas aglutinações e possíveis distorções desse modo simplista. Compartilhando de forma direta só há o Perito Criminal e o Médico Legista, o quais examinam locais de crime. Aparentemente, nem mesmo o grupo de apoio à perícia, o qual era conectado sem condensar, praticamente desaparece nesta análise.
 
 ###1.1.4 LONPC com correções
 
@@ -790,7 +788,7 @@ Utilizando como base a restruturação apresentada pela PCSP em 2024, e colhendo
 As correções são parecidas com as propostas anteriormente, com exceção de:
 - Investigador de Polícia é renomedo para Oficial Investigador de Polícia. O Escrivão de Polícia é mantido a parte.
 - Todas ausência pericial corretiva proposta para papiloscopista é mantida.
-- Papiloscopista Policial e Auxiliar de Papiloscopista Policial são mesclados de forma simples no cargo de Papiloscopista Policial, sem atribuições periciais. Isso ocorre retirando todas as intersecções possíveis dos cargos periciais explícitos de Perito Criminal e Médico Legista, e criando três institutos novos: o Assessoramento Técnico Papiloscópico, o qual não seria perícia papiloscópica de local de crime, apesar da mesma essência; o Suporte a Desastres, o qual reduziria o papiloscopista a mero auxílio nessas situações; e a confeção de relatórios de assessoramento papiloscópico e exame papiloscópico, não periciais, meramente atividades policiais.
+- Papiloscopista Policial e Auxiliar de Papiloscopista Policial são mesclados de forma simples no cargo de Papiloscopista Policial, sem atribuições periciais. Isso ocorre retirando todas as intersecções possíveis dos cargos periciais explícitos de Perito Criminal e Médico Legista, e criando três institutos novos: o Assessoramento Técnico Papiloscópico, o qual não seria perícia papiloscópica de local de crime, apesar da mesma essência; o Suporte a Desastres, o qual reduziria o papiloscopista a mero auxílio nessas situações, retirando a parte de perícia necropapiloscópica desse momento (e a própria necropapiloscopia não é mais considerada perícia); e a confecção de relatórios de assessoramento papiloscópico e exame papiloscópico, não periciais.
 - As carreiras de apoio a investigação (Agente de Telecomunicações Policiais, Agente Policial e Carcereiro Policial) são mesclados no Agente de Polícia Judiciária. A priori, só foram atribuidas as funções de Oficial Investigador de Polícia.
 - São mesclados Fotógrafo Técnico Pericial e Desenhista Técnico Pericial em Agente de Perícia Criminalística.
 - São mesclados o Auxiliar de Necrópsia Policial e o Atendente de Necrotério Policial no Agente de Perícia Médico Legal.
@@ -846,7 +844,7 @@ lista_exclusivas_compartilhadas_Ncargos(lista_cargos_select, atrib_gerais_restr)
 4. NÃO há atribuições compartilhadas entre Papiloscopista Policial e Oficial Investigador de Polícia (Zero – 0%).
 5. O Oficial Investigador de Polícia não possuí atribuições exclusivas (Zero – 0%), já que compartilha todas com o Agente de Polícia Judiciária.
 6. A tabela total com as 64 atribuições (100%) já que houve a criação do Assessoramento Técnico Papiloscópico, o Suporte a Desastres e a Edição de Relatórios de Assessoramento Técnico Papiloscópico e Relatórios de Exame Papiloscópico, todos não periciais.
-7. A parte do Perito Criminal exclusiva e compartilhada entre  Papiloscopista Policial e Oficial Investigador de Polícia não se alterou em comparação com a situação Atual sem correções. Houve edução nas atrituições compartilhadas entre Perito Criminal e Papiloscopista Policial, aumento nas atribuições do Papiloscopista Policial e redução nas atribuições exclusivas do Oficial Investigador Policial.
+7. A parte do Perito Criminal exclusiva e compartilhada entre  Papiloscopista Policial e Oficial Investigador de Polícia não se alterou em comparação com a situação Atual sem correções. Houve redução nas atrituições compartilhadas entre Perito Criminal e Papiloscopista Policial, aumento nas atribuições do Papiloscopista Policial e redução nas atribuições exclusivas do Oficial Investigador Policial.
 8. Total de atribuições nas análises de atribuições exclusivas e compartilhadas: 23 (35,94%).
 
 ####1.1.5.2 Condensada
@@ -883,7 +881,7 @@ atrib_cond_por_carreira(cargos_atrib_restr_condensed)
 #2 - Cálculo de Distâncias e HeatMaps das Similaridades
 O cálculo de distância utiliza medidas relativas comparativas na tabela binária para verificar a proximidade com bases nos números e atributos. Desde que os dados estejam bem processados e sejam bem interpretados, é possível extrair algumas informações.
 
-Em todas as análises, com exceção das feitas do item 5 em diante, haverá teste feitos com os dados originais e os condensados.
+Em todas as análises, com exceção das feitas do item 5 em diante, haverá teste feitos com os dados atuais e corretivos.
 
 ##2.1 Atual sem correção
 
@@ -1669,7 +1667,7 @@ Papiloscopista Policial: 0.263158.
 
 Perito Criminal: 0.421053.
 
-No geral, a régua ficou desorganizada, misturando boa parte dos grupos. Investigador de Policial tem valor mais próximo do Papiloscopista Policial, e o Perito Criminal atingiu valor extremo ao visto em outros casos. Contudo, sempre se deve observar os valores de Gower no prista de grupos e outras informações, como a representação linear.
+No geral, a régua ficou desorganizada, misturando boa parte dos grupos. Investigador de Policial tem valor mais próximo do Papiloscopista Policial, e o Perito Criminal atingiu valor extremo ao visto em outros casos. Contudo, sempre se deve observar os valores de Gower no prisma de grupos e outras informações, como a representação linear.
 """
 
 n_grupos = 5 #Delegados, investigação, perícia, apoio a perícia e apoio a investigação.
@@ -1777,7 +1775,7 @@ Perito Criminal: 0.458333.
 
 Papiloscopista Policial: 0.458333.
 
-A regua se tornou bastante organizada, juntos cargos similares. Não só o Papiloscopista Policial se distanciou do Investigador de Polícia, como obteve o mesmo valor do Perito Criminal. Para melhor aferição dos dados, deve-se checar a representação linear.
+A regua se tornou bastante organizada, juntando cargos similares. Não só o Papiloscopista Policial se distanciou do Investigador de Polícia, como obteve o mesmo valor do Perito Criminal. Para melhor aferição dos dados, deve-se checar a representação linear.
 """
 
 n_grupos = 4 #Delegados, investigação, perícia e apoio a perícia.
@@ -1788,7 +1786,7 @@ repr_linear, dist_linear = representacao_linear(titulo)
 
 """A separação linear permite verificar os grupos os quais cada cargo estarem de forma colorida. Verificando o gráfico acima, temos:
 1. Delegado (vermelho): somente Delegado de Polícia, na primeira posição.
-2. Investigação e apoio à perícias (roxo): ainda que mesclados devido valores próximos, há ordem entre os cargos, com Escrivão de Polícia, Investigador de Polícia (+ Agente de Telecomunicações Policial + Agente POlicial + Carcereiro Policial), Fotógrafo Técnico Pericial, Atendente de Necrotério Policial, Auxiliar de Necrópsia Policial, Auxiliar de Papiloscopista Policial e Desenhista Técnico Pericial.
+2. Investigação e apoio à perícias (roxo): ainda que mesclados devido valores próximos, há ordem entre os cargos, com Escrivão de Polícia, Investigador de Polícia (+ Agente de Telecomunicações Policial + Agente Policial + Carcereiro Policial), Fotógrafo Técnico Pericial, Atendente de Necrotério Policial, Auxiliar de Necrópsia Policial, Auxiliar de Papiloscopista Policial e Desenhista Técnico Pericial.
 3. Médico Legista fica individualizado em um grupo azul de perícia médica.
 4. Perito Criminal e Papiloscopista Policial assumem a extremidade com as perícias restante em amarelo.
 
@@ -2062,7 +2060,7 @@ Papiloscopista Policial: 0.276316.
 Perito Criminal: 0.342105.
 
 
-A distância entre Oficial Investigador de Polícia e Papiloscopista é relativamente grande, com muitos cargos entre eles. Há distanciamento relativamente menor entre Papiloscopista Policial e Perito Crimnal. Como de praxe, observar a divisão proposta da representação linear. Voltamos a ter 5 grupos nesta representação: Delegados, Investigação, Apoio à Investigação, Apoio à Perícia e Perícia.
+A distância entre Oficial Investigador de Polícia e Papiloscopista é relativamente grande, com muitos cargos entre eles. Há distanciamento relativamente menor entre Papiloscopista Policial e Perito Criminal. Como de praxe, observar a divisão proposta da representação linear. Voltamos a ter 5 grupos nesta representação: Delegados, Investigação, Apoio à Investigação, Apoio à Perícia e Perícia.
 """
 
 n_grupos = 5 #Delegados, investigação, apoio à investigação, perícia e apoio a perícia.
@@ -2129,7 +2127,7 @@ repr_linear, dist_linear = representacao_linear(titulo)
 """Observando a representação linear proposta:
 1. Delegado de Polícia está na base separado, em laranja.
 2. O segundo grupo contemplar a investigação em azul, com o Escrivão de Polícia, Oficial Investigador de Polícia e Agente de Polícia Judiciária.
-3. O Papiloscopista fica sozinha em verde, num grupo relativo a papiloscopia.
+3. O Papiloscopista fica sozinho em verde, num grupo relativo a papiloscopia.
 4. Um quarto grupo em roxo comtempla o Agente de Perícia Criminalística, o Perito Criminal e o Agente de Medicina Legal, colocando apoio a perícia com a Perícia Criminalística em um mesmo grupo.
 5. Por último, em vermelho, está o Médico Legista, com a Perícia Médico legal.
 
@@ -2200,7 +2198,7 @@ def dendograma(dict_pdict, df, titulo):
   plt.xticks(rotation=90)
   plt.show()
 
-"""O dendograma permite verificar quais são mais derivados / especializados (aqueles com alturas mais baixas) ou basais / generalistas (aqueles com alturas mais altas) e também a proximidade de cada cargo (proximidade horizontal)."""
+"""O dendograma permite verificar quais são mais derivados / especializados (aqueles com alturas mais baixas, eixo Y, onde há dicotomização mais a esquerda) ou basais / generalistas (aqueles com alturas mais altas, mais a direita) e também a proximidade de cada cargo (proximidade horizontal, eixo X)."""
 
 titulo = 'A) Dendograma - Cargos Atuais Original Sem correções'
 
@@ -2345,7 +2343,7 @@ titulo = 'B) Dendograma - Original Condensada Com correções'
 dendograma(dict_pdict,cargos_atrib_atual_withcor_condensed, titulo)
 
 """Após gerar o dendograma dos atributos condensados, é possível verificar os seguintes resultados:
-1. Inicia-se o dendogramca com o Delegado de Polícia sendo o mais basal dos cargos, em azul.
+1. Inicia-se o dendograma com o Delegado de Polícia sendo o mais basal dos cargos, em azul.
 2. O primeiro subgrupo formado é o de investigação, com o Investigador de Polícia (+ Agente de Telecomunicações + Agente Policial + Carcereiro Policial) e Escrivão de Polícia.
 3. A próxima derivação é do Atendente de Necrotério Policial.
 4. Mais uma derivação com um subgrupo do Fotógrafo Técnico Policial e Desenhista Técnico Pericial, apoio a perícia criminalística.
@@ -2497,7 +2495,7 @@ dendograma(dict_pdict,cargos_atrib_LONPC_withcor_condensed, titulo)
 
 """Ao observar o dendograma gerado pelas atribuições condensadas, observa-se:
 1. O Oficial Investigador de Polícia é o cargo mais basal, conjuntamento com o Delegado de Polícia, nos clado em azul.
-2. O Agente de Perícia Crimin é o primeiro a derivar.
+2. O Agente de Perícia Criminal é o primeiro a derivar.
 3. Os próximos subgrupos assume valores mais expressivos, adotando a cor laranja para diferenciação. O Agente de Perícia Papiloscópica e o Perito Papiloscopista estão no próximo, com papiloscopia.
 4. Há uma derivação com o Agente de Perícia Técnico Pericial.
 5. O último grupo é das perícias SPTC, com o Perito Criminal e o Médico Legista.
@@ -2572,7 +2570,7 @@ titulo = 'E) Dendograma - Restruturação Condensada'
 dendograma(dict_pdict,cargos_atrib_restr_condensed, titulo)
 
 """Ao observar o dendograma gerado pelas atribuições condensadas, observa-se:
-1. O Delgado é o grupo mais basal, em azul.
+1. O Delegado é o grupo mais basal, em azul.
 2. Um clado de Investigação e apoio à investigação surge em laranja, agora derivado em comparação ao não condensado.
 3. Um grande grupo em verde mais derivado surge, com a Papiloscopia, Apoio à Perícia e Perícias. O Papiloscopista ainda fica mais próximo à Investigação. O Agente de Perícia Criminalística segue na derivação,  com os três cargos mais derivados em memso nível o Agente de Perícia Medicina Legal (mais próximo do Agente de Perícia Criminalística), Médico legista e Perito Criminal.
 
@@ -2826,7 +2824,7 @@ atrib_comp_cargos(atrib_gerais_no_cor)
 
 12. O Atendente de Necrotério Policial (13) não possuí atribuições compartilhadas.
 
-No geral, o Delegado de Polícia não se conecta com nenhum cargo. Não há conexão intra e inter cargos de investigação e apoio à investigação. Há uma conexão de Investigador de Polícia com Desenhista Técnico Pericial, o qual aparenta ser espúria. Cargos periciais e de apoio à perícia apresenta maiores conexões entre si tanto em arestas como em atribuições.
+No geral, o Delegado de Polícia não se conecta com nenhum cargo. Não há conexão intra e inter cargos de investigação e apoio à investigação. Há uma conexão de Investigador de Polícia com Desenhista Técnico Pericial, a qual aparenta ser espúria. Cargos periciais e de apoio à perícia apresenta maiores conexões entre si tanto em arestas como em atribuições.
 
 Para facilitar a manipulação de imagens, foi criado o diagrama de grafos sem a legenda.
 """
