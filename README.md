@@ -1,4 +1,4 @@
-Pedro Maia - 04/12/2024
+Estudo de atribuições e similaridades de cargos da da Polícia Civil de São Paulo.
 
 Sugere-se que os códigos .ipynb sejam rodados em Google Colab ou Jupiter Notebook.
 
@@ -6,7 +6,7 @@ Siga a ordem dos códigos inicialmente, mas depois é possível seguir de forma 
 
 Depois de instalar as bibliotecas necessárias, adicione as tabelas CSV. em cada parte indicada.
 
-O mapeamente de atribuições e geração de tabelas binárias e de adjacências foram automatizadas, desde que se siga a ordem dos código.
+O mapeamento de atribuições e geração de tabelas binárias e de adjacências foram automatizadas, desde que se siga a ordem dos código.
 
 Sinta-se a vontade de utilizar a lógica e código para estudos próprios de cargos e instituições, desde que haja referência para o código aqui feito.
 
