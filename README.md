@@ -1,4 +1,8 @@
-Estudo de atribuições e similaridades de cargos da da Polícia Civil de São Paulo.
+
+
+#**Estudo de atribuições e similaridades de cargos da da Polícia Civil de São Paulo.**
+
+Citação: [![DOI](https://zenodo.org/badge/883525251.svg)](https://doi.org/10.5281/zenodo.14284482)
 
 Sugere-se que os códigos .ipynb sejam rodados em Google Colab ou Jupiter Notebook.
 
