@@ -8,6 +8,7 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ### Added
 - Inicialização do arquivo `CHANGELOG.md` para gerenciamento de continuidade e rastreamento das sessões do projeto, adotando a diretriz do "technical-change-skill".
+- Início da Etapa 2: Planejamento arquitetural para conversão dos scripts analíticos em um painel interativo com Streamlit.
 
 ### Changed
 - Adição de nota explicativa no `README.md` indicando a branch [`scientific-publication`](https://github.com/phsmaia/Estudo_Atribuicoes_PCSP_2024/tree/scientific-publication) (versão estática do artigo) e a branch `main` (atualizações contínuas), em linguagem acessível para leigos.
