@@ -1,19 +1,37 @@
+# Estudo de Atribuições e Similaridades de Cargos da Polícia Civil de São Paulo
 
+## Visão Geral
+Este projeto busca mapear, analisar e comparar as atribuições dos diversos cargos da Polícia Civil do Estado de São Paulo (PCSP). Através da análise de dados e técnicas computacionais, identificamos similaridades nas atividades exercidas pelos diferentes cargos. O projeto é dividido em duas partes principais: os estudos analíticos e quantitativos que basearam um artigo científico, e uma futura Aplicação Web interativa para explorar esses dados.
 
-#**Estudo de atribuições e similaridades de cargos da da Polícia Civil de São Paulo.**
+---
 
-Citação: [![DOI](https://zenodo.org/badge/883525251.svg)](https://doi.org/10.5281/zenodo.14284482)
+## Artigo Científico e Scripts
 
-Sugere-se que os códigos .ipynb sejam rodados em Google Colab ou Jupiter Notebook.
+Esta seção contempla os códigos e análises realizados para o estudo que embasa o artigo científico.
 
-Siga a ordem dos códigos inicialmente, mas depois é possível seguir de forma aleatória, desde que se entenda o código, variáveis, etc.
+### Como rodar os scripts localmente
+- Recomenda-se o uso de **Jupyter Notebook** ou **Google Colab**.
+- Siga a ordem dos scripts numéricos (`.ipynb`) na primeira execução para entender o fluxo de geração das tabelas. Posteriormente, podem ser executados livremente, desde que se entenda a lógica das variáveis.
+- É necessário instalar as bibliotecas citadas no início de cada script.
+- Adicione as tabelas `.csv` (fornecidas no repositório) no diretório de execução para que os códigos consigam ler os dados.
+- O mapeamento de atribuições, bem como a geração de tabelas binárias e de adjacências, foram automatizados seguindo a ordem correta dos códigos.
 
-Depois de instalar as bibliotecas necessárias, adicione as tabelas CSV. em cada parte indicada.
+---
 
-O mapeamento de atribuições e geração de tabelas binárias e de adjacências foram automatizadas, desde que se siga a ordem dos código.
+## Aplicação Web Interativa
 
-Sinta-se a vontade de utilizar a lógica e código para estudos próprios de cargos e instituições, desde que haja referência para o código aqui feito.
+Para facilitar a visualização e entendimento das similaridades e conexões entre os cargos, **criaremos** uma aplicação web.
 
-Futuras alterações, acréscimos e dashboards são planejados.
+### Como acessar o Web App
+*As instruções e links de acesso estarão disponíveis aqui assim que o aplicativo web for lançado futuramente.*
 
-Para seguir as alterações necessárias, verifique o histórico de commits.
+---
+
+## Citação e Referência
+
+Sinta-se à vontade para utilizar a lógica e os códigos para estudos próprios de cargos e instituições, desde que seja feita a devida referência a este repositório.
+
+**Citação (Zenodo)**:
+[![DOI](https://zenodo.org/badge/883525251.svg)](https://doi.org/10.5281/zenodo.14284482)
+
+Futuras alterações, acréscimos e dashboards são planejados. Para acompanhar, verifique o histórico de commits.
