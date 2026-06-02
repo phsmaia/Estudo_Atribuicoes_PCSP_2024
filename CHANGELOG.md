@@ -4,6 +4,28 @@ Todas as modificações notáveis neste projeto serão documentadas neste arquiv
 
 O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
+## [Unreleased] - 2026-06-02
+
+### Added
+- **Módulo Explorador Dinâmico**: Nova seção em abas com cruzamentos interativos "Por Cargo" e "Por Atribuição", automatizando verificações do Jupyter Notebook original e provendo selos visuais de status (ex: Exclusiva de 1 cargo).
+- **Botões de Ajuda Metodológica**: Adição do parâmetro `help` aos subtítulos gerando pop-ups integrados para explicar como interpretar e os cálculos de cada gráfico.
+- **Animações Premium CSS**: Implementação de efeito *Fade & Focus* nas renderizações.
+- **Logger LGPD (`logger.py`)**: Desenvolvimento de banco de dados SQLite furtivo no backend focado em métricas e visitações, protegendo a privacidade por meio de Hash unidirecional (SHA-256) aplicado sobre os IPs.
+- **Mídia Social e Repositórios**: Inserção de Badges com formatação shields.io nativa apontando para Artigo, Github, Zenodo e LinkedIn na barra lateral.
+
+### Changed
+- **Arquitetura Visual**: Layout do Streamlit transformado em Dashboard Vertical 100% (*wide*), sobrepondo componentes na totalidade do eixo Y.
+- **Painel de Controle Central**: Deslocamento da seleção de cenários (Matrizes, Originais) e KPIs de redução dimensional diretamente para a `sidebar`.
+- **UX em Matrizes**: Encurtamento do título "Investigador de Polícia (+ Agente de Telecomunicações policial + Agente Policial + Carcereiro Policial)" para "Investigador de Polícia (+ Apoio)" afim de viabilizar leitura ótica das colunas.
+- **Ordenação Lógica**: O eixo Y das Matrizes (Atribuição e Adjacência) foi invertido (`autorange="reversed"`) garantindo o topo com o escopo de Delegado de Polícia.
+- **UX Dendograma e Gower**: Adicionadas as marcações de Médias, além de caixas numéricas semi-transparentes em cada braço hierárquico informando o peso gravitacional da junção de carreiras.
+
+### Fixed
+- **Erro de Memória de Matriz**: Corrigido `ValueError: underlying array is read-only` decorrente de manipulação matemática de vetores Numpy 2.0+ no Plotly;
+- **Refatoração Gráfica**: Corrigido bug grave na ausência do `NetworkX` via injeção direta dos cálculos matemáticos de arestas (Edges) exclusivamente dentro da camada de processamento `data_processing.py`.
+- **KeyError do Explorador Dinâmico**: Corrigida a indexação reversa onde a aplicação tentava rastrear siglas (A_01) em um DataFrame já re-composto pelas longas orações normativas originárias.
+- **Bug do Iframe (Barras de rolagem artificiais)**: Removidos parâmetros restritivos `width=800` do Python e `transform: rotate` do CSS Global do aplicativo que induziam falha no motor de *Resize Observer* do próprio Streamlit.
+
 ## [Unreleased] - 2026-06-01
 
 ### Added

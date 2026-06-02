@@ -21,12 +21,27 @@ Esta seção contempla os códigos e análises realizados para o estudo que emba
 
 ---
 
-## Aplicação Web Interativa
+## Aplicação Web Interativa (Dashboard)
 
-Para facilitar a visualização e entendimento das similaridades e conexões entre os cargos, **criaremos** uma aplicação web.
+Para facilitar a exploração dos dados por leigos e gestores, o projeto agora conta com uma **Aplicação Web Interativa** completa, construída em Python (Streamlit).
 
-### Como acessar o Web App
-*As instruções e links de acesso estarão disponíveis aqui assim que o aplicativo web for lançado futuramente.*
+### Principais Funcionalidades do Painel:
+- **Matrizes Interativas**: Heatmaps que expõem as atribuições brutas e compartilhadas entre todos os cargos.
+- **Rede de Grafos**: Simulação magnética demonstrando a interligação de afinidade das carreiras.
+- **Régua de Gower & Dendograma**: Regimes de similaridade e agrupamentos hierárquicos entre carreiras de referência.
+- **Explorador Dinâmico**: Abas para buscar cruzamentos diretos "Por Cargo" ou "Por Atribuição" sob demanda.
+
+### Como executar o Painel Localmente:
+1. Certifique-se de ter o Python instalado.
+2. Instale as dependências executando:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Inicie o servidor do Streamlit:
+   ```bash
+   python -m streamlit run app.py
+   ```
+O painel abrirá automaticamente no seu navegador padrão.
 
 ---
 
