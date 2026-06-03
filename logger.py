@@ -1,23 +1,29 @@
-import sqlite3
 import hashlib
 from datetime import datetime
 import os
 import streamlit as st
-
-DB_PATH = "visits_log.db"
+from db import get_connection
 
 def init_db():
-    """Inicializa o banco de dados SQLite para log silencioso."""
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS visits
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                  timestamp TEXT, 
-                  hashed_ip TEXT, 
-                  cenario TEXT,
-                  session_id TEXT)''')
-    conn.commit()
-    conn.close()
+    """Inicializa as tabelas do banco de dados PostgreSQL para log silencioso."""
+    conn = get_connection()
+    if not conn:
+        return
+        
+    try:
+        c = conn.cursor()
+        c.execute('''CREATE TABLE IF NOT EXISTS visits
+                     (id SERIAL PRIMARY KEY, 
+                      timestamp TEXT, 
+                      hashed_ip TEXT, 
+                      cenario TEXT,
+                      session_id TEXT)''')
+        conn.commit()
+        c.close()
+    except Exception as e:
+        print(f"Erro ao inicializar DB logger: {e}")
+    finally:
+        conn.close()
 
 def _get_client_ip():
     """Tenta capturar o IP do cliente através dos headers do Streamlit."""
@@ -58,14 +64,19 @@ def log_visit(cenario):
         except Exception:
             session_id = "unknown"
         
+        conn = get_connection()
+        if not conn:
+            return
+            
         try:
-            conn = sqlite3.connect(DB_PATH)
             c = conn.cursor()
-            c.execute("INSERT INTO visits (timestamp, hashed_ip, cenario, session_id) VALUES (?, ?, ?, ?)", 
+            c.execute("INSERT INTO visits (timestamp, hashed_ip, cenario, session_id) VALUES (%s, %s, %s, %s)", 
                       (datetime.now().isoformat(), hashed_ip, cenario, session_id))
             conn.commit()
-            conn.close()
+            c.close()
             st.session_state["visit_logged"] = True
         except Exception as e:
             # Em caso de falha no banco de dados, morre silenciosamente sem quebrar o app
             pass
+        finally:
+            conn.close()

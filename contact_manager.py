@@ -1,21 +1,22 @@
-import sqlite3
 import datetime
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import streamlit as st
 import os
-
-DB_PATH = "contacts.db"
+from db import get_connection
 
 def init_db():
-    """Inicializa o banco de dados de contatos."""
+    """Inicializa o banco de dados PostgreSQL de contatos."""
+    conn = get_connection()
+    if not conn:
+        return
+        
     try:
-        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS contact_messages (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id SERIAL PRIMARY KEY,
                 timestamp TEXT,
                 nome TEXT,
                 email TEXT,
@@ -26,32 +27,35 @@ def init_db():
             )
         ''')
         conn.commit()
+        cursor.close()
     except Exception as e:
         print(f"Erro ao inicializar o BD de contatos: {e}")
     finally:
-        if 'conn' in locals():
-            conn.close()
+        conn.close()
 
 def save_contact_message(nome, email, instituicao, funcao, assunto, mensagem):
     """Salva a mensagem de contato no banco de dados local."""
+    conn = get_connection()
+    if not conn:
+        return False
+        
     try:
-        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         agora = datetime.datetime.now().isoformat()
         
         cursor.execute('''
             INSERT INTO contact_messages (timestamp, nome, email, instituicao, funcao, assunto, mensagem)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
         ''', (agora, nome, email, instituicao, funcao, assunto, mensagem))
         
         conn.commit()
+        cursor.close()
         return True
     except Exception as e:
         print(f"Erro ao salvar mensagem no BD: {e}")
         return False
     finally:
-        if 'conn' in locals():
-            conn.close()
+        conn.close()
 
 def send_contact_email(nome, email, instituicao, funcao, assunto, mensagem):
     """

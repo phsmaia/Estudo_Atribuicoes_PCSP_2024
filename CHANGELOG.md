@@ -4,6 +4,15 @@ Todas as modificações notáveis neste projeto serão documentadas neste arquiv
 
 O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
+## [Unreleased] - 2026-06-03
+
+### Added
+- **Auditoria de Segurança (SAST/SCA)**: Realizada verificação contra SQL Injection, XSS e vazamento de dependências.
+- **Segurança de Dados Locais**: Criação de regras de exclusão no `.gitignore` impedindo versionamento indevido de logs, caches e bancos de dados locais.
+
+### Changed
+- **Migração de Banco de Dados**: Refatoração estrutural da aplicação (arquivos `logger.py`, `contact_manager.py` e novo `db.py`) de **SQLite para PostgreSQL**. A arquitetura agora utiliza `psycopg2-binary` e suporta conexões em nuvem para eliminar bloqueios de banco de dados (`database is locked`) sob alta concorrência de usuários no painel interativo.
+
 ## [Unreleased] - 2026-06-02
 
 ### Added

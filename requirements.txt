@@ -6,3 +6,4 @@ gower>=0.0.5
 networkx>=3.0
 plotly>=5.14.0
 streamlit>=1.30.0
+psycopg2-binary>=2.9.0
