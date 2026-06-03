@@ -41,6 +41,13 @@ Para facilitar a exploração dos dados por leigos e gestores, o projeto agora c
    ```bash
    python -m streamlit run app.py
    ```
+4. (Opcional) **Formulário de Contato**: Para que o disparo de e-mails funcione localmente a partir da aba "Fale com o Autor", crie uma pasta `.streamlit` na raiz e adicione o arquivo `secrets.toml` contendo:
+   ```toml
+   SMTP_USER = "seu_email_remetente@gmail.com"
+   SMTP_PASSWORD = "sua_senha_de_aplicativo"
+   ```
+   *Nota: Sem este arquivo, os contatos enviados pela aplicação não quebrarão o sistema, sendo armazenados localmente e com segurança no arquivo SQLite `contacts.db`.*
+
 O painel abrirá automaticamente no seu navegador padrão.
 
 ---

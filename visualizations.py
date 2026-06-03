@@ -173,6 +173,31 @@ def plot_adjacency_heatmap(adj_matrix: pd.DataFrame, title: str, text_matrix: pd
     fig.update_yaxes(autorange="reversed")
     return fig
 
+def plot_gower_heatmap(df_gower: pd.DataFrame, title: str) -> go.Figure:
+    """
+    Gera um mapa de calor da Matriz de Gower. Valores próximos a 0 significam
+    maior similaridade, enquanto valores próximos a 1 significam maior distância.
+    A escala de cores é ajustada para dar foco em 0 (ex: cores mais quentes).
+    """
+    # Gower distance is symmetric with 0 on the diagonal
+    fig = go.Figure(data=go.Heatmap(
+        z=df_gower.values,
+        x=df_gower.columns,
+        y=df_gower.index,
+        colorscale="RdBu", # Vermelho para 0, Azul para 1
+        reversescale=False,
+        xgap=1, ygap=1,
+        hovertemplate="<b>Carreira A:</b> %{y}<br><b>Carreira B:</b> %{x}<br><b>Distância de Gower:</b> %{z:.4f}<extra></extra>"
+    ))
+    fig.update_layout(
+        title=title,
+        title_font_size=20,
+        margin=dict(l=100, r=20, t=50, b=100)
+    )
+    # Reverte o eixo y para bater com as outras matrizes (Delegado no topo)
+    fig.update_yaxes(autorange="reversed")
+    return fig
+
 def plot_gower_ruler(df_gower: pd.DataFrame, reference_career: str = "Delegado de Polícia") -> go.Figure:
     """
     Cria uma régua 1D (Scatter plot) baseada na distância de Gower de todos os cargos
@@ -287,4 +312,113 @@ def plot_dendrogram(df_gower: pd.DataFrame, title: str) -> go.Figure:
                 
     fig.update_layout(annotations=annotations)
     
+    return fig
+
+def plot_upset_bar_chart(df: pd.DataFrame, title: str, dic_reverso: dict = None) -> go.Figure:
+    """
+    Simula a essência de um UpSet Plot usando um Bar Chart horizontal interativo no Plotly.
+    Calcula as interseções reais entre os conjuntos de cargos.
+    O DataFrame de entrada deve ter os cargos como índice (rows) e as atribuições nas colunas.
+    """
+    # Converter para booleano
+    df_bool = df > 0
+    total_attrs = len(df.columns)
+    
+    # Transpor: linhas = atribuições, colunas = carreiras
+    df_attrs = df_bool.T
+    
+    if df_attrs.empty:
+        return go.Figure()
+        
+    cols = list(df_attrs.columns)
+    
+    # Agrupar para descobrir o tamanho da interseção
+    combination_counts = df_attrs.groupby(cols).size().reset_index(name='count')
+    
+    # Agrupar para descobrir EXATAMENTE QUAIS SÃO as atribuições daquela interseção
+    # Como o index original do df_attrs são as siglas (ou nomes), pegamos a lista do index
+    attr_lists = df_attrs.groupby(cols).apply(lambda x: list(x.index)).reset_index(name='attributes_list')
+    
+    # Mesclar as contagens com a lista de nomes
+    combination_counts = combination_counts.merge(attr_lists, on=cols)
+    
+    # Filtrar onde pelo menos um cargo possui a atribuição (ignorar a linha onde todos são False)
+    combination_counts['has_any'] = combination_counts[cols].any(axis=1)
+    combination_counts = combination_counts[combination_counts['has_any']]
+    
+    def make_label(row):
+        c_list = [c for c in cols if row[c]]
+        if len(c_list) == len(cols):
+            return "Todos os Cargos"
+        elif len(c_list) == 1:
+            return c_list[0] + " (Exclusiva)"
+        elif len(c_list) == 2:
+            return c_list[0] + " + " + c_list[1]
+        else:
+            return f"[{len(c_list)} Cargos] " + " + ".join([c[:8]+"." for c in c_list])
+            
+    def make_hover(row):
+        # Transforma a lista de siglas em nomes originais
+        raw_list = row['attributes_list']
+        if dic_reverso:
+            text_list = [dic_reverso.get(a, a) for a in raw_list]
+        else:
+            text_list = raw_list
+            
+        # Limita a exibição no hover para não estourar a tela (ex: max 15 atribuições)
+        max_show = 15
+        display_list = text_list[:max_show]
+        joined = "<br> - " + "<br> - ".join([t[:90] + "..." if len(t) > 90 else t for t in display_list])
+        if len(text_list) > max_show:
+            joined += f"<br><i>... e mais {len(text_list) - max_show} atribuições.</i>"
+            
+        c_list = [c for c in cols if row[c]]
+        cargos_str = "<br>".join(c_list)
+        pct = (row['count'] / total_attrs) * 100
+        
+        return cargos_str, joined, pct
+            
+    combination_counts['label'] = combination_counts.apply(make_label, axis=1)
+    
+    # Extrai tupla do hover para múltiplas customdatas
+    hover_data = combination_counts.apply(make_hover, axis=1)
+    combination_counts['cargos_str'] = [x[0] for x in hover_data]
+    combination_counts['atributos_str'] = [x[1] for x in hover_data]
+    combination_counts['pct'] = [x[2] for x in hover_data]
+    
+    # Ordenar pela contagem
+    combination_counts = combination_counts.sort_values(by='count', ascending=True)
+    
+    # Limitar top 30
+    if len(combination_counts) > 30:
+        combination_counts = combination_counts.tail(30)
+        title += " (Top 30 Interseções)"
+        
+    fig = go.Figure(go.Bar(
+        x=combination_counts['count'],
+        y=combination_counts['label'],
+        orientation='h',
+        customdata=combination_counts[['cargos_str', 'atributos_str', 'pct']].values,
+        hovertemplate=(
+            "<b>Representatividade:</b> %{customdata[2]:.1f}% do cenário<br><br>"
+            "<b>Cargos Envolvidos:</b><br>%{customdata[0]}<br><br>"
+            "<b>Atribuições Compartilhadas:</b>%{customdata[1]}"
+            "<extra></extra>"
+        ),
+        marker=dict(
+            color=combination_counts['count'],
+            colorscale='Blues', # Cores sóbrias válidas no Plotly
+            showscale=True,
+            colorbar=dict(title="Volume")
+        )
+    ))
+    
+    fig.update_layout(
+        title=title,
+        xaxis_title="Quantidade de Atribuições Compartilhadas",
+        yaxis_title=None,
+        margin=dict(l=250, r=20, t=50, b=50),
+        height=max(400, len(combination_counts) * 35),
+        autosize=True
+    )
     return fig
