@@ -41,12 +41,16 @@ Para facilitar a exploração dos dados por leigos e gestores, o projeto agora c
    ```bash
    python -m streamlit run app.py
    ```
-4. (Opcional) **Formulário de Contato**: Para que o disparo de e-mails funcione localmente a partir da aba "Fale com o Autor", crie uma pasta `.streamlit` na raiz e adicione o arquivo `secrets.toml` contendo:
+4. (Obrigatório) **Configuração do Banco de Dados**: A aplicação utiliza PostgreSQL para suportar múltiplos acessos simultâneos sem travar. Crie uma pasta `.streamlit` na raiz e adicione o arquivo `secrets.toml` (ou um `.env`) contendo a sua conexão:
+   ```toml
+   DATABASE_URL = "postgresql://usuario:senha@host:5432/nome_do_banco"
+   ```
+5. (Opcional) **Formulário de Contato**: Para habilitar o envio de e-mails para o autor, adicione também no `secrets.toml`:
    ```toml
    SMTP_USER = "seu_email_remetente@gmail.com"
    SMTP_PASSWORD = "sua_senha_de_aplicativo"
    ```
-   *Nota: Sem este arquivo, os contatos enviados pela aplicação não quebrarão o sistema, sendo armazenados localmente e com segurança no arquivo SQLite `contacts.db`.*
+   *Nota: Sem o SMTP configurado, o e-mail não será enviado, mas a mensagem ainda será salva com segurança no seu banco de dados PostgreSQL.*
 
 O painel abrirá automaticamente no seu navegador padrão.
 
