@@ -45,12 +45,7 @@ Para facilitar a exploração dos dados por leigos e gestores, o projeto agora c
    ```toml
    DATABASE_URL = "postgresql://usuario:senha@host:5432/nome_do_banco"
    ```
-5. (Opcional) **Formulário de Contato**: Para habilitar o envio de e-mails para o autor, adicione também no `secrets.toml`:
-   ```toml
-   SMTP_USER = "seu_email_remetente@gmail.com"
-   SMTP_PASSWORD = "sua_senha_de_aplicativo"
-   ```
-   *Nota: Sem o SMTP configurado, o e-mail não será enviado, mas a mensagem ainda será salva com segurança no seu banco de dados PostgreSQL.*
+
 
 O painel abrirá automaticamente no seu navegador padrão.
 

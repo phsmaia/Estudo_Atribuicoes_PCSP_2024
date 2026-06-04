@@ -1,30 +1,135 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import data_loader
 import data_processing
 import visualizations
 import logger
-import contact_manager
 
 # Iniciar o banco de dados de log
 logger.init_db()
 
 # Configuração Básica da Página
-st.set_page_config(page_title="Estudo de Atribuições PCSP", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Estudo de Atribuições PCSP", layout="wide")
 
-# Injeção de CSS para destaques críticos (Transparência Matemática)
+# --- RODAPÉ FLUTUANTE DE CONTATOS E REFERÊNCIAS (Injeção Direta no DOM) ---
+components.html("""
+<script>
+    // Tenta remover o footer antigo caso o Streamlit faça um re-run da tela
+    const oldFooter = window.parent.document.getElementById('hud-floating-footer');
+    if (oldFooter) {
+        oldFooter.remove();
+    }
+
+    // Constrói o HUD puro no root do navegador, imune aos containers do Streamlit
+    const footer = window.parent.document.createElement('div');
+    footer.id = 'hud-floating-footer';
+    footer.innerHTML = `
+        <style>
+        #hud-floating-footer {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: rgba(14, 17, 23, 0.90);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 30px;
+            padding: 0 20px;
+            z-index: 999999;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            width: 240px;
+            height: 50px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            font-family: sans-serif;
+        }
+        #hud-floating-footer:hover {
+            width: 320px;
+            height: max-content;
+            border-radius: 15px;
+            padding: 20px;
+            align-items: flex-start;
+        }
+        .hud-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 50px;
+            cursor: pointer;
+            flex-shrink: 0;
+            color: #E0E0E0;
+            font-weight: bold;
+            font-size: 0.95rem;
+            gap: 8px;
+        }
+        #hud-floating-footer:hover .hud-icon {
+            display: none;
+        }
+        .hud-content {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            transition-delay: 0.1s;
+            display: none;
+            width: 100%;
+        }
+        #hud-floating-footer:hover .hud-content {
+            opacity: 1;
+            display: block;
+        }
+        .hud-content a {
+            color: #4da6ff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            padding: 6px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+        .hud-content a:hover {
+            text-decoration: underline;
+            background: rgba(255,255,255,0.05);
+        }
+        .hud-content h4 {
+            margin: 0 0 10px 0;
+            color: #E0E0E0;
+            font-size: 1rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+        </style>
+        
+        <div class="hud-icon">
+            <span style="font-size: 1.2rem;">💬</span> Referências e Contato
+        </div>
+        <div class="hud-content">
+            <h4>Referências do Estudo</h4>
+            <a href="https://github.com/phsmaia/Estudo_Atribuicoes_PCSP_2024" target="_blank">💻 Repositório GitHub</a>
+            <a href="https://periodicos.pf.gov.br/index.php/RBCP/pt_BR/article/view/4693" target="_blank">📜 Artigo Científico</a>
+            <a href="https://zenodo.org/records/14284483" target="_blank">📊 Dados Brutos (Zenodo)</a>
+            <h4 style="margin-top: 15px;">Fale com o Autor</h4>
+            <a href="mailto:maia.phs@gmail.com">📧 maia.phs@gmail.com</a>
+            <a href="https://www.linkedin.com/in/pedromaiapapilodata/" target="_blank">🔗 LinkedIn (Pedro Maia)</a>
+        </div>
+    `;
+    window.parent.document.body.appendChild(footer);
+</script>
+""", height=0)
+
+# Injeção de CSS para destaques críticos (Transparência Matemática e Status Bar)
 st.markdown("""
 <style>
 /* Animação Premium: Fade & Focus (Sem alteração geométrica) */
 @keyframes smoothCascadeFocus {
-    0% { 
-        opacity: 0; 
-        filter: blur(5px); 
-    }
-    100% { 
-        opacity: 1; 
-        filter: blur(0); 
-    }
+    0% { opacity: 0; filter: blur(5px); }
+    100% { opacity: 1; filter: blur(0); }
 }
 
 div[data-testid="stVerticalBlock"] > div {
@@ -32,22 +137,17 @@ div[data-testid="stVerticalBlock"] > div {
     animation: smoothCascadeFocus 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Trava global contra barras de rolagem artificiais induzidas por transformações geométricas */
+/* Trava global contra barras de rolagem artificiais */
 .stApp {
     overflow-x: hidden;
 }
 
-/* Atrasos escalonados para criar o efeito cascata premium */
+/* Atrasos escalonados */
 div[data-testid="stVerticalBlock"] > div:nth-child(1) { animation-delay: 0.05s; }
 div[data-testid="stVerticalBlock"] > div:nth-child(2) { animation-delay: 0.15s; }
 div[data-testid="stVerticalBlock"] > div:nth-child(3) { animation-delay: 0.25s; }
 div[data-testid="stVerticalBlock"] > div:nth-child(4) { animation-delay: 0.35s; }
 div[data-testid="stVerticalBlock"] > div:nth-child(5) { animation-delay: 0.45s; }
-div[data-testid="stVerticalBlock"] > div:nth-child(6) { animation-delay: 0.55s; }
-div[data-testid="stVerticalBlock"] > div:nth-child(7) { animation-delay: 0.65s; }
-div[data-testid="stVerticalBlock"] > div:nth-child(8) { animation-delay: 0.75s; }
-div[data-testid="stVerticalBlock"] > div:nth-child(9) { animation-delay: 0.85s; }
-div[data-testid="stVerticalBlock"] > div:nth-child(10) { animation-delay: 0.95s; }
 
 .transparency-box {
     background-color: #2D2D2D;
@@ -61,37 +161,45 @@ div[data-testid="stVerticalBlock"] > div:nth-child(10) { animation-delay: 0.95s;
     color: #0072B2;
 }
 
-/* Sidebar QoL e Compactação Visual */
-[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
-    gap: 0.5rem !important; 
+/* Estilo da Barra de Status Discreta */
+.status-bar-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 5px 0px 10px 0px;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #333;
 }
-[data-testid="stSidebar"] hr {
-    margin: 0.2em 0 !important; 
+.status-badge {
+    background-color: #1E1E1E;
+    color: #A0A0A0;
+    border: 1px solid #444;
+    border-radius: 12px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
-[data-testid="stSidebar"] .block-container {
-    padding-top: 2rem !important;
-    padding-bottom: 0.5rem !important;
+.status-badge strong {
+    color: #E0E0E0;
+    font-weight: 600;
 }
-[data-testid="stSidebar"] [data-testid="stSidebarHeader"] {
-    position: absolute !important;
-    top: 0;
-    right: 0;
-    padding: 0.5rem !important;
+
+/* CSS para o Sticky Header (Glassmorphism) */
+div[data-testid="stVerticalBlock"] > div:has(#sticky-header-anchor) {
+    position: sticky;
+    top: 2.875rem; /* Ajuste para não conflitar com a barra do topo do Streamlit */
     z-index: 999;
-}
-[data-testid="stSidebar"] h3 {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
-}
-/* Redução do tamanho das badges (imagens de contato) */
-[data-testid="stSidebar"] [data-testid="stExpander"] img {
-    transform: scale(0.85);
-    transform-origin: left center;
-    margin-bottom: -5px;
-}
-/* Mantém o ícone de interrogação colado no texto do toggle */
-[data-testid="stSidebar"] [data-testid="stWidgetLabel"] {
-    align-items: center !important;
+    background: rgba(14, 17, 23, 0.65); /* Fundo um pouco mais transparente */
+    backdrop-filter: blur(12px); /* Efeito de Vidro (Glassmorphism) */
+    -webkit-backdrop-filter: blur(12px);
+    padding: 10px 15px;
+    border-radius: 12px; /* Bordas arredondadas tiram o aspecto de tijolo */
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    margin-bottom: 20px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -114,44 +222,62 @@ mapa_cenarios = {
     "Reestruturação 2024": datasets["reestruturacao"]
 }
 
-# --- CONTROLES LATERAIS (SIDEBAR) ---
-with st.sidebar:
-    st.markdown("### ⚙️ Painel de Controle")
+# --- CONTROLES SUPERIORES EXPANSÍVEIS E FIXOS ---
+with st.container():
+    st.markdown('<div id="sticky-header-anchor"></div>', unsafe_allow_html=True)
     
-    cenario_sel = st.selectbox("Selecione o Cenário:", opcoes_cenarios)
-    df_cenario = mapa_cenarios.get(cenario_sel)
+    # Placeholder Dinâmico que começa só com o título e depois carrega os status ao lado
+    status_bar_placeholder = st.empty()
+    status_bar_placeholder.markdown("<h3 style='margin:0; padding-bottom:10px; font-size:1.4rem;'>Painel Interativo: Estudo de Atribuições da PCSP (2024)</h3>", unsafe_allow_html=True)
     
-    st.markdown("---")
-    
-    st.markdown("**Opções**")
-    incluir_comuns = st.toggle("Incluir Atribuições Genéricas a Todos", value=False, help="Se ativado, não oculta as atribuições normativas comuns a todos os cargos e desabilita o formato Condensado.")
-    tipo_matriz_raw = st.radio(
-        "Formato da Matriz:", 
-        ["Condensada (Aglutina repetições)", "Original (Dados brutos)"], 
-        horizontal=True, 
-        disabled=incluir_comuns,
-        help="**Condensada:** Junta funções que aparecem no mesmo exato grupo de cargos em uma única coluna com peso concentrado, para que dezenas de atribuições redundantes não distorçam os cálculos matemáticos.\n\n**Original:** Mantém os dados da base exatamente como foram extraídos dos manuais e editais normativos."
-    )
-    
-    tipo_matriz = "Original" if "Original" in tipo_matriz_raw else "Condensada"
-    
-    # Se incluir comuns está ativo, forçamos Original
-    if incluir_comuns:
-        tipo_matriz = "Original"
+    with st.popover("⚙️ Configurações Analíticas e Controles", use_container_width=False):
+        col1, col2, col3 = st.columns([1.5, 1.5, 2])
         
-    expandir_textos = st.checkbox("Expandir textos nos tooltips", value=False, help="Se ativo, renderiza os nomes completos das atribuições no hover (pode gerar grandes blocos de texto). Se inativo, exibe as siglas matemáticas (A_01, A_02).")
+        with col1:
+            cenario_sel = st.selectbox("Selecione o Cenário:", opcoes_cenarios)
+            df_cenario = mapa_cenarios.get(cenario_sel)
+            cargos_disponiveis = df_cenario['Carreira'].tolist() if df_cenario is not None and 'Carreira' in df_cenario.columns else (df_cenario.index.tolist() if df_cenario is not None else [])
+            
+            # Filtros Macros (Polícia Científica vs PCSP)
+            cientifica_keywords = ["Perito", "Médico", "Fotógrafo", "Desenhista", "Necropsia", "Necrópsia", "Atendente"]
+            cargos_cientifica = [c for c in cargos_disponiveis if any(k in c for k in cientifica_keywords)]
+            cargos_pc = [c for c in cargos_disponiveis if c not in cargos_cientifica]
+            
+            grupo_sel = st.radio(
+                "Filtro Rápido de Cargos:",
+                ["Todos os cargos da Polícia Civil", "Polícia Civil sem cargos da Polícia Científica", "Polícia Civil com somente Polícia Científica", "Personalizado"]
+            )
     
-    st.markdown("---")
-    
-    if df_cenario is not None and not df_cenario.empty:
-        cargos_disponiveis = df_cenario['Carreira'].tolist() if 'Carreira' in df_cenario.columns else df_cenario.index.tolist()
-        cargos_selecionados = st.multiselect("Cargos a Analisar (vazio = todos):", cargos_disponiveis)
+    with col2:
+        incluir_comuns = st.toggle("Incluir Atribuições Genéricas a Todos", value=False, help="Se ativado, não oculta as atribuições normativas comuns a todos os cargos e desabilita o formato Condensado.")
+        tipo_matriz_raw = st.radio(
+            "Formato da Matriz:", 
+            ["Condensada (Aglutina repetições)", "Original (Dados brutos)"], 
+            horizontal=False, 
+            disabled=incluir_comuns,
+            help="**Condensada:** Junta funções redundantes em uma única coluna.\n\n**Original:** Mantém os dados brutos."
+        )
+        tipo_matriz = "Original" if "Original" in tipo_matriz_raw or incluir_comuns else "Condensada"
+        expandir_textos = st.checkbox("Expandir textos nos tooltips", value=False)
         
-        # Loga a visita de forma invisível via backend
-        logger.log_visit(cenario_sel)
+        kpi_placeholder = col3.empty()
+        
+        if grupo_sel == "Todos os cargos da Polícia Civil":
+            cargos_selecionados = []
+        elif grupo_sel == "Polícia Civil sem cargos da Polícia Científica":
+            cargos_selecionados = cargos_pc
+        elif grupo_sel == "Polícia Civil com somente Polícia Científica":
+            cargos_selecionados = cargos_cientifica
+        else:
+            cargos_selecionados = st.multiselect("Cargos a Analisar (Personalizado):", cargos_disponiveis)
+            
+        st.markdown("<div style='text-align: center; color: #666; font-size: 0.8rem; margin-top: 15px;'><em>Clique em qualquer área externa para recolher este painel</em></div>", unsafe_allow_html=True)
 
-# --- MÓDULO DE DASHBOARD VERTICAL ---
-st.title("Painel Interativo: Estudo de Atribuições da PCSP (2024)")
+
+# Registrar log invisível de visita
+if 'visit_logged' not in st.session_state:
+    logger.log_visit(cenario_sel)
+
 st.markdown("<div class='transparency-box'><h4>Suposição Matemática Ativa</h4><p>As matrizes abaixo transformam listas de atribuições textuais em coordenadas numéricas. Ao passarem pela 'Condensação', repetições exatas entre os mesmos cargos viram uma única coluna. Isso impede que atribuições divididas em 10 itens no edital mas que significam a mesma coisa causem 'peso artificial' que aproxima duas carreiras incorretamente.</p></div>", unsafe_allow_html=True)
 
 if df_cenario is not None and not df_cenario.empty:
@@ -170,17 +296,12 @@ if df_cenario is not None and not df_cenario.empty:
             
     # Processamento Matemático Principal
     if incluir_comuns:
-        # Se comum, o DataFrame limpo é o próprio cenário com tudo!
-        # Mas vamos ordenar as colunas comuns para o início
         col_sums = df_cenario.sum(axis=0)
         num_reais = len(df_cenario)
         colunas_comuns = df_cenario.columns[col_sums == num_reais].tolist()
         colunas_outras = [c for c in df_cenario.columns if c not in colunas_comuns]
         df_original_limpo = df_cenario[colunas_comuns + colunas_outras].copy()
-        
-        # O Condensado é desabilitado visualmente, mas deixamos preenchido para evitar quebra de variável
         df_condensado = df_original_limpo
-        
     else:
         df_original_limpo = data_processing.remover_atribuicoes_comuns(df_cenario)
         df_condensado, historico = data_processing.condensar_dataframe(df_cenario)
@@ -192,77 +313,62 @@ if df_cenario is not None and not df_cenario.empty:
     dic_siglas = data_processing.gerar_dicionario_siglas(df_to_use.columns)
     dic_reverso = {v: k for k, v in dic_siglas.items()}
     df_to_use_siglas = data_processing.aplicar_siglas_dataframe(df_to_use, dic_siglas)
-    
-    # Matriz de Textos para Tooltips
     text_matrix = data_processing.obter_atribuicoes_comuns_textuais(df_to_use, dic_siglas, expandir_textos)
 
-    # 1. KPIs (Sidebar)
-    with st.sidebar:
-        st.markdown("---")
-        reducao = len(df_original_limpo.columns) - len(df_condensado.columns)
-        pct_reducao = (reducao / len(df_original_limpo.columns)) * 100 if len(df_original_limpo.columns) > 0 else 0
-        
-        # Uso de Flexbox nativo para garantir a mesma linha de altura e evitar truncamento "Condensa..."
-        html_kpis = f"""
-        <div style="display: flex; justify-content: space-between; align-items: center; text-align: center; margin-bottom: 0.5rem;">
-            <div>
-                <div style="font-size: 0.65rem; color: #9E9E9E; font-weight: 600; text-transform: uppercase;">Originais</div>
+    # --- INJEÇÃO DO HEADER COMBINADO (Título + Status) ---
+    lbl_cargos = "Todos" if not cargos_selecionados else f"{len(cargos_selecionados)} Selecionados"
+    lbl_genericas = "ON" if incluir_comuns else "OFF"
+    lbl_textos = "ON" if expandir_textos else "OFF"
+    
+    lista_cargos_html = ""
+    if cargos_selecionados:
+        lista_cargos_html = f"<div style='text-align: right; color: #C0C0C0; font-size: 0.9rem; margin-top: 5px; margin-bottom: 5px;'><strong>Cargos ativos:</strong> {', '.join(cargos_selecionados)}</div>"
+    
+    header_html = f"""
+    <div style='display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;'>
+        <h3 style='margin: 0; padding: 0; font-size: 1.4rem; color: #E0E0E0;'>Painel Interativo: Atribuições PCSP</h3>
+        <div style='display: flex; gap: 5px; flex-wrap: wrap;'>
+            <div class='status-badge'>⚙️ Cenário: <strong>{cenario_sel}</strong></div>
+            <div class='status-badge'>📊 Matriz: <strong>{tipo_matriz}</strong></div>
+            <div class='status-badge'>👥 Genéricas: <strong>{lbl_genericas}</strong></div>
+            <div class='status-badge'>🏷️ Textos Extensos: <strong>{lbl_textos}</strong></div>
+            <div class='status-badge'>🚓 Cargos: <strong>{lbl_cargos}</strong></div>
+        </div>
+    </div>
+    {lista_cargos_html}
+    """
+    status_bar_placeholder.markdown(header_html, unsafe_allow_html=True)
+
+    # --- INJEÇÃO DOS KPIs DENTRO DA GAVETA ---
+    reducao = len(df_original_limpo.columns) - len(df_condensado.columns)
+    pct_reducao = (reducao / len(df_original_limpo.columns)) * 100 if len(df_original_limpo.columns) > 0 else 0
+    
+    html_kpis = f"""
+    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+        <div style="display: flex; justify-content: space-between; text-align: center; background: #1E1E1E; padding: 10px; border-radius: 8px; border: 1px solid #333;">
+            <div title="Total de atribuições únicas extraídas dos editais para os cargos selecionados, antes de aglutinar as redundâncias.">
+                <div style="font-size: 0.65rem; color: #9E9E9E; font-weight: 600; text-transform: uppercase;">Atribuições Originais <span style="cursor:help; color:#888; font-size:0.75rem;">ⓘ</span></div>
                 <div style="font-size: 1.1rem; line-height: 1.2;">{len(df_original_limpo.columns)}</div>
             </div>
-            <div>
-                <div style="font-size: 0.65rem; color: #9E9E9E; font-weight: 600; text-transform: uppercase;">Condensadas</div>
+            <div title="Quantidade de colunas exclusivas na matriz após juntar numa só as atribuições idênticas que eram comuns a múltiplos cargos.">
+                <div style="font-size: 0.65rem; color: #9E9E9E; font-weight: 600; text-transform: uppercase;">Atribuições Condensadas <span style="cursor:help; color:#888; font-size:0.75rem;">ⓘ</span></div>
                 <div style="font-size: 1.1rem; line-height: 1.2;">{len(df_condensado.columns)}</div>
             </div>
-            <div>
-                <div style="font-size: 0.65rem; color: #9E9E9E; font-weight: 600; text-transform: uppercase;">Redução</div>
+        </div>
+        <div style="display: flex; justify-content: space-between; text-align: center; background: #1E1E1E; padding: 10px; border-radius: 8px; border: 1px solid #333;">
+            <div title="Diferença absoluta entre as atribuições originais e as condensadas (quantidade de ruído/redundância eliminada).">
+                <div style="font-size: 0.65rem; color: #9E9E9E; font-weight: 600; text-transform: uppercase;">Redução <span style="cursor:help; color:#888; font-size:0.75rem;">ⓘ</span></div>
                 <div style="font-size: 1.1rem; color: #00C851; line-height: 1.2; font-weight: bold;">{reducao}</div>
             </div>
-            <div>
-                <div style="font-size: 0.65rem; color: #9E9E9E; font-weight: 600; text-transform: uppercase;">Eficácia</div>
+            <div title="Percentual que representa o nível de redundância normativa que foi superada pela metodologia na comparação.">
+                <div style="font-size: 0.65rem; color: #9E9E9E; font-weight: 600; text-transform: uppercase;">Porcentagem de Redução <span style="cursor:help; color:#888; font-size:0.75rem;">ⓘ</span></div>
                 <div style="font-size: 1.1rem; color: #00C851; line-height: 1.2; font-weight: bold;">{pct_reducao:.1f}%</div>
             </div>
         </div>
-        """
-        st.markdown(html_kpis, unsafe_allow_html=True)
-        
-        st.markdown("---")
-        with st.expander("🔗 Referências e Contato", expanded=False):
-            st.markdown("[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/phsmaia/Estudo_Atribuicoes_PCSP_2024)")
-            st.markdown("[![Artigo](https://img.shields.io/badge/Artigo_Científico-0056D2?style=for-the-badge&logo=googlescholar&logoColor=white)](https://periodicos.pf.gov.br/index.php/RBCP/pt_BR/article/view/4693)")
-            st.markdown("[![Zenodo](https://img.shields.io/badge/Zenodo-024E70?style=for-the-badge&logo=zenodo&logoColor=white)](https://zenodo.org/records/14284483)")
-            st.markdown("[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/pedromaiapapilodata/)")
-            
-            st.markdown("---")
-            st.markdown("**✉️ Fale com o Autor**")
-            with st.form("contact_form", clear_on_submit=True):
-                c_nome = st.text_input("Nome*")
-                c_email = st.text_input("E-mail*")
-                c_inst = st.text_input("Instituição")
-                c_func = st.text_input("Função")
-                c_assunto = st.text_input("Assunto*")
-                c_msg = st.text_area("Mensagem*")
-                enviou = st.form_submit_button("Enviar Mensagem")
-                
-            if enviou:
-                if not c_nome or not c_email or not c_assunto or not c_msg:
-                    st.error("Preencha todos os campos obrigatórios (*).")
-                else:
-                    with st.spinner("Processando..."):
-                        salvou_db = contact_manager.save_contact_message(
-                            c_nome, c_email, c_inst, c_func, c_assunto, c_msg
-                        )
-                        if salvou_db:
-                            st.success("Salvo no banco de dados com segurança!")
-                            # Tenta enviar o email
-                            email_ok, email_status = contact_manager.send_contact_email(
-                                c_nome, c_email, c_inst, c_func, c_assunto, c_msg
-                            )
-                            if email_ok:
-                                st.success("E-mail disparado para o autor!")
-                            else:
-                                st.warning(f"Salvo localmente, mas falha no e-mail: {email_status}")
-                        else:
-                            st.error("Falha ao acessar o banco de dados interno.")
+    </div>
+    """
+    kpi_placeholder.markdown(html_kpis, unsafe_allow_html=True)
+
 
     # 2. Matriz de Atribuições
     st.subheader(f"1. Matriz de Atribuições ({tipo_matriz})", help="**Como interpretar:** Exibe o valor '1' se o cargo possui a atribuição normativa e '0' caso não possua. \n\n**Cálculo:** Construída lendo os manuais e editais. No modo 'Condensada', a matriz aglutina atribuições que possuem o exato mesmo padrão de repetição (ex: atribuições comuns a um mesmo grupo de cargos viram uma única coluna com peso 1) para evitar que redundâncias documentais criem distorções de peso estatístico.")
@@ -404,3 +510,5 @@ if df_cenario is not None and not df_cenario.empty:
 
 else:
     st.error("Cenário indisponível.")
+
+

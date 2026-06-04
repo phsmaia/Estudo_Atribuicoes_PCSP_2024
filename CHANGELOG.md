@@ -4,6 +4,18 @@ Todas as modificações notáveis neste projeto serão documentadas neste arquiv
 
 O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
+## [Unreleased] - 2026-06-04
+
+### Added
+- **Painel Flutuante (Glassmorphism)**: Transformação completa do cabeçalho estático em um menu interativo fixo flutuante e translúcido.
+- **Botão de Redução Dinâmico**: Substituição dos tradicionais expanders Streamlit por um popover moderno para concentrar configurações analíticas em pouco espaço (`st.popover`).
+- **Head-Up Display (HUD) de Contatos**: Novo rodapé injetado dinamicamente via JS (`window.parent.document.body`) formatado como "Pílula expansível", anulando interferências de DOM do Streamlit.
+
+### Changed
+- **Segurança Antifraude / Remoção de SMTP**: Remoção drástica do sistema nativo de mensagens integradas (`contact_manager.py`) visando a segurança do autor contra mensagens falsas não-rastreáveis, trocando tudo por conexões estáticas `mailto:` seguras.
+- **Micro-interações e KPIs**: Reorganização geométrica do seletor *Multiselect* para uso em *full-width* na gaveta e homogeneização de todos os ícones nativos de contexto para "ⓘ" limpo.
+- Atualização do `README.md` expurgando credenciais e menções ao formulário de contato anterior.
+
 ## [Unreleased] - 2026-06-03
 
 ### Added
