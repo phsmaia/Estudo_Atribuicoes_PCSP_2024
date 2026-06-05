@@ -29,7 +29,7 @@ Para facilitar a exploração dos dados por leigos e gestores, o projeto agora c
 - **Matrizes Interativas**: Heatmaps que expõem as atribuições brutas e compartilhadas entre todos os cargos.
 - **Rede de Grafos**: Simulação magnética demonstrando a interligação de afinidade das carreiras.
 - **Régua de Gower & Dendograma**: Regimes de similaridade e agrupamentos hierárquicos entre carreiras de referência.
-- **Explorador Dinâmico**: Abas para buscar cruzamentos diretos "Por Cargo" ou "Por Atribuição" sob demanda.
+- **Explorador Dinâmico**: Abas para buscar cruzamentos diretos "Por Cargo" ou "Por Atribuição" sob demanda, contando com filtros algorítmicos de exclusividade global e inter-cargos.
 
 ### Como executar o Painel Localmente:
 1. Certifique-se de ter o Python instalado.

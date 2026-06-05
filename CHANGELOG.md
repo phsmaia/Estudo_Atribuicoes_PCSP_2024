@@ -9,10 +9,13 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 ### Added
 - **Painel Flutuante (Glassmorphism)**: Transformação completa do cabeçalho estático em um menu interativo fixo flutuante e translúcido.
 - **Botão de Redução Dinâmico**: Substituição dos tradicionais expanders Streamlit por um popover moderno para concentrar configurações analíticas em pouco espaço (`st.popover`).
-- **Head-Up Display (HUD) de Contatos**: Novo rodapé injetado dinamicamente via JS (`window.parent.document.body`) formatado como "Pílula expansível", anulando interferências de DOM do Streamlit.
+- **Head-Up Display (HUD) de Contatos**: Novo rodapé injetado dinamicamente via JS (`window.parent.document.body`) formatado como "Pílula expansível", anulando interferências de DOM do Streamlit. Com subtítulos explicativos adicionados.
+- **Filtros de Exclusividade Algorítmica**: Adição de botões de rádio no Explorador Dinâmico para varredura de atribuições 'Exclusivas', 'Compartilhadas Globalmente' ou 'Compartilhadas Internamente', combinadas com iconografia de status.
 
 ### Changed
 - **Segurança Antifraude / Remoção de SMTP**: Remoção drástica do sistema nativo de mensagens integradas (`contact_manager.py`) visando a segurança do autor contra mensagens falsas não-rastreáveis, trocando tudo por conexões estáticas `mailto:` seguras.
+- **Otimização de Renderização Visual**: Substituição dos alertas gigantes (`st.info` e `transparency-box`) por textos inline e expanders minimalistas, liberando altura no Viewport para visualização fluída das Matrizes e dos cálculos Gower.
+- **Reset State no Explorador Dinâmico**: Modificação da lógica para esvaziar os filtros em transições de cenário, evitando a persistência poluidora de dados entre diferentes arranjos da Polícia Civil.
 - **Micro-interações e KPIs**: Reorganização geométrica do seletor *Multiselect* para uso em *full-width* na gaveta e homogeneização de todos os ícones nativos de contexto para "ⓘ" limpo.
 - Atualização do `README.md` expurgando credenciais e menções ao formulário de contato anterior.
 

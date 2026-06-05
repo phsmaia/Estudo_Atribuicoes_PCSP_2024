@@ -1,0 +1,1 @@
+['Delegado de Polícia', 'Escrivão de Polícia', 'Oficial Investigador de Polícia', 'Perito Criminal', 'Médico Legista', 'Papiloscopista Policial', 'Agente de Polícia Judiciária', 'Agente de Perícia Criminalística', 'Agente de Perícia Médico Legal']

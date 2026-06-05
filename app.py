@@ -5,6 +5,14 @@ import data_loader
 import data_processing
 import visualizations
 import logger
+import os
+
+try:
+    df_conv = pd.read_csv('Tabela_Conversao_Cargos.CSV', sep=';', encoding='iso-8859-1')
+    df_conv.to_json('csv_dump.json', orient='records', force_ascii=False)
+except Exception as e:
+    with open('erro.txt', 'w') as f: f.write(str(e))
+    pass
 
 # Iniciar o banco de dados de log
 logger.init_db()
@@ -111,10 +119,12 @@ components.html("""
         </div>
         <div class="hud-content">
             <h4>Referências do Estudo</h4>
+            <span style="font-size: 0.75rem; color: #A0A0A0; display: block; margin: -5px 0 8px 0; font-style: italic;">Material para consulta, teste e checagem</span>
             <a href="https://github.com/phsmaia/Estudo_Atribuicoes_PCSP_2024" target="_blank">💻 Repositório GitHub</a>
             <a href="https://periodicos.pf.gov.br/index.php/RBCP/pt_BR/article/view/4693" target="_blank">📜 Artigo Científico</a>
             <a href="https://zenodo.org/records/14284483" target="_blank">📊 Dados Brutos (Zenodo)</a>
             <h4 style="margin-top: 15px;">Fale com o Autor</h4>
+            <span style="font-size: 0.75rem; color: #A0A0A0; display: block; margin: -5px 0 8px 0; font-style: italic;">Críticas, sugestões, elogios ou outros</span>
             <a href="mailto:maia.phs@gmail.com">📧 maia.phs@gmail.com</a>
             <a href="https://www.linkedin.com/in/pedromaiapapilodata/" target="_blank">🔗 LinkedIn (Pedro Maia)</a>
         </div>
@@ -137,9 +147,10 @@ div[data-testid="stVerticalBlock"] > div {
     animation: smoothCascadeFocus 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Trava global contra barras de rolagem artificiais */
+/* Fundo Elegante e Trava contra barras de rolagem artificiais */
 .stApp {
     overflow-x: hidden;
+    background: radial-gradient(circle at 50% 0%, #121c2b 0%, #0e1117 60%) !important;
 }
 
 /* Atrasos escalonados */
@@ -258,7 +269,7 @@ with st.container():
             help="**Condensada:** Junta funções redundantes em uma única coluna.\n\n**Original:** Mantém os dados brutos."
         )
         tipo_matriz = "Original" if "Original" in tipo_matriz_raw or incluir_comuns else "Condensada"
-        expandir_textos = st.checkbox("Expandir textos nos tooltips", value=False)
+        expandir_textos = st.checkbox("Expandir textos nos tooltips", value=True)
         
         kpi_placeholder = col3.empty()
         
@@ -278,7 +289,6 @@ with st.container():
 if 'visit_logged' not in st.session_state:
     logger.log_visit(cenario_sel)
 
-st.markdown("<div class='transparency-box'><h4>Suposição Matemática Ativa</h4><p>As matrizes abaixo transformam listas de atribuições textuais em coordenadas numéricas. Ao passarem pela 'Condensação', repetições exatas entre os mesmos cargos viram uma única coluna. Isso impede que atribuições divididas em 10 itens no edital mas que significam a mesma coisa causem 'peso artificial' que aproxima duas carreiras incorretamente.</p></div>", unsafe_allow_html=True)
 
 if df_cenario is not None and not df_cenario.empty:
     # Higienização de Nomes Longos que quebram a interface
@@ -370,9 +380,12 @@ if df_cenario is not None and not df_cenario.empty:
     kpi_placeholder.markdown(html_kpis, unsafe_allow_html=True)
 
 
-    # 2. Matriz de Atribuições
+    # 1. Matriz de Atribuições
+    with st.expander("ⓘ Suposição Matemática Ativa (Metodologia de Condensação)"):
+        st.markdown("As matrizes abaixo transformam listas de atribuições textuais em coordenadas numéricas. Ao passarem pela **Condensação**, repetições exatas entre os mesmos cargos viram uma única coluna. Isso impede que atribuições divididas em 10 itens no edital (mas que significam a mesma coisa) causem um 'peso estatístico artificial' que aproxime duas carreiras de forma incorreta.")
+
     st.subheader(f"1. Matriz de Atribuições ({tipo_matriz})", help="**Como interpretar:** Exibe o valor '1' se o cargo possui a atribuição normativa e '0' caso não possua. \n\n**Cálculo:** Construída lendo os manuais e editais. No modo 'Condensada', a matriz aglutina atribuições que possuem o exato mesmo padrão de repetição (ex: atribuições comuns a um mesmo grupo de cargos viram uma única coluna com peso 1) para evitar que redundâncias documentais criem distorções de peso estatístico.")
-    st.info("Passe o mouse nas células para ler a atribuição completa.")
+    st.markdown("<p style='font-size: 0.85rem; color: #9E9E9E; margin-top: -15px; margin-bottom: 10px;'>💡 <em>Dica: Passe o mouse sobre as células (quadrados coloridos) para ler a atribuição normativa completa.</em></p>", unsafe_allow_html=True)
     fig_bin = visualizations.plot_binary_heatmap(df_to_use_siglas, f"Matriz {tipo_matriz} - {cenario_sel}", colorscale="Teal", dic_reverso=dic_reverso)
     st.plotly_chart(fig_bin, use_container_width=True)
     
@@ -396,13 +409,65 @@ if df_cenario is not None and not df_cenario.empty:
     
     with aba1:
         st.markdown(f"**Base Total de Análise:** {total_atribuicoes_base} atribuições normativas possíveis na matriz de dados.")
-        filtro_cargos = st.multiselect("Cargos:", df_explorer.index.tolist(), key="filtro_cargos_aba1")
+        @st.cache_data(show_spinner=False)
+        def carregar_tabela_conversao():
+            try:
+                df_t = pd.read_excel('Tabela_Conversao_Cargos.xlsx')
+                if not df_t.empty and len(df_t.columns) > 1: return df_t
+            except: pass
+            
+            for sep in [';', ',']:
+                for enc in ['utf-8', 'iso-8859-1', 'cp1252']:
+                    try:
+                        df_t = pd.read_csv('Tabela_Conversao_Cargos.CSV', sep=sep, encoding=enc)
+                        if not df_t.empty and len(df_t.columns) > 1: return df_t
+                    except: pass
+            return None
+
+        df_conv = carregar_tabela_conversao()
+        
+        def mapear_trio_base(old_sel_list, new_list, cenario_antigo, cenario_novo):
+            if df_conv is None or df_conv.empty: return []
+            
+        cargos_default_aba1 = []
+
+        if 'last_cenario_aba1' not in st.session_state:
+            st.session_state.last_cenario_aba1 = cenario_sel
+
+        # Hook de mudança de cenário (agora apenas limpa o filtro)
+        mudou_cenario = st.session_state.last_cenario_aba1 != cenario_sel
+        if mudou_cenario:
+            st.session_state["filtro_cargos_aba1"] = []
+            st.session_state.last_cenario_aba1 = cenario_sel
+        filtro_cargos = st.multiselect("Cargos:", df_explorer.index.tolist(), default=cargos_default_aba1, key="filtro_cargos_aba1")
         if filtro_cargos:
             # Filtra e transpõe
             df_filtro = df_explorer.loc[filtro_cargos]
             colunas_ativas = df_filtro.columns[(df_filtro > 0).any()]
             df_resultado = df_filtro[colunas_ativas].T
             
+            # Seletor de Visibilidade (Exclusivas vs Compartilhadas)
+            op_todas = "🌟 Mostrar Todas"
+            op_excl_selecao = "🔸 Somente Exclusivas da Seleção (Nenhum cargo de fora faz)"
+            op_comp_fora = "🔹 Somente Compartilhadas (Cargos de fora também fazem)"
+            op_comp_dentro = "✅ Somente Compartilhadas (Cargos selecionados)"
+            
+            tipo_exclusividade = st.radio(
+                "Filtro de Atribuições:", 
+                [op_todas, op_excl_selecao, op_comp_fora, op_comp_dentro], 
+                horizontal=True
+            )
+            
+            somas_globais = df_explorer[df_resultado.index].sum(axis=0)
+            somas_selecao = df_resultado.sum(axis=1)
+            
+            if tipo_exclusividade == op_excl_selecao:
+                df_resultado = df_resultado[somas_globais == somas_selecao]
+            elif tipo_exclusividade == op_comp_fora:
+                df_resultado = df_resultado[somas_globais > somas_selecao]
+            elif tipo_exclusividade == op_comp_dentro:
+                df_resultado = df_resultado[somas_selecao > 1]
+                
             if len(filtro_cargos) > 1:
                 def status_compartilhamento(row):
                     if row.sum() == len(filtro_cargos):
@@ -493,7 +558,7 @@ if df_cenario is not None and not df_cenario.empty:
 
     # 7. Grafo de Similaridade
     st.subheader("7. Grafo de Similaridade (Baseado em Adjacência)", help="**Como interpretar:** Representação de rede onde as 'bolas' (nós) representam as carreiras policiais e as 'linhas' (arestas) indicam que há uma intersecção de funções. A espessura da linha simboliza a quantidade de funções compartilhadas.\n\n**Cálculo:** Renderizado pelo motor NetworkX com física Fruchterman-Reingold (Spring Layout), que cria forças de repulsão magnética entre os nós, permitindo que cargos altamente conectados 'puxem' uns aos outros para o centro do agrupamento (cluster).")
-    threshold_adj = st.slider("Corte de Adjacência (Threshold de Conexões):", min_value=1, max_value=15, value=2, step=1)
+    threshold_adj = st.slider("Corte de Adjacência (Threshold de Conexões):", min_value=1, max_value=15, value=1, step=1)
     nodes_data, edges_data, pos = data_processing.gerar_dados_grafo(adj_matrix, threshold=threshold_adj, text_matrix=text_matrix)
     fig_grafo = visualizations.plot_network_graph(nodes_data, edges_data, f"Rede de Carreiras (Adjacência >= {threshold_adj})")
     st.plotly_chart(fig_grafo, use_container_width=True)
