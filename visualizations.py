@@ -2,7 +2,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
 
-def plot_binary_heatmap(df: pd.DataFrame, title: str, colorscale: str = "Teal", dic_reverso: dict = None) -> go.Figure:
+def plot_binary_heatmap(df: pd.DataFrame, title: str, colorscale: str = "Teal", dic_reverso: dict = None, cargos_destaque: list = None) -> go.Figure:
     """
     Renderiza um mapa de calor interativo (Plotly) para as matrizes binárias de atribuições.
     A interatividade garante clareza (tooltips nas células).
@@ -46,6 +46,17 @@ def plot_binary_heatmap(df: pd.DataFrame, title: str, colorscale: str = "Teal", 
     # Ajuste dos ticks no eixo X para ficar vertical caso os textos sejam grandes
     fig.update_xaxes(tickangle=45)
     
+    if cargos_destaque:
+        colors = ["Gold", "Cyan", "Magenta", "Lime", "Orange", "Pink", "Red", "Blue", "Green", "Yellow"]
+        for i, cargo in enumerate(cargos_destaque):
+            if cargo in df_temp.index:
+                idx = list(df_temp.index).index(cargo)
+                color = colors[i % len(colors)]
+                fig.add_shape(type="rect",
+                    x0=-0.5, y0=idx-0.5, x1=len(df_temp.columns)-0.5, y1=idx+0.5,
+                    line=dict(color=color, width=2), fillcolor="rgba(0,0,0,0)"
+                )
+    
     return fig
 
 def plot_correlation_heatmap(matriz_corr: pd.DataFrame, title: str) -> go.Figure:
@@ -68,7 +79,7 @@ def plot_correlation_heatmap(matriz_corr: pd.DataFrame, title: str) -> go.Figure
     )
     return fig
 
-def plot_network_graph(nodes_data: list, edges_data: list, title: str) -> go.Figure:
+def plot_network_graph(nodes_data: list, edges_data: list, title: str, cargos_destaque: list = None) -> go.Figure:
     """
     Renderiza um grafo interativo usando as coordenadas previamente calculadas pelo NetworkX.
     """
@@ -83,6 +94,14 @@ def plot_network_graph(nodes_data: list, edges_data: list, title: str) -> go.Fig
         import math
         largura = max(0.5, 0.5 + math.sqrt(peso)) if peso > 0 else 0.5
         
+        line_color = '#888'
+        if cargos_destaque:
+            if edge["source"] in cargos_destaque or edge["target"] in cargos_destaque:
+                line_color = '#ccc'
+                largura = largura * 1.5
+            else:
+                line_color = 'rgba(50,50,50,0.1)'
+        
         # O hovertext será mostrado no centro da aresta
         mid_x = (x0 + x1) / 2
         mid_y = (y0 + y1) / 2
@@ -90,7 +109,7 @@ def plot_network_graph(nodes_data: list, edges_data: list, title: str) -> go.Fig
         edge_traces.append(go.Scatter(
             x=[x0, x1, None],
             y=[y0, y1, None],
-            line=dict(width=largura, color='#888'),
+            line=dict(width=largura, color=line_color),
             hoverinfo='none',
             mode='lines'
         ))
@@ -111,9 +130,24 @@ def plot_network_graph(nodes_data: list, edges_data: list, title: str) -> go.Fig
     node_y = [n["y"] for n in nodes_data]
     node_text = [n["id"] for n in nodes_data]
     
-    # Cores qualitativas para os nós
     node_colors = px.colors.qualitative.Plotly
-    cores_nos = [node_colors[i % len(node_colors)] for i in range(len(nodes_data))]
+    cores_nos = []
+    tamanhos_nos = []
+    text_colors = []
+    for i, n in enumerate(nodes_data):
+        if cargos_destaque and n["id"] in cargos_destaque:
+            idx_color = cargos_destaque.index(n["id"]) % len(node_colors)
+            cores_nos.append(node_colors[idx_color])
+            tamanhos_nos.append(35)
+            text_colors.append("white")
+        elif cargos_destaque:
+            cores_nos.append("rgba(100,100,100,0.5)") # Faded se não for destaque
+            tamanhos_nos.append(10)
+            text_colors.append("rgba(100,100,100,0.5)")
+        else:
+            cores_nos.append(node_colors[i % len(node_colors)])
+            tamanhos_nos.append(20)
+            text_colors.append("white")
 
     node_trace = go.Scatter(
         x=node_x, y=node_y,
@@ -121,10 +155,11 @@ def plot_network_graph(nodes_data: list, edges_data: list, title: str) -> go.Fig
         textposition="top center",
         hoverinfo='text',
         text=node_text,
+        textfont=dict(color=text_colors, size=12),
         marker=dict(
             showscale=False,
             color=cores_nos,
-            size=20,
+            size=tamanhos_nos,
             line_width=2))
 
 
@@ -140,7 +175,7 @@ def plot_network_graph(nodes_data: list, edges_data: list, title: str) -> go.Fig
                 )
     return fig
 
-def plot_adjacency_heatmap(adj_matrix: pd.DataFrame, title: str, text_matrix: pd.DataFrame = None) -> go.Figure:
+def plot_adjacency_heatmap(adj_matrix: pd.DataFrame, title: str, text_matrix: pd.DataFrame = None, cargos_destaque: list = None) -> go.Figure:
     """
     Gera um mapa de calor para a matriz de adjacência (número de atribuições em comum).
     """
@@ -171,9 +206,27 @@ def plot_adjacency_heatmap(adj_matrix: pd.DataFrame, title: str, text_matrix: pd
         margin=dict(l=100, r=20, t=50, b=100)
     )
     fig.update_yaxes(autorange="reversed")
+    
+    if cargos_destaque:
+        colors = ["Gold", "Cyan", "Magenta", "Lime", "Orange", "Pink", "Red", "Blue", "Green", "Yellow"]
+        for i, cargo in enumerate(cargos_destaque):
+            if cargo in adj_vis.index:
+                idx = list(adj_vis.index).index(cargo)
+                color = colors[i % len(colors)]
+                # Linha
+                fig.add_shape(type="rect",
+                    x0=-0.5, y0=idx-0.5, x1=len(adj_vis.columns)-0.5, y1=idx+0.5,
+                    line=dict(color=color, width=2), fillcolor="rgba(0,0,0,0)"
+                )
+                # Coluna
+                fig.add_shape(type="rect",
+                    x0=idx-0.5, y0=-0.5, x1=idx+0.5, y1=len(adj_vis.index)-0.5,
+                    line=dict(color=color, width=2), fillcolor="rgba(0,0,0,0)"
+                )
+    
     return fig
 
-def plot_gower_heatmap(df_gower: pd.DataFrame, title: str) -> go.Figure:
+def plot_gower_heatmap(df_gower: pd.DataFrame, title: str, cargos_destaque: list = None) -> go.Figure:
     """
     Gera um mapa de calor da Matriz de Gower. Valores próximos a 0 significam
     maior similaridade, enquanto valores próximos a 1 significam maior distância.
@@ -196,9 +249,27 @@ def plot_gower_heatmap(df_gower: pd.DataFrame, title: str) -> go.Figure:
     )
     # Reverte o eixo y para bater com as outras matrizes (Delegado no topo)
     fig.update_yaxes(autorange="reversed")
+    
+    if cargos_destaque:
+        colors = ["Gold", "Cyan", "Magenta", "Lime", "Orange", "Pink", "Red", "Blue", "Green", "Yellow"]
+        for i, cargo in enumerate(cargos_destaque):
+            if cargo in df_gower.index:
+                idx = list(df_gower.index).index(cargo)
+                color = colors[i % len(colors)]
+                # Linha
+                fig.add_shape(type="rect",
+                    x0=-0.5, y0=idx-0.5, x1=len(df_gower.columns)-0.5, y1=idx+0.5,
+                    line=dict(color=color, width=2), fillcolor="rgba(0,0,0,0)"
+                )
+                # Coluna
+                fig.add_shape(type="rect",
+                    x0=idx-0.5, y0=-0.5, x1=idx+0.5, y1=len(df_gower.index)-0.5,
+                    line=dict(color=color, width=2), fillcolor="rgba(0,0,0,0)"
+                )
+                
     return fig
 
-def plot_gower_ruler(df_gower: pd.DataFrame, reference_career: str = "Delegado de Polícia") -> go.Figure:
+def plot_gower_ruler(df_gower: pd.DataFrame, reference_career: str = "Delegado de Polícia", cargos_destaque: list = None) -> go.Figure:
     """
     Cria uma régua 1D (Scatter plot) baseada na distância de Gower de todos os cargos
     em relação a um cargo de referência (Delegado de Polícia, assumindo x=0).
@@ -213,11 +284,30 @@ def plot_gower_ruler(df_gower: pd.DataFrame, reference_career: str = "Delegado d
     
     # Adicionamos os pontos ao scatter. O eixo X é a distância, o eixo Y pode ser 0.
     # Mas para não encavalar, vamos escalonar o eixo Y por índice.
+    
+    tamanhos = []
+    cores = []
+    for c in dist_serie.index:
+        if cargos_destaque and c in cargos_destaque:
+            tamanhos.append(20)
+            cores.append("gold")
+        elif cargos_destaque:
+            tamanhos.append(8)
+            cores.append("rgba(100,100,100,0.5)")
+        else:
+            tamanhos.append(12)
+            cores.append(dist_serie.loc[c])
+            
     fig.add_trace(go.Scatter(
         x=dist_serie.values,
         y=dist_serie.index,
         mode='markers',
-        marker=dict(size=12, color=dist_serie.values, colorscale='Viridis', showscale=True),
+        marker=dict(
+            size=tamanhos, 
+            color=cores, 
+            colorscale='Viridis' if not cargos_destaque else None, 
+            showscale=not bool(cargos_destaque)
+        ),
         text=dist_serie.index,
         hovertemplate="<b>Carreira:</b> %{text}<br><b>Distância Gower (ref: " + reference_career + "):</b> %{x:.3f}<extra></extra>"
     ))
@@ -246,7 +336,7 @@ def plot_gower_ruler(df_gower: pd.DataFrame, reference_career: str = "Delegado d
 import plotly.figure_factory as ff
 from scipy.spatial.distance import squareform
 
-def plot_dendrogram(df_gower: pd.DataFrame, title: str) -> go.Figure:
+def plot_dendrogram(df_gower: pd.DataFrame, title: str, cargos_destaque: list = None) -> go.Figure:
     """
     Gera um dendograma a partir da matriz de distâncias de Gower.
     """
@@ -256,7 +346,12 @@ def plot_dendrogram(df_gower: pd.DataFrame, title: str) -> go.Figure:
     import numpy as np
     np.fill_diagonal(dist_array, 0)
     
-    labels = df_gower.index.tolist()
+    labels = []
+    for lbl in df_gower.index:
+        if cargos_destaque and lbl in cargos_destaque:
+            labels.append(f"<b><span style='color:gold'>{lbl}</span></b>")
+        else:
+            labels.append(lbl)
     
     # Squareform requer distância sem a diagonal
     condensed_dist = squareform(dist_array)
@@ -314,7 +409,7 @@ def plot_dendrogram(df_gower: pd.DataFrame, title: str) -> go.Figure:
     
     return fig
 
-def plot_upset_bar_chart(df: pd.DataFrame, title: str, dic_reverso: dict = None) -> go.Figure:
+def plot_upset_bar_chart(df: pd.DataFrame, title: str, dic_reverso: dict = None, cargos_destaque: list = None) -> go.Figure:
     """
     Simula a essência de um UpSet Plot usando um Bar Chart horizontal interativo no Plotly.
     Calcula as interseções reais entre os conjuntos de cargos.
@@ -394,6 +489,22 @@ def plot_upset_bar_chart(df: pd.DataFrame, title: str, dic_reverso: dict = None)
         combination_counts = combination_counts.tail(30)
         title += " (Top 30 Interseções)"
         
+    marker_colors = []
+    if cargos_destaque:
+        # Usa as mesmas cores padronizadas dos outros gráficos
+        colors = ["Gold", "Cyan", "Magenta", "Lime", "Orange", "Pink", "Red", "Blue", "Green", "Yellow"]
+        for c_str in combination_counts['cargos_str']:
+            destaques_no_grupo = [cargo for cargo in cargos_destaque if cargo in c_str]
+            if len(destaques_no_grupo) == 1:
+                idx = cargos_destaque.index(destaques_no_grupo[0])
+                marker_colors.append(colors[idx % len(colors)])
+            elif len(destaques_no_grupo) > 1:
+                marker_colors.append("#FFFFFF") # Branco se aglutinar múltiplos destaques
+            else:
+                marker_colors.append("rgba(100,100,100,0.5)")
+    else:
+        marker_colors = combination_counts['count']
+        
     fig = go.Figure(go.Bar(
         x=combination_counts['count'],
         y=combination_counts['label'],
@@ -406,10 +517,10 @@ def plot_upset_bar_chart(df: pd.DataFrame, title: str, dic_reverso: dict = None)
             "<extra></extra>"
         ),
         marker=dict(
-            color=combination_counts['count'],
-            colorscale='Blues', # Cores sóbrias válidas no Plotly
-            showscale=True,
-            colorbar=dict(title="Volume")
+            color=marker_colors,
+            colorscale='Blues' if not cargos_destaque else None,
+            showscale=not bool(cargos_destaque),
+            colorbar=dict(title="Volume") if not cargos_destaque else None
         )
     ))
     

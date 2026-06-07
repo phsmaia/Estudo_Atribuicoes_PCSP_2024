@@ -199,19 +199,6 @@ div[data-testid="stVerticalBlock"] > div:nth-child(5) { animation-delay: 0.45s; 
     font-weight: 600;
 }
 
-/* CSS para o Sticky Header (Glassmorphism) */
-div[data-testid="stVerticalBlock"] > div:has(#sticky-header-anchor) {
-    position: sticky;
-    top: 2.875rem; /* Ajuste para não conflitar com a barra do topo do Streamlit */
-    z-index: 999;
-    background: rgba(14, 17, 23, 0.65); /* Fundo um pouco mais transparente */
-    backdrop-filter: blur(12px); /* Efeito de Vidro (Glassmorphism) */
-    -webkit-backdrop-filter: blur(12px);
-    padding: 10px 15px;
-    border-radius: 12px; /* Bordas arredondadas tiram o aspecto de tijolo */
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    margin-bottom: 20px;
-}
 </style>
 """, unsafe_allow_html=True)
 
@@ -233,57 +220,144 @@ mapa_cenarios = {
     "Reestruturação 2024": datasets["reestruturacao"]
 }
 
-# --- CONTROLES SUPERIORES EXPANSÍVEIS E FIXOS ---
-with st.container():
-    st.markdown('<div id="sticky-header-anchor"></div>', unsafe_allow_html=True)
+# --- CABEÇALHO GLOBAL E ROTEAMENTO ---
+st.markdown("""
+    <style>
+    .block-container {
+        padding-top: 0rem !important; 
+        padding-bottom: 1rem !important;
+    }
     
-    # Placeholder Dinâmico que começa só com o título e depois carrega os status ao lado
-    status_bar_placeholder = st.empty()
-    status_bar_placeholder.markdown("<h3 style='margin:0; padding-bottom:10px; font-size:1.4rem;'>Painel Interativo: Estudo de Atribuições da PCSP (2024)</h3>", unsafe_allow_html=True)
+    header[data-testid="stHeader"] {
+        display: none;
+    }
     
-    with st.popover("⚙️ Configurações Analíticas e Controles", use_container_width=False):
-        col1, col2, col3 = st.columns([1.5, 1.5, 2])
-        
-        with col1:
-            cenario_sel = st.selectbox("Selecione o Cenário:", opcoes_cenarios)
-            df_cenario = mapa_cenarios.get(cenario_sel)
-            cargos_disponiveis = df_cenario['Carreira'].tolist() if df_cenario is not None and 'Carreira' in df_cenario.columns else (df_cenario.index.tolist() if df_cenario is not None else [])
-            
-            # Filtros Macros (Polícia Científica vs PCSP)
-            cientifica_keywords = ["Perito", "Médico", "Fotógrafo", "Desenhista", "Necropsia", "Necrópsia", "Atendente"]
-            cargos_cientifica = [c for c in cargos_disponiveis if any(k in c for k in cientifica_keywords)]
-            cargos_pc = [c for c in cargos_disponiveis if c not in cargos_cientifica]
-            
-            grupo_sel = st.radio(
-                "Filtro Rápido de Cargos:",
-                ["Todos os cargos da Polícia Civil", "Polícia Civil sem cargos da Polícia Científica", "Polícia Civil com somente Polícia Científica", "Personalizado"]
-            )
-    
-    with col2:
-        incluir_comuns = st.toggle("Incluir Atribuições Genéricas a Todos", value=False, help="Se ativado, não oculta as atribuições normativas comuns a todos os cargos e desabilita o formato Condensado.")
-        tipo_matriz_raw = st.radio(
-            "Formato da Matriz:", 
-            ["Condensada (Aglutina repetições)", "Original (Dados brutos)"], 
-            horizontal=False, 
-            disabled=incluir_comuns,
-            help="**Condensada:** Junta funções redundantes em uma única coluna.\n\n**Original:** Mantém os dados brutos."
-        )
-        tipo_matriz = "Original" if "Original" in tipo_matriz_raw or incluir_comuns else "Condensada"
-        expandir_textos = st.checkbox("Expandir textos nos tooltips", value=True)
-        
-        kpi_placeholder = col3.empty()
-        
-        if grupo_sel == "Todos os cargos da Polícia Civil":
-            cargos_selecionados = []
-        elif grupo_sel == "Polícia Civil sem cargos da Polícia Científica":
-            cargos_selecionados = cargos_pc
-        elif grupo_sel == "Polícia Civil com somente Polícia Científica":
-            cargos_selecionados = cargos_cientifica
-        else:
-            cargos_selecionados = st.multiselect("Cargos a Analisar (Personalizado):", cargos_disponiveis)
-            
-        st.markdown("<div style='text-align: center; color: #666; font-size: 0.8rem; margin-top: 15px;'><em>Clique em qualquer área externa para recolher este painel</em></div>", unsafe_allow_html=True)
+    </style>
+""", unsafe_allow_html=True)
 
+# Container Exclusivo para o Header Sticky
+with st.container():
+    status_bar_placeholder = st.empty()
+    status_bar_placeholder.markdown("<div id='sticky-header-anchor'></div><h3 style='margin:0; padding-bottom:0px; font-size:1.4rem;'>Painel Interativo: Estudo de Atribuições da PCSP (2024)</h3>", unsafe_allow_html=True)
+    
+    col_label, col_radio = st.columns([1.5, 8.5])
+    with col_label:
+        st.markdown("<h4 style='margin:0; margin-top:5px; font-size:1.1rem; color:#ccc;'>Modos de Visão:</h4>", unsafe_allow_html=True)
+    with col_radio:
+        modo_visao = st.radio(
+            "Navegação Analítica:",
+            ["1. Explorador Individual", "2. Análise de Cenários (Comparativo A x B)", "3. Comparação Global (Macro)", "4. Rastreamento Longitudinal (Micro)"],
+            horizontal=True,
+            label_visibility="collapsed"
+        )
+        
+    # --- CONTROLES SUPERIORES (APENAS EXPLORADOR INDIVIDUAL) ---
+    if modo_visao == "1. Explorador Individual":
+        with st.popover("⚙️ Configurações Analíticas e Controles", use_container_width=True):
+            col_linha1_1, col_linha1_2, col_linha1_3 = st.columns([1, 1.5, 1.5])
+            
+            with col_linha1_1:
+                cenario_sel = st.selectbox("Selecione o Cenário:", opcoes_cenarios)
+                df_cenario = mapa_cenarios.get(cenario_sel)
+                cargos_disponiveis = df_cenario['Carreira'].tolist() if df_cenario is not None and 'Carreira' in df_cenario.columns else (df_cenario.index.tolist() if df_cenario is not None else [])
+                
+                cientifica_keywords = ["Perito", "Médico", "Fotógrafo", "Desenhista", "Necropsia", "Necrópsia", "Atendente"]
+                cargos_cientifica = [c for c in cargos_disponiveis if any(k in c for k in cientifica_keywords)]
+                cargos_pc = [c for c in cargos_disponiveis if c not in cargos_cientifica]
+                
+            with col_linha1_2:
+                grupo_sel = st.selectbox(
+                    "Filtro Rápido de Cargos:",
+                    ["Todos os cargos da Polícia Civil", "Polícia Civil sem cargos da Polícia Científica", "Polícia Civil com somente Polícia Científica", "Personalizado"]
+                )
+                
+            with col_linha1_3:
+                incluir_comuns = st.toggle("Incluir Atribuições Genéricas a Todos", value=False)
+                tipo_matriz_raw = st.selectbox(
+                    "Formato da Matriz:", 
+                    ["Condensada (Aglutina repetições)", "Original (Dados brutos)"], 
+                    disabled=incluir_comuns
+                )
+                tipo_matriz = "Original" if "Original" in tipo_matriz_raw or incluir_comuns else "Condensada"
+                expandir_textos = st.checkbox("Expandir textos nos tooltips", value=True)
+                
+            st.markdown("---")
+            
+            col_linha2_1, col_linha2_2, col_linha2_3 = st.columns([1.5, 1.5, 1])
+            with col_linha2_1:
+                if grupo_sel == "Todos os cargos da Polícia Civil":
+                    default_cargos = cargos_disponiveis
+                elif grupo_sel == "Polícia Civil sem cargos da Polícia Científica":
+                    default_cargos = cargos_pc
+                elif grupo_sel == "Polícia Civil com somente Polícia Científica":
+                    default_cargos = cargos_cientifica
+                else:
+                    default_cargos = []
+                    
+                filtro_cargos = st.multiselect(
+                    "Cargos para Analisar:", 
+                    cargos_disponiveis,
+                    default=default_cargos
+                )
+                
+            with col_linha2_2:
+                cargos_destaque = st.multiselect(
+                    "🎨 Destaque Visual (Opcional):",
+                    filtro_cargos if filtro_cargos else cargos_disponiveis
+                )
+                
+            with col_linha2_3:
+                st.markdown("**KPls de Estrutura:**")
+                kpi_placeholder = st.empty()
+
+    # --- CONTROLES MODO 2 ---
+    elif modo_visao == "2. Análise de Cenários (Comparativo A x B)":
+        with st.popover("⚙️ Configurações do Comparativo A x B", use_container_width=True):
+            col_a, col_b = st.columns(2)
+            cenario_a = col_a.selectbox("📌 Cenário A (Base):", opcoes_cenarios, index=0)
+            cenario_b = col_b.selectbox("📌 Cenário B (Comparação):", opcoes_cenarios, index=1)
+            
+            df_a = mapa_cenarios.get(cenario_a)
+            if df_a is not None and 'Carreira' in df_a.columns:
+                cargos_base = df_a['Carreira'].tolist()
+            else:
+                cargos_base = df_a.index.tolist() if df_a is not None else []
+                
+            carreira_sel_comparativo = st.selectbox("🔎 Selecione a Carreira para Análise Detalhada:", cargos_base)
+            
+    # --- CONTROLES MODO 4 ---
+    elif modo_visao == "4. Rastreamento Longitudinal (Micro)":
+        import json
+        import os
+        cargos_base_long = []
+        try:
+            if os.path.exists('csv_dump.json'):
+                with open('csv_dump.json', 'r', encoding='utf-8') as f:
+                    lista_mapa = json.load(f)
+                    cargos_base_long = [row['Atual Sem Correção'] for row in lista_mapa]
+        except Exception:
+            pass
+            
+        with st.popover("⚙️ Configurações de Rastreamento Longitudinal", use_container_width=True):
+            st.markdown("<p style='margin-top:-10px; color:#aaa; font-size:0.9rem;'>Isola carreiras específicas ou ofusca o restante para visualizar rotas evolutivas com clareza.</p>", unsafe_allow_html=True)
+            filtro_cargos_long = st.multiselect("🔍 Filtrar Carreiras:", cargos_base_long, default=cargos_base_long)
+            cargos_destaque_long = st.multiselect("💡 Destacar Carreiras (Realce Visual):", cargos_base_long, help="Se preenchido, ofusca as carreiras não marcadas no gráfico e aplica cores na tabela.")
+
+if modo_visao == "2. Análise de Cenários (Comparativo A x B)":
+    import comparative_view
+    comparative_view.render_comparativo_axb(opcoes_cenarios, mapa_cenarios, cenario_a, cenario_b, carreira_sel_comparativo)
+    st.stop()
+    
+elif modo_visao == "3. Comparação Global (Macro)":
+    import timeline_view
+    timeline_view.render_timeline_mode(opcoes_cenarios, mapa_cenarios)
+    st.stop()
+    
+elif modo_visao == "4. Rastreamento Longitudinal (Micro)":
+    import longitudinal_view
+    longitudinal_view.render_longitudinal_mode(opcoes_cenarios, mapa_cenarios, filtro_cargos_long, cargos_destaque_long)
+    st.stop()
+    
 
 # Registrar log invisível de visita
 if 'visit_logged' not in st.session_state:
@@ -298,11 +372,11 @@ if df_cenario is not None and not df_cenario.empty:
         })
 
     # Aplicação de Filtros de Cargos
-    if cargos_selecionados:
+    if filtro_cargos:
         if 'Carreira' in df_cenario.columns:
-            df_cenario = df_cenario[df_cenario['Carreira'].isin(cargos_selecionados)]
+            df_cenario = df_cenario[df_cenario['Carreira'].isin(filtro_cargos)]
         else:
-            df_cenario = df_cenario.loc[cargos_selecionados]
+            df_cenario = df_cenario.loc[filtro_cargos]
             
     # Processamento Matemático Principal
     if incluir_comuns:
@@ -326,13 +400,13 @@ if df_cenario is not None and not df_cenario.empty:
     text_matrix = data_processing.obter_atribuicoes_comuns_textuais(df_to_use, dic_siglas, expandir_textos)
 
     # --- INJEÇÃO DO HEADER COMBINADO (Título + Status) ---
-    lbl_cargos = "Todos" if not cargos_selecionados else f"{len(cargos_selecionados)} Selecionados"
+    lbl_cargos = "Todos" if not filtro_cargos else f"{len(filtro_cargos)} Selecionados"
     lbl_genericas = "ON" if incluir_comuns else "OFF"
     lbl_textos = "ON" if expandir_textos else "OFF"
     
     lista_cargos_html = ""
-    if cargos_selecionados:
-        lista_cargos_html = f"<div style='text-align: right; color: #C0C0C0; font-size: 0.9rem; margin-top: 5px; margin-bottom: 5px;'><strong>Cargos ativos:</strong> {', '.join(cargos_selecionados)}</div>"
+    if filtro_cargos and len(filtro_cargos) < len(cargos_disponiveis):
+        lista_cargos_html = f"<div style='text-align: right; color: #C0C0C0; font-size: 0.9rem; margin-top: 5px; margin-bottom: 5px;'><strong>Cargos ativos:</strong> {', '.join(filtro_cargos)}</div>"
     
     header_html = f"""
     <div style='display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;'>
@@ -380,25 +454,25 @@ if df_cenario is not None and not df_cenario.empty:
     kpi_placeholder.markdown(html_kpis, unsafe_allow_html=True)
 
 
-    # 1. Matriz de Atribuições
+    # 1.1. Matriz de Atribuições
     with st.expander("ⓘ Suposição Matemática Ativa (Metodologia de Condensação)"):
         st.markdown("As matrizes abaixo transformam listas de atribuições textuais em coordenadas numéricas. Ao passarem pela **Condensação**, repetições exatas entre os mesmos cargos viram uma única coluna. Isso impede que atribuições divididas em 10 itens no edital (mas que significam a mesma coisa) causem um 'peso estatístico artificial' que aproxime duas carreiras de forma incorreta.")
 
-    st.subheader(f"1. Matriz de Atribuições ({tipo_matriz})", help="**Como interpretar:** Exibe o valor '1' se o cargo possui a atribuição normativa e '0' caso não possua. \n\n**Cálculo:** Construída lendo os manuais e editais. No modo 'Condensada', a matriz aglutina atribuições que possuem o exato mesmo padrão de repetição (ex: atribuições comuns a um mesmo grupo de cargos viram uma única coluna com peso 1) para evitar que redundâncias documentais criem distorções de peso estatístico.")
+    st.subheader(f"1.1. Matriz de Atribuições ({tipo_matriz})", help="**Como interpretar:** Exibe o valor '1' se o cargo possui a atribuição normativa e '0' caso não possua. \n\n**Cálculo:** Construída lendo os manuais e editais. No modo 'Condensada', a matriz aglutina atribuições que possuem o exato mesmo padrão de repetição (ex: atribuições comuns a um mesmo grupo de cargos viram uma única coluna com peso 1) para evitar que redundâncias documentais criem distorções de peso estatístico.")
     st.markdown("<p style='font-size: 0.85rem; color: #9E9E9E; margin-top: -15px; margin-bottom: 10px;'>💡 <em>Dica: Passe o mouse sobre as células (quadrados coloridos) para ler a atribuição normativa completa.</em></p>", unsafe_allow_html=True)
-    fig_bin = visualizations.plot_binary_heatmap(df_to_use_siglas, f"Matriz {tipo_matriz} - {cenario_sel}", colorscale="Teal", dic_reverso=dic_reverso)
+    fig_bin = visualizations.plot_binary_heatmap(df_to_use_siglas, f"Matriz {tipo_matriz} - {cenario_sel}", colorscale="Teal", dic_reverso=dic_reverso, cargos_destaque=cargos_destaque)
     st.plotly_chart(fig_bin, use_container_width=True)
     
-    # 2. Matriz de Adjacência
-    st.subheader("2. Matriz de Adjacência (Atribuições Compartilhadas)", help="**Como interpretar:** Exibe a contagem absoluta de quantas atribuições normativas dois cargos distintos compartilham entre si. Valores mais altos (cores fortes) indicam forte justaposição funcional.\n\n**Cálculo:** Feito através do Produto Escalar cruzando a Matriz de Atribuições contra si própria (sua transposta).")
+    # 1.2. Matriz de Adjacência
+    st.subheader("1.2. Matriz de Adjacência (Atribuições Compartilhadas)", help="**Como interpretar:** Exibe a contagem absoluta de quantas atribuições normativas dois cargos distintos compartilham entre si. Valores mais altos (cores fortes) indicam forte justaposição funcional.\n\n**Cálculo:** Feito através do Produto Escalar cruzando a Matriz de Atribuições contra si própria (sua transposta).")
     adj_matrix = data_processing.gerar_matriz_adjacencia(df_to_use)
-    fig_adj = visualizations.plot_adjacency_heatmap(adj_matrix, f"Adjacência - {cenario_sel}", text_matrix=text_matrix)
+    fig_adj = visualizations.plot_adjacency_heatmap(adj_matrix, f"Adjacência - {cenario_sel}", text_matrix=text_matrix, cargos_destaque=cargos_destaque)
     st.plotly_chart(fig_adj, use_container_width=True)
 
     st.markdown("---")
 
     # 3. Explorador Dinâmico
-    st.subheader("3. Explorador Dinâmico de Atribuições", help="**Como interpretar:** Permite cruzar dados manualmente simulando as tabelas dinâmicas do estudo original. Nota: No artigo o cruzamento limitou-se a 3 carreiras por falta de espaço em página, mas aqui o sistema calcula e confronta todas as carreiras ativas simultaneamente.\n\n**Porcentagens:** Exibe o volume de atribuições que cada cargo representa em relação ao somatório total de atribuições únicas na Polícia Civil.")
+    st.subheader("1.3. Explorador Dinâmico de Atribuições", help="**Como interpretar:** Permite cruzar dados manualmente simulando as tabelas dinâmicas do estudo original. Nota: No artigo o cruzamento limitou-se a 3 carreiras por falta de espaço em página, mas aqui o sistema calcula e confronta todas as carreiras ativas simultaneamente.\n\n**Porcentagens:** Exibe o volume de atribuições que cada cargo representa em relação ao somatório total de atribuições únicas na Polícia Civil.")
     
     df_explorer = df_original_limpo.set_index('Carreira') if 'Carreira' in df_original_limpo.columns else df_original_limpo.copy()
         
@@ -507,73 +581,72 @@ if df_cenario is not None and not df_cenario.empty:
 
     st.markdown("---")
 
-    # 4. Mapa de Calor de Similaridade (Gower)
-    st.subheader("4. Mapa de Calor de Similaridade (Distância de Gower)", help="**Como interpretar:** Esta é uma visão térmica do distanciamento. Áreas vermelhas representam cargos praticamente idênticos (Distância próxima de 0.0). Áreas azuis evidenciam o extremo oposto.\n\n**Cálculo:** Diferente do mapa de adjacência (que usa contagem bruta), este usa o Coeficiente de Gower entre 0 e 1, penalizando estatisticamente grandes disparidades.")
+    # 1.4. Grafo de Similaridade
+    st.subheader("1.4. Grafo de Similaridade (Baseado em Adjacência)", help="**Como interpretar:** Representação de rede onde as 'bolas' (nós) representam as carreiras policiais e as 'linhas' (arestas) indicam que há uma intersecção de funções. A espessura da linha simboliza a quantidade de funções compartilhadas.\n\n**Cálculo:** Renderizado pelo motor NetworkX com física Fruchterman-Reingold (Spring Layout), que cria forças de repulsão magnética entre os nós, permitindo que cargos altamente conectados 'puxem' uns aos outros para o centro do agrupamento (cluster).")
+    threshold_adj = st.slider("Corte de Adjacência (Threshold de Conexões):", min_value=1, max_value=15, value=1, step=1)
+    nodes_data, edges_data, pos = data_processing.gerar_dados_grafo(adj_matrix, threshold=threshold_adj, text_matrix=text_matrix)
+    fig_grafo = visualizations.plot_network_graph(nodes_data, edges_data, f"Rede de Carreiras (Adjacência >= {threshold_adj})", cargos_destaque=cargos_destaque)
+    st.plotly_chart(fig_grafo, use_container_width=True)
+
+    st.markdown("---")
+
+    # 1.5. Mapa de Calor Gower
+    st.subheader("1.5. Mapa de Calor de Similaridade (Distância de Gower)", help="**Como interpretar o Mapa:** Visão térmica do distanciamento. Áreas vermelhas representam cargos idênticos (Distância próxima de 0.0).\n\n**Cálculo:** Diferente da adjacência (contagem bruta), este usa o Coeficiente de Gower entre 0 e 1, cruzando arrays de presenças (1) e ausências (0) penalizando distorções.")
     
     df_para_gower = df_to_use.copy()
     if incluir_comuns:
-        # Injeta o pseudo-cargo apenas para os cálculos de similaridade relativos
         num_cargos_reais = len(df_para_gower)
-        
-        # Calcula soma ignorando a coluna 'Carreira' que é string
         numeric_cols = df_para_gower.select_dtypes(include='number').columns
         pseudo_row = (df_para_gower[numeric_cols].sum(axis=0) == num_cargos_reais).astype(int)
-        
-        # Como o Gower usa a coluna Carreira para nomear o índice, precisamos setar explicitamente
         if 'Carreira' in df_para_gower.columns:
             pseudo_row['Carreira'] = "Policial Civil (todos os cargos)"
-            
         pseudo_row.name = "Policial Civil (todos os cargos)"
         df_para_gower.loc[pseudo_row.name] = pseudo_row
         
     df_gower = data_processing.calcular_distancias_gower(df_para_gower)
-    fig_gower_heat = visualizations.plot_gower_heatmap(df_gower, f"Matriz de Distância de Gower - {cenario_sel}")
+    
+    fig_gower_heat = visualizations.plot_gower_heatmap(df_gower, f"Matriz de Distância de Gower - {cenario_sel}", cargos_destaque=cargos_destaque)
     st.plotly_chart(fig_gower_heat, use_container_width=True)
 
     st.markdown("---")
+    
+    # 1.6. Régua Gower
+    st.subheader("1.6. Régua de Similaridade Relativa (Distância de Gower)", help="**Como interpretar a Régua:** Fixando um cargo central na marca 'Zero', mapeia o afastamento de todas as outras carreiras.\n\n**Cálculo:** Diferente da adjacência (contagem bruta), este usa o Coeficiente de Gower entre 0 e 1, cruzando arrays de presenças (1) e ausências (0) penalizando distorções.")
 
-    # 5. Régua Gower
-    st.subheader("5. Régua de Similaridade Relativa (Distância de Gower)", help="**Como interpretar:** Fixando um cargo central na marca 'Zero', mapeia o afastamento estatístico de todas as outras carreiras. Valores próximos de Zero demonstram alta comunhão de atribuições, enquanto valores que tangenciam 1.0 (ou mais distantes) revelam carreiras completamente díspares.\n\n**Cálculo:** Emprega o Coeficiente de Distância de Gower para dados mistos, cruzando os arrays de presenças (1) e ausências (0) de cada binômio de cargos na matriz.")
     ref_cargo = st.selectbox(
-        "Selecione o Cargo de Referência:", 
+        "Selecione o Cargo de Referência para a Régua:", 
         df_gower.columns, 
         index=0,
         format_func=lambda x: f"{x} (usado no artigo)" if x == "Delegado de Polícia" else x
     )
-    fig_gower = visualizations.plot_gower_ruler(df_gower, reference_career=ref_cargo)
-    st.plotly_chart(fig_gower, use_container_width=True)
+    fig_gower_ruler = visualizations.plot_gower_ruler(df_gower, reference_career=ref_cargo, cargos_destaque=cargos_destaque)
+    st.plotly_chart(fig_gower_ruler, use_container_width=True)
 
     st.markdown("---")
 
-    # 6. Dendograma
-    st.subheader("6. Árvore Hierárquica (Dendograma)", help="**Como interpretar:** Classifica e agrupa sub-blocos de carreiras que possuem alta afinidade. Se duas carreiras se conectam mais para baixo (mais à esquerda nos eixos X), significa que são funcionalmente muito idênticas e foram agrupadas primeiro na base.\n\n**Cálculo:** Utiliza Algoritmo de Clusterização Hierárquica sobre as métricas da Matriz de Gower. Foi utilizado o método aglomerativo *Single-linkage*, que calcula a distância mínima entre membros de grupos adjacentes.")
+    # 1.7. Dendograma
+    st.subheader("1.7. Árvore Hierárquica (Dendograma)", help="**Como interpretar:** Classifica e agrupa sub-blocos de carreiras que possuem alta afinidade. Se duas carreiras se conectam mais para baixo (mais à esquerda nos eixos X), significa que são funcionalmente muito idênticas e foram agrupadas primeiro na base.\n\n**Cálculo:** Utiliza Algoritmo de Clusterização Hierárquica sobre as métricas da Matriz de Gower. Foi utilizado o método aglomerativo *Single-linkage*, que calcula a distância mínima entre membros de grupos adjacentes.")
     st.markdown("Agrupamento hierárquico das distâncias de Gower usando o método *single*.")
     if len(df_gower.columns) > 1:
-        fig_dendro = visualizations.plot_dendrogram(df_gower, f"Dendograma Gower - {cenario_sel}")
+        fig_dendro = visualizations.plot_dendrogram(df_gower, f"Dendograma Gower - {cenario_sel}", cargos_destaque=cargos_destaque)
         st.plotly_chart(fig_dendro, use_container_width=True)
     else:
         st.warning("Selecione mais de um cargo para gerar a árvore hierárquica.")
 
     st.markdown("---")
 
-    # 7. Grafo de Similaridade
-    st.subheader("7. Grafo de Similaridade (Baseado em Adjacência)", help="**Como interpretar:** Representação de rede onde as 'bolas' (nós) representam as carreiras policiais e as 'linhas' (arestas) indicam que há uma intersecção de funções. A espessura da linha simboliza a quantidade de funções compartilhadas.\n\n**Cálculo:** Renderizado pelo motor NetworkX com física Fruchterman-Reingold (Spring Layout), que cria forças de repulsão magnética entre os nós, permitindo que cargos altamente conectados 'puxem' uns aos outros para o centro do agrupamento (cluster).")
-    threshold_adj = st.slider("Corte de Adjacência (Threshold de Conexões):", min_value=1, max_value=15, value=1, step=1)
-    nodes_data, edges_data, pos = data_processing.gerar_dados_grafo(adj_matrix, threshold=threshold_adj, text_matrix=text_matrix)
-    fig_grafo = visualizations.plot_network_graph(nodes_data, edges_data, f"Rede de Carreiras (Adjacência >= {threshold_adj})")
-    st.plotly_chart(fig_grafo, use_container_width=True)
-
-    st.markdown("---")
-
-    # 8. UpSet Plot (Alternativa ao Venn)
-    st.subheader("8. Diagrama de Conjuntos (Interseções Exatas)", help="**Como interpretar:** Funciona como um 'Diagrama de Venn' escalável. Ele varre as centenas de combinações possíveis entre os cargos e lista as maiores fatias em comum. A barra revela exatamente quantas atribuições aquele 'bloco' de cargos exclusivo possui.\n\n**Por que não usar um Diagrama de Venn circular?** Matematicamente, círculos só conseguem se sobrepor em todas as permutações para, no máximo, 4 conjuntos. Como possuímos 14 cargos diferentes, um Venn seria geometricamente impossível de ser desenhado sem violar as leis espaciais. Este formato (UpSet Plot) é o padrão ouro na visualização multicamadas na Ciência de Dados.")
+    # 1.8. UpSet Plot (Alternativa ao Venn)
+    st.subheader("1.8. Diagrama de Conjuntos (Interseções Exatas)", help="**Como interpretar:** Funciona como um 'Diagrama de Venn' escalável. Ele varre as centenas de combinações possíveis entre os cargos e lista as maiores fatias em comum. A barra revela exatamente quantas atribuições aquele 'bloco' de cargos exclusivo possui.\n\n**Por que não usar um Diagrama de Venn circular?** Matematicamente, círculos só conseguem se sobrepor em todas as permutações para, no máximo, 4 conjuntos. Como possuímos 14 cargos diferentes, um Venn seria geometricamente impossível de ser desenhado sem violar as leis espaciais. Este formato (UpSet Plot) é o padrão ouro na visualização multicamadas na Ciência de Dados.")
     
     # O Diagrama de Conjuntos sempre usa os dados originais (não-condensados) para manter a precisão geométrica das fatias.
     df_upset = df_original_limpo.set_index('Carreira') if 'Carreira' in df_original_limpo.columns else df_original_limpo.copy()
-    fig_upset = visualizations.plot_upset_bar_chart(df_upset, f"Top Interseções Normativas (Granular) - {cenario_sel}")
+    fig_upset = visualizations.plot_upset_bar_chart(df_upset, f"Top Interseções Normativas (Granular) - {cenario_sel}", cargos_destaque=cargos_destaque)
     st.plotly_chart(fig_upset, use_container_width=True)
 
 else:
     st.error("Cenário indisponível.")
+
+# Padding para não esconder gráficos atrás do botão de rodapé
+st.markdown("<div style='height: 150px;'></div>", unsafe_allow_html=True)
 
 

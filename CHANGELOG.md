@@ -7,12 +7,17 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 ## [Unreleased] - 2026-06-04
 
 ### Added
+- **Filtros Dinâmicos de Tabela (Modo 2)**: Inclusão de `st.multiselect` interativos acima de todas as tabelas analíticas de comparação direta (Ganhos/Perdas, Afinidade, Rede de Adjacência e Hierarquia Dendrográfica) para depuração de tendências específicas.
 - **Painel Flutuante (Glassmorphism)**: Transformação completa do cabeçalho estático em um menu interativo fixo flutuante e translúcido.
 - **Botão de Redução Dinâmico**: Substituição dos tradicionais expanders Streamlit por um popover moderno para concentrar configurações analíticas em pouco espaço (`st.popover`).
 - **Head-Up Display (HUD) de Contatos**: Novo rodapé injetado dinamicamente via JS (`window.parent.document.body`) formatado como "Pílula expansível", anulando interferências de DOM do Streamlit. Com subtítulos explicativos adicionados.
 - **Filtros de Exclusividade Algorítmica**: Adição de botões de rádio no Explorador Dinâmico para varredura de atribuições 'Exclusivas', 'Compartilhadas Globalmente' ou 'Compartilhadas Internamente', combinadas com iconografia de status.
 
 ### Changed
+- **Desativação de Âncora Fixa CSS**: Remoção de hacks avançados de injeção de CSS em `#sticky-header-anchor` visando restaurar o fluxo livre da página e sanar bugs de estabilidade no motor nativo do Streamlit.
+- **Otimização Estrutural do Popover (Modo 1)**: Ajuste arquitetural dos controles para design horizontal em 2 camadas de linhas (Cenários/Filtros/Gerais em cima; Destaque Visual e KPIs em baixo) aniquilando barras de rolagem artificiais.
+- **UX do Rastreamento Longitudinal (Modo 4)**: Substituição radical da restrita arquitetura de "Abas" (`st.tabs`) por uma fluida rolagem em subseções numeradas (Ex: 4.1 Volume Normativo, 4.2 Atribuições Exclusivas) integradas via `st.markdown`.
+- **UX de Análise de Cenários (Modo 2)**: Elevação e encapsulamento dos seletores "Cenário Base (A)" e "Cenário Alvo (B)" diretamente para a engrenagem principal (`st.popover`), promovendo navegação unificada *Cockpit* por toda a aplicação.
 - **Segurança Antifraude / Remoção de SMTP**: Remoção drástica do sistema nativo de mensagens integradas (`contact_manager.py`) visando a segurança do autor contra mensagens falsas não-rastreáveis, trocando tudo por conexões estáticas `mailto:` seguras.
 - **Otimização de Renderização Visual**: Substituição dos alertas gigantes (`st.info` e `transparency-box`) por textos inline e expanders minimalistas, liberando altura no Viewport para visualização fluída das Matrizes e dos cálculos Gower.
 - **Reset State no Explorador Dinâmico**: Modificação da lógica para esvaziar os filtros em transições de cenário, evitando a persistência poluidora de dados entre diferentes arranjos da Polícia Civil.
