@@ -4,6 +4,17 @@ Todas as modificações notáveis neste projeto serão documentadas neste arquiv
 
 O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
+## [Unreleased] - 2026-06-22
+
+### Added
+- **Painel Dinâmico de Destaque Visual**: Injeção de paleta de cores hexadecimais variáveis no mapa de calor de Gower, marcadores em formato de Estrela (⭐) no gráfico Radar e colorização condicional nas tabelas do Modo Comparativo A x B. Inserção de um *badge* rastreador exclusivo fixado ao *Sticky Header*.
+- **SAST Automático (Security Tests)**: Implementação permanente do framework `pre-commit` com `bandit` inserido diretamente na esteira de *hooks* do Git. Qualquer vulnerabilidade de segurança bloqueará novos commits automaticamente.
+- **Formatação de Fluxo Normativo**: Regras visuais (Pandas Styler) aplicadas na tabela de transição de cargos, destacando em Verde atribuições adquiridas e em Vermelho atribuições revogadas.
+
+### Fixed
+- **Vazamento de DOM (Streamlit Markdown Parser Bug)**: Supressão de um erro gráfico nativo do framework onde a ausência de conteúdo de uma variável induzia a motor Markdown a fechar erroneamente as tags, exibindo strings `</div>` na interface do usuário.
+- **Caching Memory Block (Streamlit)**: Adição do comando de expurgo `importlib.reload()` no ciclo principal (`app.py`) forçando o subsistema do Python a recompilar a árvore do `comparative_view.py` recém-escrita, prevenindo crashes relacionados ao "TypeError: positional arguments".
+
 ## [Unreleased] - 2026-06-04
 
 ### Added

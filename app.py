@@ -149,7 +149,6 @@ div[data-testid="stVerticalBlock"] > div {
 
 /* Fundo Elegante e Trava contra barras de rolagem artificiais */
 .stApp {
-    overflow-x: hidden;
     background: radial-gradient(circle at 50% 0%, #121c2b 0%, #0e1117 60%) !important;
 }
 
@@ -159,6 +158,20 @@ div[data-testid="stVerticalBlock"] > div:nth-child(2) { animation-delay: 0.15s; 
 div[data-testid="stVerticalBlock"] > div:nth-child(3) { animation-delay: 0.25s; }
 div[data-testid="stVerticalBlock"] > div:nth-child(4) { animation-delay: 0.35s; }
 div[data-testid="stVerticalBlock"] > div:nth-child(5) { animation-delay: 0.45s; }
+
+/* Sticky Container Header */
+div[data-testid="stLayoutWrapper"]:has(div#sticky-header-anchor):has(div[data-testid="stRadio"]) {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background-color: rgba(14, 17, 23, 0.95);
+    padding: 15px 20px 10px 20px;
+    border-radius: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    margin-bottom: 25px;
+    backdrop-filter: blur(10px);
+}
 
 .transparency-box {
     background-color: #2D2D2D;
@@ -237,10 +250,16 @@ st.markdown("""
 
 # Container Exclusivo para o Header Sticky
 with st.container():
+    st.markdown("<div id='sticky-header-anchor'></div>", unsafe_allow_html=True)
     status_bar_placeholder = st.empty()
-    status_bar_placeholder.markdown("<div id='sticky-header-anchor'></div><h3 style='margin:0; padding-bottom:0px; font-size:1.4rem;'>Painel Interativo: Estudo de Atribuições da PCSP (2024)</h3>", unsafe_allow_html=True)
+    status_bar_placeholder.markdown("""
+    <div id='sticky-header-anchor'></div>
+    <div style='display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;'>
+        <h3 style='margin: 0; padding: 0; font-size: 1.4rem; color: #E0E0E0;'>Painel Interativo: Estudo de Atribuições da PCSP (2024)</h3>
+    </div>
+    """, unsafe_allow_html=True)
     
-    col_label, col_radio = st.columns([1.5, 8.5])
+    col_label, col_radio = st.columns([2, 8])
     with col_label:
         st.markdown("<h4 style='margin:0; margin-top:5px; font-size:1.1rem; color:#ccc;'>Modos de Visão:</h4>", unsafe_allow_html=True)
     with col_radio:
@@ -254,9 +273,9 @@ with st.container():
     # --- CONTROLES SUPERIORES (APENAS EXPLORADOR INDIVIDUAL) ---
     if modo_visao == "1. Explorador Individual":
         with st.popover("⚙️ Configurações Analíticas e Controles", use_container_width=True):
-            col_linha1_1, col_linha1_2, col_linha1_3 = st.columns([1, 1.5, 1.5])
+            col1, col2, col3 = st.columns([1, 1, 1.5])
             
-            with col_linha1_1:
+            with col1:
                 cenario_sel = st.selectbox("Selecione o Cenário:", opcoes_cenarios)
                 df_cenario = mapa_cenarios.get(cenario_sel)
                 cargos_disponiveis = df_cenario['Carreira'].tolist() if df_cenario is not None and 'Carreira' in df_cenario.columns else (df_cenario.index.tolist() if df_cenario is not None else [])
@@ -265,26 +284,12 @@ with st.container():
                 cargos_cientifica = [c for c in cargos_disponiveis if any(k in c for k in cientifica_keywords)]
                 cargos_pc = [c for c in cargos_disponiveis if c not in cargos_cientifica]
                 
-            with col_linha1_2:
+            with col2:
                 grupo_sel = st.selectbox(
                     "Filtro Rápido de Cargos:",
                     ["Todos os cargos da Polícia Civil", "Polícia Civil sem cargos da Polícia Científica", "Polícia Civil com somente Polícia Científica", "Personalizado"]
                 )
                 
-            with col_linha1_3:
-                incluir_comuns = st.toggle("Incluir Atribuições Genéricas a Todos", value=False)
-                tipo_matriz_raw = st.selectbox(
-                    "Formato da Matriz:", 
-                    ["Condensada (Aglutina repetições)", "Original (Dados brutos)"], 
-                    disabled=incluir_comuns
-                )
-                tipo_matriz = "Original" if "Original" in tipo_matriz_raw or incluir_comuns else "Condensada"
-                expandir_textos = st.checkbox("Expandir textos nos tooltips", value=True)
-                
-            st.markdown("---")
-            
-            col_linha2_1, col_linha2_2, col_linha2_3 = st.columns([1.5, 1.5, 1])
-            with col_linha2_1:
                 if grupo_sel == "Todos os cargos da Polícia Civil":
                     default_cargos = cargos_disponiveis
                 elif grupo_sel == "Polícia Civil sem cargos da Polícia Científica":
@@ -294,21 +299,43 @@ with st.container():
                 else:
                     default_cargos = []
                     
+                incluir_comuns = st.checkbox("Incluir Atribuições Genéricas a Todos", value=False)
+                
+            with col1:
+                tipo_matriz_raw = st.selectbox(
+                    "Formato da Matriz:", 
+                    ["Condensada (Aglutina repetições)", "Original (Dados brutos)"], 
+                    disabled=incluir_comuns
+                )
+                tipo_matriz = "Original" if "Original" in tipo_matriz_raw or incluir_comuns else "Condensada"
+                
+            with col2:
+                expandir_textos = st.checkbox("Expandir textos nos tooltips", value=True)
+                
+            with col3:
                 filtro_cargos = st.multiselect(
                     "Cargos para Analisar:", 
                     cargos_disponiveis,
                     default=default_cargos
                 )
-                
-            with col_linha2_2:
                 cargos_destaque = st.multiselect(
                     "🎨 Destaque Visual (Opcional):",
                     filtro_cargos if filtro_cargos else cargos_disponiveis
                 )
                 
-            with col_linha2_3:
-                st.markdown("**KPls de Estrutura:**")
-                kpi_placeholder = st.empty()
+                if cargos_destaque:
+                    css_tags = ""
+                    for cargo in cargos_destaque:
+                        css_tags += f'''
+                        span[data-baseweb="tag"][aria-label^="{cargo}"] {{
+                            background-color: rgba(255, 152, 0, 0.3) !important;
+                            border: 1px solid #ff9800 !important;
+                        }}
+                        span[data-baseweb="tag"][aria-label^="{cargo}"] span {{
+                            color: #ffb74d !important;
+                        }}
+                        '''
+                    st.markdown(f"<style>{css_tags}</style>", unsafe_allow_html=True)
 
     # --- CONTROLES MODO 2 ---
     elif modo_visao == "2. Análise de Cenários (Comparativo A x B)":
@@ -323,8 +350,61 @@ with st.container():
             else:
                 cargos_base = df_a.index.tolist() if df_a is not None else []
                 
-            carreira_sel_comparativo = st.selectbox("🔎 Selecione a Carreira para Análise Detalhada:", cargos_base)
+            col_c, col_d = st.columns(2)
+            carreira_sel_comparativo = col_c.selectbox("🔎 Selecione a Carreira para Análise Detalhada:", cargos_base, index=None, placeholder="Nenhuma (Visão Geral)")
+            cargos_destaque_2 = col_d.multiselect("🎨 Destaque Visual (Opcional):", cargos_base, help="Realça essas carreiras nos gráficos e tabelas.")
             
+        if carreira_sel_comparativo:
+            import json
+            with open('csv_dump.json', 'r', encoding='utf-8') as f:
+                mapa_dict = json.load(f)
+            cargo_foco_b = carreira_sel_comparativo
+            for row in mapa_dict:
+                val_a = row.get(cenario_a)
+                if val_a == "Investigador de Polícia (+ Agente de Telecomunicações Policial + Agente Policial + Carcereiro Policial)":
+                    val_a = "Investigador de Polícia (+ Apoio)"
+                if val_a == carreira_sel_comparativo:
+                    val_b = row.get(cenario_b)
+                    if val_b == "Investigador de Polícia (+ Agente de Telecomunicações Policial + Agente Policial + Carcereiro Policial)":
+                        val_b = "Investigador de Polícia (+ Apoio)"
+                    cargo_foco_b = val_b
+                    break
+            rastreio_html = f"<div title='Rastreia as perdas e ganhos funcionais de uma carreira específica entre os dois cenários escolhidos.' style='cursor: help; background: rgba(0, 114, 178, 0.2); border: 1px solid #0072B2; padding: 6px 15px; border-radius: 8px; font-size: 0.85rem; color: #E0E0E0; width: 100%; margin-top: 5px;'>🔍 Rastreando carreira principal: <strong style='color: #4da6ff;'>{carreira_sel_comparativo}</strong> ({cenario_a}) ➔ <strong style='color: #4da6ff;'>{cargo_foco_b}</strong> ({cenario_b}) <span style='float:right'>ℹ️</span></div>"
+        else:
+            rastreio_html = ""
+            
+        badge_destaque_2 = ""
+        if cargos_destaque_2:
+            str_dest_2 = ", ".join([c.replace(' de Polícia', '').replace(' Policial', '') for c in cargos_destaque_2])
+            badge_destaque_2 = f" <div class='status-badge' style='background: rgba(255, 152, 0, 0.2); border: 1px solid rgba(255, 152, 0, 0.5); color: #ffb74d;'>🎨 Destaques: <strong>{str_dest_2}</strong></div>"
+
+        status_bar_placeholder.markdown(f"""
+        <div id='sticky-header-anchor'></div>
+        <div style='display: flex; flex-direction: column;'>
+            <div style='display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 5px; flex-wrap: wrap; gap: 10px;'>
+                <h3 style='margin: 0; padding: 0; font-size: 1.4rem; color: #E0E0E0;'>Painel Interativo: Atribuições PCSP</h3>
+                <div style='display: flex; gap: 5px; flex-wrap: wrap;'>
+                    <div class='status-badge' title='Modo 2: Permite comparar o grau de distanciamento, afinidade e fluxo de funções normativas entre as carreiras policiais nos dois cenários temporais.' style='cursor: help;'>⚙️ Modo: <strong>Análise de Cenários (A x B)</strong> <span style='font-size:0.7rem'>ℹ️</span></div>
+                    <div class='status-badge' title='Cenário de Origem da comparação (De onde os cargos partiram)' style='cursor: help;'>📌 A: <strong>{cenario_a}</strong></div>
+                    <div class='status-badge' title='Cenário de Destino da comparação (Para onde os cargos foram)' style='cursor: help;'>📌 B: <strong>{cenario_b}</strong></div>{badge_destaque_2}
+                </div>
+            </div>
+            {rastreio_html}
+        </div>
+        """, unsafe_allow_html=True)
+            
+    # --- CONTROLES MODO 3 ---
+    elif modo_visao == "3. Comparação Global (Macro)":
+        status_bar_placeholder.markdown(f"""
+        <div id='sticky-header-anchor'></div>
+        <div style='display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;'>
+            <h3 style='margin: 0; padding: 0; font-size: 1.4rem; color: #E0E0E0;'>Painel Interativo: Atribuições PCSP</h3>
+            <div style='display: flex; gap: 5px; flex-wrap: wrap;'>
+                <div class='status-badge'>⚙️ Modo: <strong>Comparação Global (Macro)</strong></div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
     # --- CONTROLES MODO 4 ---
     elif modo_visao == "4. Rastreamento Longitudinal (Micro)":
         import json
@@ -343,9 +423,22 @@ with st.container():
             filtro_cargos_long = st.multiselect("🔍 Filtrar Carreiras:", cargos_base_long, default=cargos_base_long)
             cargos_destaque_long = st.multiselect("💡 Destacar Carreiras (Realce Visual):", cargos_base_long, help="Se preenchido, ofusca as carreiras não marcadas no gráfico e aplica cores na tabela.")
 
+        status_bar_placeholder.markdown(f"""
+        <div id='sticky-header-anchor'></div>
+        <div style='display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;'>
+            <h3 style='margin: 0; padding: 0; font-size: 1.4rem; color: #E0E0E0;'>Painel Interativo: Atribuições PCSP</h3>
+            <div style='display: flex; gap: 5px; flex-wrap: wrap;'>
+                <div class='status-badge'>⚙️ Modo: <strong>Rastreamento Longitudinal (Micro)</strong></div>
+                <div class='status-badge'>🔍 Carreiras Filtradas: <strong>{len(filtro_cargos_long)}</strong></div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
 if modo_visao == "2. Análise de Cenários (Comparativo A x B)":
     import comparative_view
-    comparative_view.render_comparativo_axb(opcoes_cenarios, mapa_cenarios, cenario_a, cenario_b, carreira_sel_comparativo)
+    import importlib
+    importlib.reload(comparative_view)
+    comparative_view.render_comparativo_axb(opcoes_cenarios, mapa_cenarios, cenario_a, cenario_b, carreira_sel_comparativo, cargos_destaque_2)
     st.stop()
     
 elif modo_visao == "3. Comparação Global (Macro)":
@@ -408,7 +501,13 @@ if df_cenario is not None and not df_cenario.empty:
     if filtro_cargos and len(filtro_cargos) < len(cargos_disponiveis):
         lista_cargos_html = f"<div style='text-align: right; color: #C0C0C0; font-size: 0.9rem; margin-top: 5px; margin-bottom: 5px;'><strong>Cargos ativos:</strong> {', '.join(filtro_cargos)}</div>"
     
+    badge_destaque = ""
+    if cargos_destaque:
+        str_dest = ", ".join([c.replace(' de Polícia', '').replace(' Policial', '') for c in cargos_destaque])
+        badge_destaque = f" <div class='status-badge' style='background: rgba(255, 152, 0, 0.2); border: 1px solid rgba(255, 152, 0, 0.5); color: #ffb74d;'>🎨 Destaques: <strong>{str_dest}</strong></div>"
+
     header_html = f"""
+    <div id='sticky-header-anchor'></div>
     <div style='display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;'>
         <h3 style='margin: 0; padding: 0; font-size: 1.4rem; color: #E0E0E0;'>Painel Interativo: Atribuições PCSP</h3>
         <div style='display: flex; gap: 5px; flex-wrap: wrap;'>
@@ -416,7 +515,7 @@ if df_cenario is not None and not df_cenario.empty:
             <div class='status-badge'>📊 Matriz: <strong>{tipo_matriz}</strong></div>
             <div class='status-badge'>👥 Genéricas: <strong>{lbl_genericas}</strong></div>
             <div class='status-badge'>🏷️ Textos Extensos: <strong>{lbl_textos}</strong></div>
-            <div class='status-badge'>🚓 Cargos: <strong>{lbl_cargos}</strong></div>
+            <div class='status-badge'>🚓 Cargos: <strong>{lbl_cargos}</strong></div>{badge_destaque}
         </div>
     </div>
     {lista_cargos_html}
@@ -428,35 +527,31 @@ if df_cenario is not None and not df_cenario.empty:
     pct_reducao = (reducao / len(df_original_limpo.columns)) * 100 if len(df_original_limpo.columns) > 0 else 0
     
     html_kpis = f"""
-    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-        <div style="display: flex; justify-content: space-between; text-align: center; background: #1E1E1E; padding: 10px; border-radius: 8px; border: 1px solid #333;">
-            <div title="Total de atribuições únicas extraídas dos editais para os cargos selecionados, antes de aglutinar as redundâncias.">
-                <div style="font-size: 0.65rem; color: #9E9E9E; font-weight: 600; text-transform: uppercase;">Atribuições Originais <span style="cursor:help; color:#888; font-size:0.75rem;">ⓘ</span></div>
-                <div style="font-size: 1.1rem; line-height: 1.2;">{len(df_original_limpo.columns)}</div>
-            </div>
-            <div title="Quantidade de colunas exclusivas na matriz após juntar numa só as atribuições idênticas que eram comuns a múltiplos cargos.">
-                <div style="font-size: 0.65rem; color: #9E9E9E; font-weight: 600; text-transform: uppercase;">Atribuições Condensadas <span style="cursor:help; color:#888; font-size:0.75rem;">ⓘ</span></div>
-                <div style="font-size: 1.1rem; line-height: 1.2;">{len(df_condensado.columns)}</div>
-            </div>
+    <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
+        <div style="flex: 1; min-width: 140px; text-align: center; background: #1E1E1E; padding: 10px; border-radius: 8px; border: 1px solid #333;" title="Total de atribuições únicas extraídas dos editais para os cargos selecionados, antes de aglutinar as redundâncias.">
+            <div style="font-size: 0.65rem; color: #9E9E9E; font-weight: 600; text-transform: uppercase;">Atribuições Originais <span style="cursor:help; color:#888; font-size:0.75rem;">ⓘ</span></div>
+            <div style="font-size: 1.1rem; line-height: 1.2;">{len(df_original_limpo.columns)}</div>
         </div>
-        <div style="display: flex; justify-content: space-between; text-align: center; background: #1E1E1E; padding: 10px; border-radius: 8px; border: 1px solid #333;">
-            <div title="Diferença absoluta entre as atribuições originais e as condensadas (quantidade de ruído/redundância eliminada).">
-                <div style="font-size: 0.65rem; color: #9E9E9E; font-weight: 600; text-transform: uppercase;">Redução <span style="cursor:help; color:#888; font-size:0.75rem;">ⓘ</span></div>
-                <div style="font-size: 1.1rem; color: #00C851; line-height: 1.2; font-weight: bold;">{reducao}</div>
-            </div>
-            <div title="Percentual que representa o nível de redundância normativa que foi superada pela metodologia na comparação.">
-                <div style="font-size: 0.65rem; color: #9E9E9E; font-weight: 600; text-transform: uppercase;">Porcentagem de Redução <span style="cursor:help; color:#888; font-size:0.75rem;">ⓘ</span></div>
-                <div style="font-size: 1.1rem; color: #00C851; line-height: 1.2; font-weight: bold;">{pct_reducao:.1f}%</div>
-            </div>
+        <div style="flex: 1; min-width: 140px; text-align: center; background: #1E1E1E; padding: 10px; border-radius: 8px; border: 1px solid #333;" title="Quantidade de colunas exclusivas na matriz após juntar numa só as atribuições idênticas que eram comuns a múltiplos cargos.">
+            <div style="font-size: 0.65rem; color: #9E9E9E; font-weight: 600; text-transform: uppercase;">Atribuições Condensadas <span style="cursor:help; color:#888; font-size:0.75rem;">ⓘ</span></div>
+            <div style="font-size: 1.1rem; line-height: 1.2;">{len(df_condensado.columns)}</div>
+        </div>
+        <div style="flex: 1; min-width: 140px; text-align: center; background: #1E1E1E; padding: 10px; border-radius: 8px; border: 1px solid #333;" title="Diferença absoluta entre as atribuições originais e as condensadas (quantidade de ruído/redundância eliminada).">
+            <div style="font-size: 0.65rem; color: #9E9E9E; font-weight: 600; text-transform: uppercase;">Redução <span style="cursor:help; color:#888; font-size:0.75rem;">ⓘ</span></div>
+            <div style="font-size: 1.1rem; color: #00C851; line-height: 1.2; font-weight: bold;">{reducao}</div>
+        </div>
+        <div style="flex: 1; min-width: 140px; text-align: center; background: #1E1E1E; padding: 10px; border-radius: 8px; border: 1px solid #333;" title="Percentual que representa o nível de redundância normativa que foi superada pela metodologia na comparação.">
+            <div style="font-size: 0.65rem; color: #9E9E9E; font-weight: 600; text-transform: uppercase;">Porcentagem de Redução <span style="cursor:help; color:#888; font-size:0.75rem;">ⓘ</span></div>
+            <div style="font-size: 1.1rem; color: #00C851; line-height: 1.2; font-weight: bold;">{pct_reducao:.1f}%</div>
         </div>
     </div>
     """
-    kpi_placeholder.markdown(html_kpis, unsafe_allow_html=True)
-
 
     # 1.1. Matriz de Atribuições
     with st.expander("ⓘ Suposição Matemática Ativa (Metodologia de Condensação)"):
         st.markdown("As matrizes abaixo transformam listas de atribuições textuais em coordenadas numéricas. Ao passarem pela **Condensação**, repetições exatas entre os mesmos cargos viram uma única coluna. Isso impede que atribuições divididas em 10 itens no edital (mas que significam a mesma coisa) causem um 'peso estatístico artificial' que aproxime duas carreiras de forma incorreta.")
+
+    st.markdown(html_kpis, unsafe_allow_html=True)
 
     st.subheader(f"1.1. Matriz de Atribuições ({tipo_matriz})", help="**Como interpretar:** Exibe o valor '1' se o cargo possui a atribuição normativa e '0' caso não possua. \n\n**Cálculo:** Construída lendo os manuais e editais. No modo 'Condensada', a matriz aglutina atribuições que possuem o exato mesmo padrão de repetição (ex: atribuições comuns a um mesmo grupo de cargos viram uma única coluna com peso 1) para evitar que redundâncias documentais criem distorções de peso estatístico.")
     st.markdown("<p style='font-size: 0.85rem; color: #9E9E9E; margin-top: -15px; margin-bottom: 10px;'>💡 <em>Dica: Passe o mouse sobre as células (quadrados coloridos) para ler a atribuição normativa completa.</em></p>", unsafe_allow_html=True)
@@ -564,9 +659,33 @@ if df_cenario is not None and not df_cenario.empty:
                 pct = (qtd / total_atribuicoes_base) * 100
                 stats.append({"Cargo": c, "Qtd Atribuições": int(qtd), "Representatividade (%)": f"{pct:.1f}%"})
             
-            st.dataframe(pd.DataFrame(stats).set_index("Cargo"), use_container_width=True)
+            df_stats = pd.DataFrame(stats).set_index("Cargo")
+            
+            def highlight_stats(row):
+                if cargos_destaque and row.name in cargos_destaque:
+                    return ['background-color: rgba(255, 152, 0, 0.2); color: #ffb74d; font-weight: bold;'] * len(row)
+                return [''] * len(row)
+                
+            st.dataframe(df_stats.style.apply(highlight_stats, axis=1), use_container_width=True)
             st.markdown("##### Quadro de Cruzamento de Atribuições")
-            st.dataframe(df_resultado, use_container_width=True)
+            
+            for c in filtro_cargos:
+                if c in df_resultado.columns:
+                    df_resultado[c] = df_resultado[c].apply(lambda x: '✔️' if isinstance(x, (int, float)) and x > 0 else '❌' if isinstance(x, (int, float)) and x == 0 else x)
+
+            def highlight_cruzamento(row):
+                styles = []
+                for col in df_resultado.columns:
+                    if cargos_destaque and col in cargos_destaque:
+                        if row[col] == '✔️':
+                            styles.append('background-color: rgba(255, 152, 0, 0.25); color: #ffb74d; font-weight: bold;')
+                        else:
+                            styles.append('background-color: rgba(255, 152, 0, 0.05);')
+                    else:
+                        styles.append('')
+                return styles
+
+            st.dataframe(df_resultado.style.apply(highlight_cruzamento, axis=1), use_container_width=True)
             
     with aba2:
         st.markdown("Selecione uma ou mais atribuições para descobrir quais carreiras policiais as possuem formalmente em seus escopos.")
@@ -577,7 +696,16 @@ if df_cenario is not None and not df_cenario.empty:
             df_filtro_atrib = df_filtro_atrib[(df_filtro_atrib > 0).any(axis=1)]
             df_filtro_atrib.columns = filtro_atrib
             df_filtro_atrib.index.name = "Carreira Policial"
-            st.dataframe(df_filtro_atrib, use_container_width=True)
+            
+            for col in df_filtro_atrib.columns:
+                df_filtro_atrib[col] = df_filtro_atrib[col].apply(lambda x: '✔️' if isinstance(x, (int, float)) and x > 0 else '❌')
+                
+            def highlight_aba2(row):
+                if cargos_destaque and row.name in cargos_destaque:
+                    return ['background-color: rgba(255, 152, 0, 0.25); color: #ffb74d; font-weight: bold;' if v == '✔️' else 'background-color: rgba(255, 152, 0, 0.05);' for v in row]
+                return [''] * len(row)
+
+            st.dataframe(df_filtro_atrib.style.apply(highlight_aba2, axis=1), use_container_width=True)
 
     st.markdown("---")
 

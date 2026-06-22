@@ -5,10 +5,15 @@ import plotly.express as px
 import plotly.graph_objects as go
 from data_processing import calcular_distancias_gower
 
-def render_comparativo_axb(opcoes_cenarios, mapa_cenarios, cenario_a, cenario_b, cargo_foco_a):
+def render_comparativo_axb(opcoes_cenarios, mapa_cenarios, cenario_a, cenario_b, cargo_foco_a, cargos_destaque=None):
     if cenario_a == cenario_b:
         st.warning("Selecione cenários diferentes no Painel Superior para comparar.")
         return
+
+    if cargos_destaque is None: cargos_destaque = []
+    destaques_completos = list(set(cargos_destaque))
+    if cargo_foco_a and cargo_foco_a not in destaques_completos:
+        destaques_completos.append(cargo_foco_a)
 
     df_a = mapa_cenarios[cenario_a].copy()
     df_b = mapa_cenarios[cenario_b].copy()
@@ -63,9 +68,35 @@ def render_comparativo_axb(opcoes_cenarios, mapa_cenarios, cenario_a, cenario_b,
             else:
                 delta_matrix.loc[c1, c2] = 0.0
 
-    cargo_foco_b = mapping_a_to_b.get(cargo_foco_a)
+    cargo_foco_b = mapping_a_to_b.get(cargo_foco_a) if cargo_foco_a else None
+    destaques_b = [mapping_a_to_b.get(c, c) for c in destaques_completos]
+
+    PALETTE = [
+        'rgba(255, 152, 0, 0.4)',  # Laranja
+        'rgba(33, 150, 243, 0.4)', # Azul
+        'rgba(233, 30, 99, 0.4)',  # Rosa
+        'rgba(76, 175, 80, 0.4)',  # Verde
+        'rgba(156, 39, 176, 0.4)', # Roxo
+        'rgba(255, 235, 59, 0.4)', # Amarelo
+        'rgba(0, 188, 212, 0.4)'   # Ciano
+    ]
+    TEXT_PALETTE = [
+        '#ffb74d', '#64b5f6', '#f06292', '#81c784', '#ba68c8', '#fff176', '#4dd0e1'
+    ]
     
-    st.info(f"Rastreando carreira principal: **{cargo_foco_a}** ({cenario_a}) → **{cargo_foco_b}** ({cenario_b})")
+    color_map = {}
+    text_map = {}
+    
+    c_idx = 0
+    for c in destaques_completos:
+        if c not in color_map:
+            color_map[c] = PALETTE[c_idx % len(PALETTE)]
+            text_map[c] = TEXT_PALETTE[c_idx % len(TEXT_PALETTE)]
+            
+            cb = mapping_a_to_b.get(c, c)
+            color_map[cb] = PALETTE[c_idx % len(PALETTE)]
+            text_map[cb] = TEXT_PALETTE[c_idx % len(TEXT_PALETTE)]
+            c_idx += 1
 
     st.markdown("---")
     st.subheader(
@@ -97,18 +128,20 @@ def render_comparativo_axb(opcoes_cenarios, mapa_cenarios, cenario_a, cenario_b,
         height=700
     )
     # Adiciona Highlight na linha e coluna do cargo selecionado
-    if cargo_foco_a in cargos_a:
-        idx = cargos_a.index(cargo_foco_a)
-        # Highlight Row
-        fig.add_shape(type="rect",
-            x0=-0.5, y0=idx-0.5, x1=len(cargos_a)-0.5, y1=idx+0.5,
-            line=dict(color="Gold", width=2), fillcolor="rgba(0,0,0,0)"
-        )
-        # Highlight Col
-        fig.add_shape(type="rect",
-            x0=idx-0.5, y0=-0.5, x1=idx+0.5, y1=len(cargos_a)-0.5,
-            line=dict(color="Gold", width=2), fillcolor="rgba(0,0,0,0)"
-        )
+    for dest in destaques_completos:
+        if dest in cargos_a:
+            idx = cargos_a.index(dest)
+            border_color = text_map.get(dest, "rgba(255,152,0,0.8)")
+            # Highlight Row
+            fig.add_shape(type="rect",
+                x0=-0.5, y0=idx-0.5, x1=len(cargos_a)-0.5, y1=idx+0.5,
+                line=dict(color=border_color, width=2), fillcolor="rgba(0,0,0,0)"
+            )
+            # Highlight Col
+            fig.add_shape(type="rect",
+                x0=idx-0.5, y0=-0.5, x1=idx+0.5, y1=len(cargos_a)-0.5,
+                line=dict(color=border_color, width=2), fillcolor="rgba(0,0,0,0)"
+            )
 
     st.plotly_chart(fig, use_container_width=True)
     
@@ -120,7 +153,9 @@ def render_comparativo_axb(opcoes_cenarios, mapa_cenarios, cenario_a, cenario_b,
     )
     
     # Extração de Atribuições Ganhos/Perdas
-    if cargo_foco_a in df_a['Carreira'].values and cargo_foco_b in df_b['Carreira'].values:
+    if not cargo_foco_a:
+        st.info("💡 Selecione uma 'Carreira para Análise Detalhada' no topo para visualizar o Fluxo Normativo (Ganhos e Perdas).")
+    elif cargo_foco_a in df_a['Carreira'].values and cargo_foco_b in df_b['Carreira'].values:
         row_a = df_a[df_a['Carreira'] == cargo_foco_a].iloc[0].drop('Carreira')
         row_b = df_b[df_b['Carreira'] == cargo_foco_b].iloc[0].drop('Carreira')
         
@@ -153,8 +188,16 @@ def render_comparativo_axb(opcoes_cenarios, mapa_cenarios, cenario_a, cenario_b,
             opcoes_status_22 = ["🟢 Ganhou", "🔴 Perdeu", "⚪ Manteve"]
             filtro_status_22 = st.multiselect("Filtrar Status da Atribuição:", opcoes_status_22, default=opcoes_status_22, key="filtro_status_22")
             df_mostrar_22 = df_comparativo_attrs[df_comparativo_attrs["Status"].isin(filtro_status_22)]
+            def highlight_status_22(row):
+                status = row["Status"]
+                if "Ganhou" in status:
+                    return ['background-color: rgba(76, 175, 80, 0.15); color: #81c784;'] * len(row)
+                elif "Perdeu" in status:
+                    return ['background-color: rgba(244, 67, 54, 0.15); color: #e57373;'] * len(row)
+                else:
+                    return ['color: #9e9e9e;'] * len(row)
             
-            st.dataframe(df_mostrar_22, use_container_width=True, height=(len(df_mostrar_22) + 1) * 35 + 3)
+            st.dataframe(df_mostrar_22.style.apply(highlight_status_22, axis=1), use_container_width=True, height=(len(df_mostrar_22) + 1) * 35 + 3)
         else:
             st.write("Nenhuma atribuição encontrada para esta carreira.")
     else:
@@ -166,7 +209,9 @@ def render_comparativo_axb(opcoes_cenarios, mapa_cenarios, cenario_a, cenario_b,
         help="**O que é isso?**\nUm gráfico bidimensional que sobrepõe a similaridade do cargo selecionado contra as outras carreiras da polícia nos dois cenários.\n\n**Como ler:**\n- Quanto mais a ponta do radar se esticar para a borda externa, mais as carreiras são **similares**.\n- Se a área laranja (Cenário Alvo) for maior que a ciano (Cenário Base), o cargo selecionado *absorveu* funções e se aproximou das demais carreiras.\n- Se a área encolher, o cargo sofreu um expurgo normativo e isolou-se."
     )
     
-    if cargo_foco_a in df_a['Carreira'].values and cargo_foco_b in df_b['Carreira'].values:
+    if not cargo_foco_a:
+        st.info("💡 Selecione uma 'Carreira para Análise Detalhada' no topo para visualizar o Radar de Afinidade e o Detalhamento Analítico.")
+    elif cargo_foco_a in df_a['Carreira'].values and cargo_foco_b in df_b['Carreira'].values:
         # Pega TODAS as carreiras do cenário (exceto ela mesma)
         todas_carreiras = [c for c in gower_a.index if c != cargo_foco_a]
             
@@ -206,6 +251,20 @@ def render_comparativo_axb(opcoes_cenarios, mapa_cenarios, cenario_a, cenario_b,
             hovertemplate="<b>Carreira:</b> %{theta}<br><b>Afinidade Jaccard:</b> %{r:.1%}<extra></extra>"
         ))
         
+        for dest in destaques_completos:
+            if dest in todas_carreiras:
+                fig_radar.add_trace(go.Scatterpolar(
+                    r=[1.0],
+                    theta=[dest],
+                    mode='markers+text',
+                    marker=dict(color=text_map.get(dest, 'white'), size=12, symbol='star'),
+                    text=["⭐"],
+                    textposition="top center",
+                    name=f"Destaque: {dest}",
+                    showlegend=True,
+                    hoverinfo='skip'
+                ))
+                
         fig_radar.update_layout(
             polar=dict(
                 radialaxis=dict(
@@ -253,8 +312,14 @@ def render_comparativo_axb(opcoes_cenarios, mapa_cenarios, cenario_a, cenario_b,
         filtro_status_24 = st.multiselect("Filtrar Tendência de Afinidade:", opcoes_status_24, default=opcoes_status_24, key="filtro_status_24")
         df_mostrar_24 = df_tabela[df_tabela["Tendência"].isin(filtro_status_24)]
         
+        def highlight_24(row):
+            c = row["Carreira Relacionada"]
+            if c in color_map:
+                return [f'background-color: {color_map[c]}; color: {text_map[c]}; font-weight: bold;'] * len(row)
+            return [''] * len(row)
+            
         st.dataframe(
-            df_mostrar_24,
+            df_mostrar_24.style.apply(highlight_24, axis=1),
             use_container_width=True,
             column_config={
                 f"Afinidade Base ({cenario_a})": st.column_config.NumberColumn(
@@ -291,8 +356,8 @@ def render_comparativo_axb(opcoes_cenarios, mapa_cenarios, cenario_a, cenario_b,
     nodes_a, edges_a, pos_a = data_processing.gerar_dados_grafo(adj_a, threshold=threshold_adj_comp)
     nodes_b, edges_b, pos_b = data_processing.gerar_dados_grafo(adj_b, threshold=threshold_adj_comp)
     
-    fig_grafo_a = visualizations.plot_network_graph(nodes_a, edges_a, f"Grafo Cenário Base ({cenario_a})", cargos_destaque=[cargo_foco_a] if cargo_foco_a in adj_a.index else None)
-    fig_grafo_b = visualizations.plot_network_graph(nodes_b, edges_b, f"Grafo Cenário Alvo ({cenario_b})", cargos_destaque=[cargo_foco_b] if cargo_foco_b in adj_b.index else None)
+    fig_grafo_a = visualizations.plot_network_graph(nodes_a, edges_a, f"Grafo Cenário Base ({cenario_a})", cargos_destaque=[c for c in destaques_completos if c in adj_a.index] or None)
+    fig_grafo_b = visualizations.plot_network_graph(nodes_b, edges_b, f"Grafo Cenário Alvo ({cenario_b})", cargos_destaque=[c for c in destaques_b if c in adj_b.index] or None)
     
     col_grafo1, col_grafo2 = st.columns(2)
     with col_grafo1:
@@ -335,8 +400,14 @@ def render_comparativo_axb(opcoes_cenarios, mapa_cenarios, cenario_a, cenario_b,
     filtro_status_25 = st.multiselect("Filtrar Impacto na Rede:", opcoes_status_25, default=opcoes_status_25, key="filtro_status_25")
     df_mostrar_25 = df_grafo[df_grafo["Impacto na Rede"].isin(filtro_status_25)]
     
+    def highlight_25(row):
+        c = row["Carreira"]
+        if c in color_map:
+            return [f'background-color: {color_map[c]}; color: {text_map[c]}; font-weight: bold;'] * len(row)
+        return [''] * len(row)
+        
     st.dataframe(
-        df_mostrar_25,
+        df_mostrar_25.style.apply(highlight_25, axis=1),
         use_container_width=True,
         column_config={
             "Variação (Nº de Arestas)": st.column_config.NumberColumn(
@@ -357,8 +428,8 @@ def render_comparativo_axb(opcoes_cenarios, mapa_cenarios, cenario_a, cenario_b,
     # O Dendrograma precisa do gower_a e gower_b (já calculados anteriormente)
     # Apenas se houver mais de um cargo para poder clusterizar
     if len(gower_a.columns) > 1 and len(gower_b.columns) > 1:
-        fig_dendro_a = visualizations.plot_dendrogram(gower_a, f"Árvore Cenário Base ({cenario_a})", cargos_destaque=[cargo_foco_a] if cargo_foco_a in gower_a.columns else None)
-        fig_dendro_b = visualizations.plot_dendrogram(gower_b, f"Árvore Cenário Alvo ({cenario_b})", cargos_destaque=[cargo_foco_b] if cargo_foco_b in gower_b.columns else None)
+        fig_dendro_a = visualizations.plot_dendrogram(gower_a, f"Árvore Cenário Base ({cenario_a})", cargos_destaque=[c for c in destaques_completos if c in gower_a.columns] or None)
+        fig_dendro_b = visualizations.plot_dendrogram(gower_b, f"Árvore Cenário Alvo ({cenario_b})", cargos_destaque=[c for c in destaques_b if c in gower_b.columns] or None)
         
         col_dendro1, col_dendro2 = st.columns(2)
         with col_dendro1:
@@ -404,8 +475,14 @@ def render_comparativo_axb(opcoes_cenarios, mapa_cenarios, cenario_a, cenario_b,
             filtro_status_26 = st.multiselect("Filtrar Mudança de Ramo:", opcoes_status_26, default=opcoes_status_26, key="filtro_status_26")
             df_mostrar_26 = df_dendro[df_dendro["Mudança de Ramo?"].isin(filtro_status_26)]
             
+            def highlight_26(row):
+                c = row["Carreira"]
+                if c in color_map:
+                    return [f'background-color: {color_map[c]}; color: {text_map[c]}; font-weight: bold;'] * len(row)
+                return [''] * len(row)
+                
             st.dataframe(
-                df_mostrar_26,
+                df_mostrar_26.style.apply(highlight_26, axis=1),
                 use_container_width=True,
                 column_config={
                     f"Distância ({cenario_a})": st.column_config.NumberColumn(
