@@ -5,6 +5,7 @@ import data_processing
 import numpy as np
 import json
 import os
+import explanations
 
 def render_longitudinal_mode(opcoes_cenarios, mapa_cenarios, filtro_cargos, cargos_destaque):
     # CSS para as tabelas HTML
@@ -23,6 +24,8 @@ def render_longitudinal_mode(opcoes_cenarios, mapa_cenarios, filtro_cargos, carg
     
     st.markdown("### 🧬 Rastreamento Longitudinal por Carreira")
     st.markdown("Acompanhe a mutação estrutural de cada cargo ao longo dos cenários. O cenário **Atual Sem Correção** atua como base de **Controle**, e os demais apresentam sua variação colorida indicando crescimento, queda ou salto filogenético.")
+    if st.session_state.get('show_explanations', False):
+        st.info(explanations.get_explanation("m4_micro_inicio", st.session_state.get('explanation_tone', 'tecnico')))
     
     # Load Dict
     mapa_dict = {}
@@ -169,8 +172,13 @@ def render_longitudinal_mode(opcoes_cenarios, mapa_cenarios, filtro_cargos, carg
         html += "</tbody></table>"
         st.markdown(html, unsafe_allow_html=True)
         
-    def render_dashboard_aba(titulo, descricao, hist_dict, is_float=False, is_string=False):
+    def render_dashboard_aba(titulo, descricao, hist_dict, explanation_key=None, is_float=False, is_string=False):
         st.markdown(titulo)
+        
+        is_sample_biased = len(filtro_cargos) < len(cargos_base)
+        if is_sample_biased:
+            st.warning(explanations.get_short_bias_warning(), icon="🚨")
+            
         st.caption(descricao)
         
         # Renderizar gráfico de linha (exceto se for texto)
@@ -204,17 +212,20 @@ def render_longitudinal_mode(opcoes_cenarios, mapa_cenarios, filtro_cargos, carg
                 
         # Renderizar Tabela
         render_html_table(hist_dict, is_float)
+        
+        if explanation_key and st.session_state.get('show_explanations', False):
+            st.info(explanations.get_explanation(explanation_key, st.session_state.get('explanation_tone', 'tecnico')))
 
-    render_dashboard_aba("### 4.1 Volume Normativo", "Número de atribuições que a carreira possui (ignorando as genéricas).", hist_volume)
+    render_dashboard_aba("### 4.1 Volume Normativo", "Número de atribuições que a carreira possui (ignorando as genéricas).", hist_volume, "m4_micro_41")
         
-    render_dashboard_aba("### 4.2 Atribuições Exclusivas", "Quantidade de funções que *apenas* essa carreira faz.", hist_exclusivas)
+    render_dashboard_aba("### 4.2 Atribuições Exclusivas", "Quantidade de funções que *apenas* essa carreira faz.", hist_exclusivas, "m4_micro_42")
         
-    render_dashboard_aba("### 4.3 Atribuições Compartilhadas", "Quantidade de funções que a carreira divide com outros.", hist_compartilhadas)
+    render_dashboard_aba("### 4.3 Atribuições Compartilhadas", "Quantidade de funções que a carreira divide com outros.", hist_compartilhadas, "m4_micro_43")
         
-    render_dashboard_aba("### 4.4 Força de Adjacência", "Soma bruta de intersecções inter-carreiras.", hist_adj)
+    render_dashboard_aba("### 4.4 Força de Adjacência", "Soma bruta de intersecções inter-carreiras.", hist_adj, "m4_micro_44")
         
-    render_dashboard_aba("### 4.5 Média de Distância Gower", "O quão distante matematicamente a carreira está do grupo.", hist_gower, is_float=True)
+    render_dashboard_aba("### 4.5 Média de Distância Gower", "O quão distante matematicamente a carreira está do grupo.", hist_gower, "m4_micro_45", is_float=True)
         
-    render_dashboard_aba("### 4.6 Vizinho Filogenético", "A carreira mais similar matematicamente (Primeiro galho da árvore).", hist_vizinho, is_string=True)
+    render_dashboard_aba("### 4.6 Vizinho Filogenético", "A carreira mais similar matematicamente (Primeiro galho da árvore).", hist_vizinho, "m4_micro_46", is_string=True)
 
     st.markdown("<div style='height: 150px;'></div>", unsafe_allow_html=True)

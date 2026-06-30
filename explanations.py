@@ -1,0 +1,288 @@
+# Módulo de Explicações Detalhadas e Avisos (Baseado em RBCP V15 N2)
+
+def get_bias_warning():
+    return """**⚠️ AVISO DE VIÉS AMOSTRAL: PANORAMA INCOMPLETO (DADOS PARCIAIS)**
+
+*Atenção: A seleção atual não contempla todas as carreiras da Polícia Civil.*
+
+**O que isso significa?**
+Ao remover cargos da análise, você deixa de observar a "população estatística" inteira para observar apenas uma "amostra". Isso gera um **viés amostral**.
+
+**Como isso afeta os resultados?**
+Os algoritmos de distância (como Gower) e os diagramas de rede (Grafos e Árvores) calculam a posição de um cargo empurrando e puxando-o com base em **todos** os outros. Sem o panorama completo, a similaridade entre os cargos remanescentes sofre distorções (uma similaridade pode parecer maior ou menor do que realmente é no ecossistema completo). Esta visualização é útil para focos específicos, mas **não representa o cenário global da instituição.**"""
+
+def get_short_bias_warning():
+    return "🚨 **Lembrete de Viés Amostral:** Você desativou alguns cargos da análise. O cálculo de redes e distâncias exibido abaixo reflete apenas a relação desta amostra, e não a estrutura real completa da Polícia."
+
+def get_explanation(section, tone="tecnico"):
+    explanations = {
+        "tecnico": {
+            "matriz": """**📖 Compreensão Científica: Matriz Binária de Atribuições**
+
+A Matriz Binária transforma dados textuais (atribuições em editais e leis) em coordenadas numéricas rigorosas (0 ou 1). 
+- **Valor 1 (Célula Colorida):** Indica a posse normativa positiva da atribuição pelo cargo.
+- **Metodologia de Condensação:** O estudo original aplicou um filtro redutor de dimensionalidade. Atribuições idênticas comuns a um grupo fixo de cargos foram aglutinadas em uma única "super-atribuição" (coluna única). Isso previne distorções (ruído estatístico) geradas por documentos que descrevem a mesma função em 10 tópicos diferentes, o que criaria um peso artificial de similaridade na matemática do modelo.""",
+            
+            "adjacencia": """**📖 Compreensão Científica: Matriz de Adjacência**
+
+A matriz de adjacência mede a coocorrência (frequência absoluta de interseções).
+- **Cálculo:** Obtida por meio do Produto Escalar da matriz binária de atribuições por sua matriz transposta.
+- **Interpretação:** Revela valores absolutos. Se a célula entre Perito e Papiloscopista exibe o valor "3", significa que, matematicamente, suas matrizes de atribuição colidem positivamente (ambos possuem o valor 1) em exatamente três orações normativas analisadas.""",
+            
+            "explorador": """**📖 Compreensão Científica: Cruzamento Dinâmico (Tabelas Dinâmicas)**
+
+Ferramenta exploratória que replica e expande o modelo analítico adotado no artigo original.
+- **Finalidade:** Permite o "drill-down" nas matrizes esparsas. Em vez de observar coeficientes de distância, o usuário inspeciona qualitativamente *quais* variáveis (atribuições) específicas constituem a intersecção entre conjuntos de cargos e calcula o "peso normativo" absoluto e percentual de cada carreira no ecossistema global.""",
+            
+            "grafo": """**📖 Compreensão Científica: Diagrama de Grafos (NetworkX)**
+
+Visualização topológica de rede das interações normativas.
+- **Física Aplicada:** Utiliza o algoritmo *Fruchterman-Reingold (Spring Layout)*.
+- **Interpretação:** As arestas (linhas) são conexões de adjacência (compartilhamento de funções). O algoritmo simula repulsão e atração magnética. Cargos com muitas funções em comum "puxam-se" mutuamente para formar aglomerados (clusters) densos no centro ou extremidades da rede. Nós (cargos) sem conexões com a malha principal são repelidos para as bordas (dissimilaridade total).""",
+            
+            "gower": """**📖 Compreensão Científica: Matriz de Distância de Gower**
+
+O Coeficiente de Similaridade de Gower é um método de cálculo assimétrico para dados categóricos/binários.
+- **Avanço em relação à Adjacência:** Enquanto a adjacência conta apenas as "igualdades positivas", a distância de Gower computa e penaliza as desigualdades (o que um cargo faz e o outro não).
+- **Métrica:** Varia de 0.0 a 1.0. Valores próximos de 0.0 (cores quentes/escuras) representam altíssima similaridade (distância nula). Valores próximos a 1.0 representam dissimilaridade total. Igualdades negativas (ex: o fato de que nem Delegado nem Investigador realizam exames de DNA) são descartadas do peso para não aproximar artificialmente os cargos.""",
+            
+            "regua": """**📖 Compreensão Científica: Régua de Distanciamento Relativo**
+
+Projeção unidimensional do Coeficiente de Gower focada em um "ponto zero".
+- **Interpretação:** Ao fixar uma carreira como base (marco 0.0), a régua projeta a distância euclidiana das demais. Serve para diagnosticar o desvio padrão funcional de todo o órgão em relação a um cargo de interesse (ex: "A que distância os demais estão do Perito Criminal?").""",
+            
+            "dendograma": """**📖 Compreensão Científica: Árvore Hierárquica (Dendograma)**
+
+Classificação taxionômica das carreiras baseada na matriz de distâncias.
+- **Algoritmo:** Clusterização Hierárquica Aglomerativa (método *Single-linkage*, ou vizinho mais próximo).
+- **Interpretação:** O eixo X mede o nível de especialização/distância. A árvore (clados) dicotomiza os cargos da base para a ponta. Ramos que se separam logo no início (à esquerda) indicam matrizes basais/generalistas comuns a muitos. Ramos que se agrupam apenas lá na ponta (à direita) representam altíssima proximidade funcional especializada.""",
+            
+            "upset": """**📖 Compreensão Científica: Diagrama de Conjuntos (UpSet Plot)**
+
+Modelo avançado para visualização de interseções em múltiplos conjuntos, superior ao Diagrama de Venn clássico.
+- **Geometria dos Conjuntos:** Matematicamente, círculos de Venn só suportam interseções exatas de no máximo 4 grupos antes de violarem a topologia espacial. O UpSet Plot resolve isso analisando todas as dezenas de permutações matriciais e plotando-as como um código de barras. A coluna preta demonstra o montante exato de atribuições que são de posse exclusiva daquela configuração exata de cargos assinalada na matriz inferior.""",
+            
+            "m2_delta": """**📖 Compreensão Científica: Delta de Distância de Gower**
+
+O cálculo de delta vetorial mede a variação da distância de Gower de um cargo em dois tempos distintos.
+- **Interpretação:** Uma variação negativa sinaliza aglutinação funcional (cargos tornaram-se mais similares/híbridos). Uma variação positiva indica que os cargos se isolaram funcionalmente.""",
+            
+            "m2_fluxo": """**📖 Compreensão Científica: Fluxo Normativo (Balanço de Interseções)**
+
+Demonstra a flutuação exata das coordenadas binárias (0 ➔ 1 ou 1 ➔ 0).
+- **Interpretação:** Exibe, sem abstração matemática, o que exatamente um cargo passou a ter permissão de fazer e o que lhe foi suprimido normativamente, evidenciando o escopo da mutação estrutural.""",
+            
+            "m2_radar": """**📖 Compreensão Científica: Afinidade Jaccard (Geometria Plana)**
+
+O Índice de Jaccard compara a intersecção contra a união de dois conjuntos.
+- **Interpretação:** Projetado em um plano polar (radar), este gráfico revela a "área de atuação". A diferença visual de área entre o Cenário A e o Cenário B demonstra se a carreira perdeu capilaridade transversal na instituição ou se expandiu suas fronteiras funcionais.""",
+            
+            "m2_grafo": """**📖 Compreensão Científica: Delta de Centralidade Topológica**
+
+Compara a densidade de conexões (arestas) nas duas malhas de grafos geradas pela adjacência.
+- **Interpretação:** Uma carreira que ganha muitas novas arestas no cenário alvo está assumindo uma posição de "hub" central na instituição. Se perde arestas, ela está se tornando um nó isolado na borda da rede.""",
+            
+            "m2_dendro": """**📖 Compreensão Científica: Salto Filogenético (Clados)**
+
+Avalia se as distâncias vetoriais alteraram o vizinho euclidiano mais próximo da carreira.
+- **Interpretação:** Uma mudança de vizinho (ramo na árvore) é o indicador mais forte de uma ruptura metodológica: significa que o DNA funcional daquele cargo foi tão alterado que ele precisou ser reclassificado para outra "família" dentro da Polícia.""",
+            
+            "m3_macro": """**📖 Compreensão Científica: Análise Global por Matriz de Interseções**
+
+A visualização empilhada evidencia tendências seculares nas matrizes da Polícia.
+- **Interpretação:** Um aumento no bloco de "Exclusivas" e redução nas "Compartilhadas" aponta para uma especialização institucional (segmentação). O inverso aponta para generalismo e sobreposição de competências sistêmicas.""",
+
+            "m3_macro_31": """**📖 Compreensão Científica: Volume Total por Cenário**
+    
+Demonstra o quantitativo bruto de atribuições consolidadas em cada corte temporal.
+- **Interpretação:** Verifica se as normativas, de modo geral, estão ampliando o escopo funcional da Polícia Civil ou enxugando as atribuições descritas.""",
+            
+            "m3_macro_32": """**📖 Compreensão Científica: Proporção Exclusiva vs Compartilhada**
+
+Avalia a relação percentual entre funções que pertencem a apenas um cargo e funções que pertencem a múltiplos cargos.
+- **Interpretação:** Um ganho em atribuições exclusivas sugere uma especialização maior e isolamento de carreiras. Um aumento de compartilhadas indica generalismo e sobreposição legal.""",
+            
+            "m3_macro_33": """**📖 Compreensão Científica: Grau Médio de Compartilhamento**
+
+Mede, em média, por quantas carreiras distintas uma atribuição normativa é dividida.
+- **Interpretação:** Valores altos demonstram alta capilaridade das funções (atribuições genéricas presentes em vários editais). Valores baixos indicam que as atribuições estão bem nichadas.""",
+            
+            "m4_micro": """**📖 Compreensão Científica: Rastreamento Evolutivo Individual (Séries Temporais)**
+
+Desagrega as métricas globais e projeta a variação pontual ao longo das 5 eras normativas para os cargos isolados.
+- **Interpretação:** Analisa o ganho/perda de volume funcional absoluto (total), a flutuação de distâncias magnéticas e os saltos de vizinhança topológica. Serve para rastrear a genealogia histórica individualizada.""",
+
+            "m4_micro_inicio": """**📖 Compreensão Científica: Rastreamento Evolutivo Individual**
+            
+Desagrega as métricas globais e projeta a variação pontual ao longo das 5 eras normativas para os cargos isolados.
+- **Interpretação:** Analisa a variação da carreira em volume absoluto, conexões de adjacência, proximidade de Gower e saltos filogenéticos.""",
+
+            "m4_micro_41": """**📖 Compreensão Científica: Flutuação de Volume Funcional**
+            
+Série temporal da contagem absoluta de atribuições condensadas ativas no perfil da carreira.
+- **Interpretação:** Evidencia crescimento (expansão legal do cargo) ou encolhimento (esvaziamento normativo).""",
+
+            "m4_micro_42": """**📖 Compreensão Científica: Dinâmica de Exclusividade**
+            
+Acompanha a proporção interna de atribuições exclusivas (privativas) versus compartilhadas.
+- **Interpretação:** Revela se a carreira está perdendo o monopólio de suas funções (aumento de compartilhadas) ou ganhando nichos privativos.""",
+
+            "m4_micro_43": """**📖 Compreensão Científica: Densidade de Adjacência**
+            
+Soma das interseções brutas com todas as outras carreiras (Σ adjacências).
+- **Interpretação:** Indica o quão "misturada" a carreira está. Picos sinalizam um aumento brusco de funções em comum com outros cargos.""",
+
+            "m4_micro_44": """**📖 Compreensão Científica: Centralidade de Grau (Degree)**
+            
+O número de arestas incidentes ao nó do cargo na malha de conectividade (limiar > 1).
+- **Interpretação:** Mede o poder de conexão (hub). Crescimento sugere que a carreira interage com mais carreiras distintas do que antes.""",
+
+            "m4_micro_45": """**📖 Compreensão Científica: Distanciamento Gower (Isolamento)**
+            
+Média aritmética das distâncias de Gower em relação aos demais nós.
+- **Interpretação:** Um vetor decrescente significa que o cargo está ficando estatisticamente mais genérico/parecido com o resto da corporação.""",
+
+            "m4_micro_46": """**📖 Compreensão Científica: Ruptura de Vizinhança**
+            
+Rastreia alterações na identidade do vizinho euclidiano mais próximo (menor distância Gower).
+- **Interpretação:** Troca de vizinho representa um salto filogenético (Clado), sinalizando mudança radical no DNA funcional da carreira."""
+        },
+        "leigo": {
+            "matriz": """**🗣️ Entendendo de forma simples: A Tabela de Presença**
+
+Pense nesta matriz como a folha de presença da escola ou escala de plantão.
+- Se o quadrado tem cor (valor 1), a lei ou o edital diz que aquele cargo TEM que fazer aquela tarefa.
+- Se estiver vazio (valor 0), o cargo NÃO faz.
+- **O detalhe inteligente:** Se três cargos fazem exatamente a mesma coisa burocrática, o sistema conta isso como apenas *uma* tarefa, para não dar a falsa impressão de que eles fazem muitas coisas, quando na verdade é só a mesma tarefa repetida em várias linhas da lei.""",
+            
+            "adjacencia": """**🗣️ Entendendo de forma simples: Tabela de "Amizade" de Tarefas**
+
+Essa tabela conta, em números absolutos, quantas tarefas dois cargos têm em comum.
+- **Como ler:** Cruze a linha de um cargo com a coluna do outro. Se estiver marcado "3", significa que eles compartilham exatamente três obrigações legais. Cores escuras indicam cargos que dividem muitas tarefas.""",
+            
+            "explorador": """**🗣️ Entendendo de forma simples: O Explorador de Dados**
+
+Aqui você pode investigar com uma lupa o que está por trás dos números.
+- Você pode selecionar cargos e ver uma lista em português claro de **quais** tarefas eles têm em comum, ou quais são exclusivas de um único profissional. É ótimo para responder à pergunta: 'Afinal, quem na Polícia tem autorização legal para fazer o procedimento X?'""",
+            
+            "grafo": """**🗣️ Entendendo de forma simples: A "Teia de Aranha" das Funções**
+
+Este gráfico cria um modelo físico onde os cargos são como ímãs.
+- **Como ler:** As linhas que conectam as "bolas" (cargos) representam tarefas divididas. Quanto mais funções em comum, mais forte é a atração magnética. Por isso, cargos parecidos terminam sendo "puxados" para formar um bolinho juntos, enquanto cargos muito diferentes ficam soltos e isolados nas pontas.""",
+            
+            "gower": """**🗣️ Entendendo de forma simples: O Mapa de Afinidade Real**
+
+Diferente da tabela de amizade (que só vê o que é igual), este mapa mede a diferença real (calculada por um método chamado Gower).
+- **Por que é melhor:** Ele leva em conta não só o que dois cargos fazem de parecido, mas **desconta** o peso das coisas que eles fazem de totalmente diferente. 
+- **Como ler:** Cores fortes/quentes significam que os cargos são quase clones um do outro em suas leis. Cores fracas indicam que eles têm pouco a ver.""",
+            
+            "regua": """**🗣️ Entendendo de forma simples: A Régua de Distância**
+
+Imagine que você coloque o seu cargo escolhido na marca "Zero" de uma fita métrica.
+- Este gráfico mostra a que distância todos os outros cargos estão de você. Cargos colados perto do Zero fazem um trabalho muito parecido com o seu. Cargos lá no final da régua (perto de 1.0) fazem um trabalho completamente diferente.""",
+            
+            "dendograma": """**🗣️ Entendendo de forma simples: A Árvore Genealógica das Carreiras**
+
+Este gráfico tenta agrupar a Polícia em "famílias" com base na proximidade do trabalho.
+- **Como ler:** Acompanhe as linhas da direita para a esquerda. Se dois cargos se juntam muito cedo numa "garfo" da árvore (bem à direita), eles são como gêmeos. Se a linha deles viaja muito para a esquerda antes de encontrar alguém, eles fazem um trabalho bem exclusivo e isolado do resto.""",
+            
+            "upset": """**🗣️ Entendendo de forma simples: O Gráfico de Fatias Exclusivas**
+
+Sabe aquele antigo desenho de dois círculos se cruzando (Diagrama de Venn)? Na Polícia, com 14 cargos, é impossível desenhar aquilo no papel. Este gráfico resolve o problema.
+- **Como ler:** Olhe para as bolinhas ligadas lá embaixo. Elas mostram "quem" está no grupo. A barra alta em cima mostra **quantas tarefas** pertencem exclusivamente e unicamente àquele grupo de pessoas assinalado. É excelente para ver quais grupos "monopolizam" certos trabalhos na Polícia.""",
+
+            "m2_delta": """**🗣️ Entendendo de forma simples: Mapa de Variação de Afinidade**
+
+Este quadro compara a régua de distância antes e depois.
+- **Como ler:** Zonas azuis mostram onde dois cargos ficaram mais parecidos com o tempo. Zonas vermelhas mostram que eles se afastaram e hoje em dia realizam tarefas mais diferentes um do outro.""",
+            
+            "m2_fluxo": """**🗣️ Entendendo de forma simples: O Que Mudou (Extrato da Conta)**
+
+É o extrato literal de ganhos e perdas.
+- **Como ler:** Sem gráficos ou matemática pesada. Lista claramente "o que o cargo podia fazer antes e não pode mais" (Perdas) e "o que o cargo não fazia e passou a fazer" (Ganhos).""",
+            
+            "m2_radar": """**🗣️ Entendendo de forma simples: Radar de Amizade Funcional**
+
+Mede qual porcentagem das tarefas totais o seu cargo divide com o vizinho.
+- **Como ler:** Se a área (o polígono desenhado) aumentou de um ano para o outro, significa que a carreira passou a atuar em várias áreas de outras carreiras. Se a área encolheu, ela se fechou no próprio "quadrado".""",
+            
+            "m2_grafo": """**🗣️ Entendendo de forma simples: Mudança na Malha (Grafo)**
+
+Compara como a "teia de aranha" mudou.
+- **Como ler:** Se um cargo ganhou muitos elos (links) na segunda teia, ele virou um curinga (hub) capaz de realizar tarefas de vários outros. Se perdeu elos, seu trabalho foi segregado.""",
+            
+            "m2_dendro": """**🗣️ Entendendo de forma simples: Salto de Galho (Árvore Genealógica)**
+
+Mede quem é o "irmão gêmeo" do cargo e se ele trocou de família.
+- **Como ler:** Analise se o vizinho mais próximo mudou. Se mudou (Salto de Ramo), quer dizer que as mudanças na lei foram tão drásticas que o cargo que era mais parecido com você ontem não é mais o mesmo de hoje.""",
+            
+            "m3_macro": """**🗣️ Entendendo de forma simples: A Fotografia Geral da Polícia**
+
+Olhando de cima (sem separar por cargo), como as atribuições evoluíram?
+- **Como ler:** Aumento na cor vermelha (Exclusivas) mostra que as profissões estão mais separadas e "donas" de suas tarefas. Aumento na azul (Compartilhadas) mostra uma polícia onde "todo mundo faz tudo".""",
+
+            "m3_macro_31": """**🗣️ Entendendo de forma simples: Crescimento Total**
+            
+Soma tudo o que a Polícia faz em cada época.
+- **Como ler:** Subiu? A Polícia tem mais regras sobre o que fazer. Desceu? Enxugaram as atribuições nos editais.""",
+
+            "m3_macro_32": """**🗣️ Entendendo de forma simples: Exclusivas vs Compartilhadas**
+
+Compara o que é de uma profissão só com o que "todo mundo faz".
+- **Como ler:** Mais cor vermelha (exclusivas) significa que cada um está mais no seu quadrado. Mais azul (compartilhadas) significa que as carreiras estão atuando nas mesmas áreas.""",
+
+            "m3_macro_33": """**🗣️ Entendendo de forma simples: Média de Compartilhamento**
+
+Em média, por quantas pessoas uma tarefa é dividida?
+- **Como ler:** Se a média sobe, as tarefas estão cada vez mais diluídas entre vários cargos. Se desce, as funções estão mais específicas para cada profissão.""",
+            
+            "m4_micro": """**🗣️ Entendendo de forma simples: Histórico Individual (Raio-X do Cargo)**
+
+É como a carteirinha de vacinação ou o boletim escolar do cargo ao longo do tempo.
+- **Como ler:** Você acompanha a mesma linha em todos os 5 cenários. Pode ver claramente se, ao longo das décadas, o cargo ganhou volume de trabalho (subiu) ou perdeu (desceu), e se ele se aproximou ou se afastou das outras profissões.""",
+
+            "m4_micro_inicio": """**🗣️ Entendendo de forma simples: O Raio-X do Cargo no Tempo**
+
+É o histórico de como a carreira mudou desde o primeiro edital até hoje.
+- **Como ler:** Acompanhe a linha do seu cargo e veja se, com o passar dos anos, ele foi ganhando ou perdendo força, e se está ficando mais parecido ou diferente dos outros.""",
+
+            "m4_micro_41": """**🗣️ Entendendo de forma simples: Total de Funções**
+
+A contagem básica de "quantas coisas" o cargo faz.
+- **Como ler:** Linha subindo significa que o cargo ganhou novas responsabilidades na lei. Linha caindo significa esvaziamento.""",
+
+            "m4_micro_42": """**🗣️ Entendendo de forma simples: Privilégio vs Divisão**
+
+Das coisas que o cargo faz, quantas são SÓ dele?
+- **Como ler:** Se a barra de exclusivas diminui ao longo dos anos, significa que o cargo perdeu exclusividades e passou a dividir o trabalho com outros.""",
+
+            "m4_micro_43": """**🗣️ Entendendo de forma simples: Grau de Mistura**
+
+Mede quantas tarefas no total o cargo divide com a corporação.
+- **Como ler:** Crescimento indica que a carreira está cada vez mais justaposta e misturada com o trabalho alheio.""",
+
+            "m4_micro_44": """**🗣️ Entendendo de forma simples: Pontes de Conexão**
+
+De 14 cargos, com quantos o seu cargo tem funções em comum?
+- **Como ler:** Se antes ele dividia tarefas com 2 cargos e agora divide com 8, ele virou um "coringa" que atua em toda a delegacia.""",
+
+            "m4_micro_45": """**🗣️ Entendendo de forma simples: Isolamento da Profissão**
+
+O quão "único" é o seu cargo comparado a todos os outros?
+- **Como ler:** Linha subindo (perto de 1.0) significa que a carreira está se distanciando de todos e virando uma ilha (isolada). Linha descendo significa que está virando um "faz tudo" genérico.""",
+
+            "m4_micro_46": """**🗣️ Entendendo de forma simples: Troca de "Irmão Gêmeo"**
+
+Quem é o cargo mais parecido com o seu?
+- **Como ler:** Se o vizinho muda de uma década para outra, as alterações na lei foram tão pesadas que você literalmente mudou de família profissional."""
+        }
+    }
+    
+    # Validação e fallback
+    t = tone.lower()
+    if "leigo" in t or "simplificado" in t:
+        t = "leigo"
+    else:
+        t = "tecnico"
+        
+    return explanations.get(t, explanations["tecnico"]).get(section, "")

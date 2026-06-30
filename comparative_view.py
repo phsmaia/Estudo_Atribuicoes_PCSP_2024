@@ -4,6 +4,7 @@ import json
 import plotly.express as px
 import plotly.graph_objects as go
 from data_processing import calcular_distancias_gower
+import explanations
 
 def render_comparativo_axb(opcoes_cenarios, mapa_cenarios, cenario_a, cenario_b, cargo_foco_a, cargos_destaque=None):
     if cenario_a == cenario_b:
@@ -144,6 +145,8 @@ def render_comparativo_axb(opcoes_cenarios, mapa_cenarios, cenario_a, cenario_b,
             )
 
     st.plotly_chart(fig, use_container_width=True)
+    if st.session_state.get('show_explanations', False):
+        st.info(explanations.get_explanation("m2_delta", st.session_state.get('explanation_tone', 'tecnico')))
     
     st.markdown("---")
     
@@ -202,6 +205,8 @@ def render_comparativo_axb(opcoes_cenarios, mapa_cenarios, cenario_a, cenario_b,
             st.write("Nenhuma atribuição encontrada para esta carreira.")
     else:
         st.warning("Carreira não localizada nos dados para comparação direta de atribuições.")
+    if st.session_state.get('show_explanations', False):
+        st.info(explanations.get_explanation("m2_fluxo", st.session_state.get('explanation_tone', 'tecnico')))
 
     st.markdown("---")
     st.subheader(
@@ -337,6 +342,8 @@ def render_comparativo_axb(opcoes_cenarios, mapa_cenarios, cenario_a, cenario_b,
             },
             height=(len(df_mostrar_24) + 1) * 35 + 3
         )
+        if st.session_state.get('show_explanations', False):
+            st.info(explanations.get_explanation("m2_radar", st.session_state.get('explanation_tone', 'tecnico')))
 
     st.markdown("---")
     
@@ -417,6 +424,8 @@ def render_comparativo_axb(opcoes_cenarios, mapa_cenarios, cenario_a, cenario_b,
         },
         height=(len(df_mostrar_25) + 1) * 35 + 3
     )
+    if st.session_state.get('show_explanations', False):
+        st.info(explanations.get_explanation("m2_grafo", st.session_state.get('explanation_tone', 'tecnico')))
 
     st.markdown("---")
 
@@ -499,5 +508,7 @@ def render_comparativo_axb(opcoes_cenarios, mapa_cenarios, cenario_a, cenario_b,
             
     else:
         st.warning("Não há carreiras suficientes para gerar a árvore hierárquica.")
+    if st.session_state.get('show_explanations', False):
+        st.info(explanations.get_explanation("m2_dendro", st.session_state.get('explanation_tone', 'tecnico')))
 
     st.markdown("<div style='height: 150px;'></div>", unsafe_allow_html=True)

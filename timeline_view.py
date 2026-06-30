@@ -5,6 +5,7 @@ import data_processing
 import numpy as np
 import json
 import os
+import explanations
 
 def render_timeline_mode(opcoes_cenarios, mapa_cenarios):
     st.markdown("Compare as métricas globais da Polícia Civil como um bloco único através dos diferentes cenários normativos.")
@@ -126,6 +127,8 @@ def render_timeline_mode(opcoes_cenarios, mapa_cenarios):
         st.subheader("3.1. Índice de Dissimilaridade Institucional", help="**O que é isso?**\nMede a distância matemática média (Gower) entre todos os cargos de um cenário.\n\n**Como ler:**\n- Valores **menores** indicam que as carreiras da Polícia estão mais parecidas entre si (maior aglutinação) naquele cenário.\n- Valores **maiores** indicam maior separação e exclusividade entre as funções.")
         st.plotly_chart(fig1, use_container_width=True)
         st.markdown("<p style='font-size:0.8rem; color:#aaa; margin-top:-20px;'>Mede o distanciamento médio (Gower) dos cargos no cenário. Cenários com valores menores possuem carreiras mais unificadas.</p>", unsafe_allow_html=True)
+        if st.session_state.get('show_explanations', False):
+            st.info(explanations.get_explanation("gower", st.session_state.get('explanation_tone', 'tecnico')))
     
     fig2 = px.bar(df_metrics, x="Cenário", y="Total de Atribuições Únicas", text="Total de Atribuições Únicas",
                   color="Total de Atribuições Únicas", color_continuous_scale="Viridis")
@@ -136,6 +139,8 @@ def render_timeline_mode(opcoes_cenarios, mapa_cenarios):
         st.subheader("3.2. Volume Normativo Bruto", help="**O que é isso?**\nA contagem bruta de todas as atribuições ativas espalhadas pelos cargos.\n\n**Como ler:**\n- Quedas drásticas indicam condensações normativas (ex: exclusão de detalhamentos desnecessários ou revogação de funções).")
         st.plotly_chart(fig2, use_container_width=True)
         st.markdown("<p style='font-size:0.8rem; color:#aaa; margin-top:-20px;'>Mede a carga bruta de funções ativas na instituição. Quedas drásticas indicam condensação normativo (Ex: LONPC).</p>", unsafe_allow_html=True)
+        if st.session_state.get('show_explanations', False):
+            st.info(explanations.get_explanation("m3_macro_31", st.session_state.get('explanation_tone', 'tecnico')))
         
     st.markdown("---")
     
@@ -147,6 +152,7 @@ def render_timeline_mode(opcoes_cenarios, mapa_cenarios):
     st.subheader("3.3. Nível de Compartilhamento", help="**O que é isso?**\nMostra, em média, por quantos cargos uma atribuição é dividida na corporação.\n\n**Como ler:**\n- Valores maiores indicam diluição de exclusividade (ex: muitas atribuições sendo feitas por múltiplos cargos simultaneamente).")
     st.plotly_chart(fig3, use_container_width=True)
     st.markdown("<p style='font-size:0.8rem; color:#aaa; margin-top:-20px;'>Mostra em média por quantos cargos cada atribuição é dividida. Valores altos indicam diluição de exclusividade.</p>", unsafe_allow_html=True)
-
+    if st.session_state.get('show_explanations', False):
+        st.info(explanations.get_explanation("m3_macro_33", st.session_state.get('explanation_tone', 'tecnico')))
 
     st.markdown("<div style='height: 150px;'></div>", unsafe_allow_html=True)

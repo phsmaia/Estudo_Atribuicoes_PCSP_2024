@@ -29,6 +29,8 @@ Para facilitar a exploração dos dados por leigos e gestores, o projeto agora c
 - **Matrizes Interativas**: Heatmaps que expõem as atribuições brutas e compartilhadas entre todos os cargos.
 - **Rede de Grafos**: Simulação magnética demonstrando a interligação de afinidade das carreiras.
 - **Régua de Gower & Dendograma**: Regimes de similaridade e agrupamentos hierárquicos entre carreiras de referência.
+- **Modo Educacional (Acadêmico/Leigo)**: Explicações dinâmicas injetadas ao vivo abaixo de cada gráfico, guiando a leitura metodológica e matemática do sistema.
+- **Sistema Anti-Viés**: Emissão automática de alertas de viés estatístico quando uma amostra restrita de cargos gera distorções topológicas.
 - **Explorador Dinâmico**: Abas para buscar cruzamentos diretos "Por Cargo" ou "Por Atribuição" sob demanda, contando com filtros algorítmicos de exclusividade global e inter-cargos.
 
 ### Como executar o Painel Localmente:

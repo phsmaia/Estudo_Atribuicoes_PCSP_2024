@@ -4,6 +4,18 @@ Todas as modificações notáveis neste projeto serão documentadas neste arquiv
 
 O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
+## [Unreleased] - 2026-06-29
+
+### Added
+- **Explicações Metodológicas Dinâmicas (Modos 3 e 4)**: Implementação de textos de explicação acadêmica e leiga sob demanda (`st.info`) para as seções macroscópicas e para cada etapa do rastreamento longitudinal.
+- **Sistema de Testes Automatizados**: Inclusão de testes permanentes com `pytest` focados na biblioteca `data_processing.py` para prevenção de regressões matemáticas (cálculo Gower, Aglutinação e Matriz de Adjacência).
+- **Hard Reload Anti-Cache (Streamlit)**: Aplicação de `importlib.reload()` no núcleo (`app.py`) forçando o subsistema a contornar o bloqueio de cache de views modulares (Modos 3 e 4) e componentes textuais compartilhados.
+
+### Changed
+- **Aviso de Viés Amostral**: Refatoração do banner de viés (amostra incompleta) para disparar transversalmente entre as abas e seções sempre que a totalidade de carreiras da corporação não for selecionada.
+- **Header HTML (Bugfix)**: Higienização do código HTML injetado no Streamlit Markdown Parser, impedindo vazamento de marcações `<div>` causadas por conflitos de sintaxe com linhas em branco.
+- **Gestão de Estado em Botões (Toggle)**: Refatoração do estado de seleção de explicações ("Acadêmico/Leigo") no Modo 2, utilizando o rastreador nativo `st.session_state` acoplado via argumento `key` para impedir perdas contextuais.
+
 ## [Unreleased] - 2026-06-22
 
 ### Added
